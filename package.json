@@ -1,0 +1,18 @@
+{
+  "name": "spreadboardcore",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "@tauri-apps/api": "^1.1.0",
+    "regenerator-runtime": "^0.13.11",
+    "rete": "^1.5.0-rc1",
+    "rete-area-plugin": "^0.2.1",
+    "rete-connection-plugin": "^0.9.0",
+    "rete-vue-render-plugin": "^1.0.0-rc2",
+    "vue": "^3.2.37"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
