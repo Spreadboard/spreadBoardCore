@@ -10,6 +10,7 @@ import ConnectionPlugin from "rete-connection-plugin";
 import { Data as ReteData, NodeData } from "rete/types/core/data";
 import { SpreadBoardWorkspace } from './spreadBoardWorkspace';
 import { ComponentPlugin } from './componentPlugin';
+import AreaPlugin from "rete-area-plugin";
 
 interface i18nObj{
     [index:string]: i18nObj | string;
@@ -33,6 +34,13 @@ export class SpreadBoardEditor extends NodeEditor{
                 component: SpreadBoardNode
             }
         );
+        this.use(ConnectionPlugin);
+        this.use(AreaPlugin,{
+            background: false,
+            snap: false,
+            scaleExtent: {min: 0.25, max: 1},
+            translateExtent: {width: 5000, height: 4000}
+        })
 
         this.use(ConnectionPlugin);
     }
