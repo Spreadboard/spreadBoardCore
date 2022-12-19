@@ -1,15 +1,15 @@
 import Rete, {Component, Node as RNode} from "rete";
 
 import {NumControl} from "./NumControl";
-import {i18n, SpreadBoardEditor} from "../../editor";
-import {SocketTypes} from "../../sockets";
+import {i18n, SpreadBoardEditor} from "../../editor/editor";
+import {SocketTypes} from "../../editor/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 
 export class NumNode extends Component {
 
     data = {
         i18nKeys: ["num"],
-        category: ["num"]
+        category: [["values"]]
     }
 
     constructor(){

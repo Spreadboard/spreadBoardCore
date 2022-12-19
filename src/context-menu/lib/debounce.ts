@@ -6,11 +6,11 @@
  * @return {Function}
  */
 export default function debounce(next: Function, ms: number) {
-    let timeout: number;
+    let timeout: any;
     return (...args: any) => {
         clearTimeout(timeout);
         timeout = setTimeout(() => {
-            next(args);
+            next(...args);
         }, ms);
     };
 }

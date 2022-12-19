@@ -106,18 +106,20 @@ export default defineComponent({
                 curMenu.push({title: title, onClick: onClick});
                 return;
             }
-            let subMenu = curMenu[path[0]];
+            let subMenu = curMenu.find((item:any)=> item.title == path[0]);
             
             if(!subMenu){
-                subMenu = { title: path[0], subitems: [] };
+                subMenu = { title: path[0], subitems: []};
                 curMenu.push(subMenu);
             }
-            else{
-                addItemRec(title, onClick, path.slice(0), subMenu);
-            }
+            if(!subMenu.subitems)
+                subMenu.subitems = []
+            addItemRec(title, onClick, path.slice(1), subMenu.subitems);
 
         }
       const additem = (title:string, onClick:Function, path = []) => {
+            addItemRec(title, onClick, path, items);
+            return;
           for(let level of path) {
               let exist = items.find(i => i.title === level);
 

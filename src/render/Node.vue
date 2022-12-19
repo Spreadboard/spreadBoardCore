@@ -42,7 +42,7 @@ import { defineComponent, computed } from "vue";
 import Mixin from './mixin';
 import Socket from "./Socket.vue";
 import { kebab } from "./utils";
-import {SpreadBoardEditor} from '../editor';
+import {SpreadBoardEditor} from '../editor/editor';
 export default defineComponent({
   name: "node",
   components: {

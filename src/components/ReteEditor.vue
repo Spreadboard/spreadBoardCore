@@ -4,7 +4,7 @@
 </template>
   
 <script lang="ts">
-import { SpreadBoardEditor } from '../editor';
+import { SpreadBoardEditor } from '../editor/editor';
 
 async function start(element: HTMLElement){
     element.innerHTML = "";

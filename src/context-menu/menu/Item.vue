@@ -19,7 +19,6 @@
 
 <script>
 import { computed, defineComponent, ref, onMounted } from "vue";
-import debounce from "../lib/debounce";
 
 export default defineComponent({
   props: {
@@ -29,10 +28,9 @@ export default defineComponent({
   },
   emits: ["hide", "click"],
   setup(props, { emit }) {
-      onMounted(() => {
-          timeoutHide = debounce(hideSubitems, props.delay);
-      })
-    let timeoutHide = () => {};
+    let timeoutHide = () => {
+        hideSubitems();
+    };
     const visibleSubitems = ref(false);
     const hasSubitems = computed(() => {
           return props.item.subitems
@@ -44,6 +42,7 @@ export default defineComponent({
     }
     const showSubitems = () => {
           visibleSubitems.value = true;
+          console.log("Show subitems",props.item.subitems);
           cancelHide();
       };
     const hideSubitems = () => {

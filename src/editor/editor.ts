@@ -14,13 +14,13 @@ import { ComponentPlugin } from './componentPlugin';
 // @ts-ignore
 import AreaPlugin from "rete-area-plugin";
 // @ts-ignore
-import ContextMenuPlugin from "./context-menu";
+import ContextMenuPlugin from "../context-menu";
 
-import { BoolNode } from './nodes/data/BoolNode';
-import { NumNode } from './nodes/data/NumNode';
+import { BoolNode } from '../nodes/data/BoolNode';
+import { NumNode } from '../nodes/data/NumNode';
 
 //@ts-ignore
-import NodeVue from './render/Node.vue';
+import NodeVue from '../render/Node.vue';
 
 interface i18nObj{
     [index:string]: i18nObj | string;
@@ -194,7 +194,9 @@ export class SpreadBoardEditor extends NodeEditor{
     public i18nMap: i18nMap= {
         "de":{
             "num":"Zahl",
-            "bool":"Wahrheitswert"
+            "bool":"Wahrheitswert",
+            "values":"Werte",
+            "value":"Wert"
         }
     };
     private modules: ReteData[];
@@ -230,9 +232,20 @@ export class SpreadBoardEditor extends NodeEditor{
         });
         this.use(ContextMenuPlugin, {
             allocate(component: Component){
+                //return [];
+                let data = component.data as any;
+                if(data.category){
+                    return data.category.map((sub:string[]) => {
+                        return i18n(sub);
+                    });
+                }
+                else return [];
+            },
+            rename(component: Component){
                 let data = component.data as any;
                 if(data.i18nKeys)
-                    return data.i18nKeys;
+                    return i18n(data.i18nKeys) || component.name;
+                return component.name;
             }
         });
 
@@ -287,15 +300,15 @@ export class SpreadBoardEditor extends NodeEditor{
             return this.i18nRec(keys.slice(1), res);
     }
 
-    register(component: Component, engine: boolean = true): void {
+    register(component: Component): void {
+        console.log("Register: ",component.name);
         super.register(component);
-        if(engine)
-            this.engine.register(component);
+        this.engine.register(component);
     }
 
     registerAll(components: Component[]): void {
         components.forEach(component => {
-            this.register(component);
+            this.register(component); 
         });
     }
 

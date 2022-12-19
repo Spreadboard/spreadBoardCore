@@ -1,16 +1,16 @@
 import Rete, {Component, Node as RNode} from "rete";
 
-import {SocketTypes} from "../../sockets";
 import {BoolControl} from "./BoolControl";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
-import { SpreadBoardEditor, i18n } from "../../editor";
+import {i18n, SpreadBoardEditor} from "../../editor/editor";
+import {SocketTypes} from "../../editor/sockets";
 
 export class BoolNode extends Component {
 
 
     data = {
         i18nKeys: ["bool"],
-        category: ["bool"]
+        category: [["values"]]
     }
 
     constructor() {
