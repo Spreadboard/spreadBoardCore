@@ -8,7 +8,7 @@ interface RetePlugin {
     install: (context: any, options?: any) => void;
 }
 
-export abstract class ComponentPlugin implements RetePlugin{
+export class ComponentPlugin implements RetePlugin{
     name: string;
     components: Component[];
     constructor(name: string, components: Component[]){

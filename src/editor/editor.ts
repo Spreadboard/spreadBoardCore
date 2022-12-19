@@ -11,6 +11,8 @@ import { Data, Data as ReteData, NodeData } from "rete/types/core/data";
 import { SpreadBoardWorkspace } from './spreadBoardWorkspace';
 import { ComponentPlugin } from './componentPlugin';
 
+import StandardNodes from "../nodes";
+
 // @ts-ignore
 import AreaPlugin from "rete-area-plugin";
 // @ts-ignore
@@ -196,7 +198,18 @@ export class SpreadBoardEditor extends NodeEditor{
             "num":"Zahl",
             "bool":"Wahrheitswert",
             "values":"Werte",
-            "value":"Wert"
+            "value":"Wert",
+            "operators":"Operatoren",
+            "add": "Summe",
+            "mult": "Produkt",
+            "addIn": "Summand",
+            "multIn": "Faktor",
+            "res": "Ergebnis",
+            "greater": "A>B",
+            "equal": "A=B",
+            "sub": "Differenz",
+            "subIn": "Minuend",
+            "subIn2": "Subtrahend",
         }
     };
     private modules: ReteData[];
@@ -249,12 +262,7 @@ export class SpreadBoardEditor extends NodeEditor{
             }
         });
 
-        const compList = [
-            new BoolNode(),
-            new NumNode()
-        ];
-
-        this.registerAll(compList);
+        this.use(StandardNodes);
 
         // add starting node
         this.fromJSON(

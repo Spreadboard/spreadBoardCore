@@ -23,7 +23,8 @@ export default {
   methods: {
     change(e:any){
       console.log(e.target.checked)
-      this.value = !this.value;
+      if(!this.readonly)
+        this.value = !this.value;
       this.update();
     },
     update() {

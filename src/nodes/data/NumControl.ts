@@ -15,10 +15,10 @@ export class NumControl extends Control {
 
     setValue(val: number) {
         //@ts-ignore
-        this.vueContext.value = val;
+        this.vueContext.value = val | 0;
     }
     getValue() {
         //@ts-ignore
-        return this.vueContext.value;
+        return this.vueContext.value | 0;
     }
 }
