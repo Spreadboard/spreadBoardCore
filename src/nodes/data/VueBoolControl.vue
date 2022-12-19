@@ -12,7 +12,6 @@
 
 <script lang="ts">
 
-
 export default {
   props: ['readonly', 'emitter', 'ikey', 'getData', 'putData', 'title'],
   name: "VueBoolComponent",

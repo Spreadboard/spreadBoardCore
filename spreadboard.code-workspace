@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../spreadboard"
+		},
+		{
+			"path": "."
+		},
+		{
+			"path": "../context-menu-plugin"
+		}
+	],
+	"settings": {}
+}
