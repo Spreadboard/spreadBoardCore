@@ -215,6 +215,12 @@ export class SpreadBoardEditor extends NodeEditor{
     private modules: ReteData[];
     private mainModule: ReteData;
 
+    public static getModuleIDs(){
+        return this.instance?.modules.map((value: Data, index: number)=>{return {index: index, id: value.id}});
+    }
+
+    public static getMainModuleID = () => this.instance?.mainModule.id;
+
     private engine: Engine;
 
     static instance: SpreadBoardEditor | null;
