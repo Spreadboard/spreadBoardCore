@@ -43,4 +43,7 @@ class SpreadBoardVariable<Type>{
 
 }
 
+export type SpreadBoardStack = {variables: Map<string, SpreadBoardVariable<any>>, subStacks: Map<number,SpreadBoardStack>};
+
+
 export {SpreadBoardVariable};

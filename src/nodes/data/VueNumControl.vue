@@ -32,7 +32,7 @@ export default {
     }
   },
   mounted() {
-    this.value = this.getData(this.ikey) | 0;
+    this.value = this.getData(this.ikey) ?? 0;
   }
 }
 </script>

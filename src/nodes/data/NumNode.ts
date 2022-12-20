@@ -23,7 +23,7 @@ export class NumNode extends Component {
     }
 
     worker(node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs) {
-        outputs['num'] = node.data.num;
+        outputs['num'] = node.data.num ;
     }
 }
 

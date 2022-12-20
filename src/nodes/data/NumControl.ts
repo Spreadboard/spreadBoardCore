@@ -7,7 +7,7 @@ export class NumControl extends Control {
     private component: any;
     private props: Object;
 
-    constructor(emitter: Function, key:string, readonly:boolean = false, title:string|null = null) {
+    constructor(emitter: Function, key:string, readonly:boolean = false, title:string | null = null) {
         super(key);
         this.component = VueNumControl;
         this.props = { emitter, ikey: key, readonly, title: title };
@@ -15,10 +15,10 @@ export class NumControl extends Control {
 
     setValue(val: number) {
         //@ts-ignore
-        this.vueContext.value = val | 0;
+        this.vueContext.value = val ?? 0;
     }
     getValue() {
         //@ts-ignore
-        return this.vueContext.value | 0;
+        return this.vueContext.value ?? 0;
     }
 }
