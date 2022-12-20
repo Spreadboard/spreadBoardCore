@@ -226,7 +226,7 @@ export class SpreadBoardEditor extends NodeEditor{
 
     static instance: SpreadBoardEditor | null;
 
-    static getOrCreate(container: HTMLElement, id = "main@0.1.0", saveObj: SpreadBoardWorkspace = {modules:[{id:"test@0.1.0", nodes: {}}]}){
+    static getOrCreate(container: HTMLElement, id = "main@0.1.0", saveObj: SpreadBoardWorkspace = {modules:[{id:"main@0.1.0", nodes: {}}]}){
         if(!this.instance)
             this.instance  = new SpreadBoardEditor(container, id, saveObj);
         return this.instance
