@@ -7,7 +7,7 @@ import { SpreadBoardStack, SpreadBoardVariable } from './variable';
 import VueRenderPlugin from "rete-vue-render-plugin";
 
 import ConnectionPlugin from "rete-connection-plugin";
-import { Data, Data as ReteData, NodeData } from "rete/types/core/data";
+import { Data, Data as ReteData, NodeData, NodesData } from "rete/types/core/data";
 import { SpreadBoardWorkspace } from './spreadBoardWorkspace';
 import { ComponentPlugin } from './componentPlugin';
 
@@ -59,6 +59,9 @@ export class SpreadBoardEditor extends NodeEditor{
             "sub": "Differenz",
             "subIn": "Minuend",
             "subIn2": "Subtrahend",
+            "modules": "Module",
+            "numIn": "Eingabe - Zahl",
+            "numOut": "Ausgabe - Zahl"
         }
     };
     private modules: ReteData[] = [];
@@ -77,6 +80,20 @@ export class SpreadBoardEditor extends NodeEditor{
         if(!this.instance)
             this.instance  = new SpreadBoardEditor(container, id, saveObj);
         return this.instance
+    }
+
+    getModuleIOs(index: number){
+        let module = this.modules[index];
+        for(let key in module.nodes){
+            let node = module.nodes[key];
+            if(node.data.module){
+
+            }
+        }
+    }
+
+    processModule(index: number){
+        let module = index.
     }
 
     private constructor(container: HTMLElement, id = "main@0.1.0",saveObj: SpreadBoardWorkspace = {modules:[{id:"main@0.1.0", nodes: {}}]}){
@@ -179,6 +196,7 @@ export class SpreadBoardEditor extends NodeEditor{
     saveCurModule(){
         this.modules[this.curModule].nodes = this.toJSON().nodes;
     }
+    
     clear(): void {
         this.editorProcessor.abort();
         const nodes = this.nodes;
@@ -224,7 +242,7 @@ export class SpreadBoardEditor extends NodeEditor{
         module.nodes = this.modules[index].nodes;
         this.fromJSON(module);
         this.processEditor();
-        this.curModule = index; 
+        this.curModule = index;
     }
 }
 
