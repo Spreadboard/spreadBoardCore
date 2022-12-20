@@ -212,31 +212,33 @@ export class SpreadBoardEditor extends NodeEditor{
             "subIn2": "Subtrahend",
         }
     };
-    private modules: ReteData[];
-    private mainModule: ReteData;
+    private modules: ReteData[] = [];
+
+    private curModule: number = 0;
+
+    public static getCurModule(){ return this.instance?.curModule};
 
     public static getModuleIDs(){
-        return this.instance?.modules.map((value: Data, index: number)=>{return {index: index, id: value.id}});
+        return this.instance?.modules.map((value: Data, index: number)=>{return {index: index, id: value.id.slice(0,value.id.length-6)}});
     }
-
-    public static getMainModuleID = () => this.instance?.mainModule.id;
 
     private engine: Engine;
 
     static instance: SpreadBoardEditor | null;
 
-    static getOrCreate(container: HTMLElement, id = "spreadboard@0.1.0", saveObj: Data = {id:"spreadboard@0.1.0", nodes: {}}){
+    static getOrCreate(container: HTMLElement, id = "main@0.1.0", saveObj: SpreadBoardWorkspace = {modules:[{id:"test@0.1.0", nodes: {}}]}){
         if(!this.instance)
             this.instance  = new SpreadBoardEditor(container, id, saveObj);
         return this.instance
     }
 
-    private constructor(container: HTMLElement, id = "spreadboard@0.1.0", saveObj: Data = {id:"spreadboard@0.1.0", nodes: {}}){
+    private constructor(container: HTMLElement, id = "main@0.1.0",saveObj: SpreadBoardWorkspace = {modules:[{id:"main@0.1.0", nodes: {}}]}){
         super(id, container);
         this.engine = new Engine(id);
 
-        this.mainModule = saveObj;
-        this.modules = [];
+        if(saveObj.modules.find((module)=>module.id!="main@0.1.0"))
+            this.modules = [{id:"main@0.1.0", nodes: {}}];
+        this.modules.push(...saveObj.modules);
 
         this.use(VueRenderPlugin,
             {
@@ -267,12 +269,11 @@ export class SpreadBoardEditor extends NodeEditor{
                 return component.name;
             }
         });
-
         this.use(StandardNodes);
 
         // add starting node
         this.fromJSON(
-            saveObj
+            this.modules[0]
         ).then((_)=>{
             this.on(
                 ["connectioncreate", 'connectionremove', "nodecreate", 'noderemove'],
@@ -326,6 +327,9 @@ export class SpreadBoardEditor extends NodeEditor{
         });
     }
 
+    saveCurModule(){
+        this.modules[this.curModule].nodes = this.toJSON().nodes;
+    }
     clear(): void {
         this.engine.abort();
         const nodes = this.nodes;
@@ -345,20 +349,29 @@ export class SpreadBoardEditor extends NodeEditor{
 
     async load(json: SpreadBoardWorkspace){
         this.modules = json.modules;
-        this.mainModule = json.mainModule;
-        return await super.fromJSON(this.mainModule);
+        return await super.fromJSON(this.modules[0]);
     }
 
-    loadMainModule(){
-        super.fromJSON(this.mainModule);
-        this.engine.abort();
-        this.engine.process(this.mainModule);
+    addModule(name: string){
+        let id = name+"@0.1.0";
+        if(this.modules.find((value:Data)=>value.id == id))
+            return;
+        console.log("Adding new Module:",id);
+        this.modules.push({
+            id: id,
+            nodes: {}
+        })
     }
 
     loadModule(index: number){
-        super.fromJSON(this.modules[index])
+        this.saveCurModule();
+        this.clear();
+        let module = this.toJSON();
+        module.nodes = this.modules[index].nodes;
+        this.fromJSON(module);
         this.engine.abort();
-        this.engine.process(this.modules[index]);
+        this.engine.process(module);
+        this.curModule = index; 
     }
 }
 

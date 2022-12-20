@@ -13,7 +13,7 @@ export class NumNode extends Component {
     }
 
     constructor(){
-        super("Number");
+        super("NumNode");
     }
 
     async builder(node: RNode) {

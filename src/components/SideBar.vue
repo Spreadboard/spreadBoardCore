@@ -1,17 +1,16 @@
 <template>
 
 <div class="sidebar">
-    <button v-for="item in map" @click="(_)=>select(item.key)">{{ item.key }}</button>
+    <button v-for="item in map" @click="(_)=>select(item.key)" >{{ item.key }}</button>
 </div>
 
-<div :class="isSelected('modules')">
-    <ModuleSelector></ModuleSelector>
+<div id="bar">
 </div>
 
 </template>
 
 <script lang="ts">
-import { ref } from 'vue';
+import { createApp, ref } from 'vue';
 import ModuleSelector from './ModuleSelector.vue';
 
 export default{
@@ -23,7 +22,7 @@ export default{
         const map = [
             {
                 key: "modules",
-                componentName: "ModuleSelector"
+                componentName: ModuleSelector
             }
         ]
 
@@ -43,6 +42,14 @@ export default{
                 selected.value = key;
             else
                 selected.value = "";
+            
+            let barEl = document.getElementById("bar")!;
+            barEl.innerHTML = "";
+            if(getSelctedComp()!=undefined){
+                let bar = createApp(getSelctedComp()!);
+                bar.mount(barEl);
+            }
+            
         }
 
         return {
@@ -58,15 +65,6 @@ export default{
 </script>
 
 <style scoped>
-
-div.notSelected{
-    width: 0;
-    overflow-y: hidden;
-}
-
-div.selected{
-    width: 10%;
-}
 
 .sidebar{
     width: 25px;
