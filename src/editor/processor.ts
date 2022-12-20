@@ -1,5 +1,5 @@
 import { Component, Engine } from "rete";
-import { Data } from "rete/types/core/data";
+import { Data, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { SpreadBoardStack, SpreadBoardVariable } from "./variable";
 
 export class Processor{
@@ -21,10 +21,18 @@ export class Processor{
     abort(){
         this.engine.abort();
     }
+
+    processModule<T extends unknown[]>(data: Data, startId: number | string | null = null, moduleInputs?:WorkerInputs, moduleOuputs?:WorkerOutputs, subStackId?: number, ...args: T): Promise<"success" | "aborted">{
+        data.id = this.engine.id;
+        if(subStackId)
+        return this.engine.clone().process(data, startId,this.stack.subStacks.get(subStackId),moduleInputs, moduleOuputs,  ...args);
+        else
+        return this.engine.clone().process(data, startId,null,moduleInputs, moduleOuputs,  ...args);
+    }
     
     process<T extends unknown[]>(data: Data, startId: number | string | null = null, ...args: T): Promise<"success" | "aborted">{
         this.engine.abort();
-        return this.engine.process(data, startId, this.stack, ...args);
+        return this.engine.process(data, startId,this.stack, ...args);
     }
 
 }

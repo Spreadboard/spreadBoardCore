@@ -28,7 +28,7 @@ export default {
     update() {
       if (this.ikey)
         this.putData(this.ikey, this.value)
-      this.emitter('process',this.value);
+      this.emitter(this.value);
     }
   },
   mounted() {

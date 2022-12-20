@@ -1,0 +1,62 @@
+import Rete, {Component, Input, Node, Node as RNode, Output, Socket} from "rete";
+
+import {TextControl} from "../data/TextControl";
+import {i18n, SpreadBoardEditor} from "../../editor/editor";
+import {SocketTypes} from "../../editor/sockets";
+import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
+import { NumControl } from "../data/NumControl";
+
+export class ModuleNode extends Component {
+
+    data = {
+        i18nKeys: ["module"],
+        category: [["modules"]]
+    }
+
+    constructor(){
+        super("Module");
+    }
+
+    async builder(node: RNode) {
+        node.addControl(new NumControl((val:number)=>this.updateIos(val, node), 'id', false));
+        this.updateIos(node.data.id as number, node);
+    }
+
+    updateIos(moduleIndex:number, node: Node){
+        //console.log("Updating IO");
+        let ios = SpreadBoardEditor.getIOS(moduleIndex);
+        //console.log("new IO:", ios);
+
+        node.inputs.forEach((input)=>{
+            if(!ios.inputs.find((i)=>input.key == i.key)){
+                node.removeInput(input);
+            }
+        })
+
+        node.outputs.forEach((output)=>{
+            if(!ios.outputs.find((i)=>output.key == i.key)){
+                node.removeOutput(output);
+            }
+        })
+
+        ios.inputs.forEach((input)=>{
+            if(!node.inputs.has(input.key))
+            node.addInput(new Input(input.key,input.key, input.socket));
+        });
+
+        ios.outputs.forEach((output)=>{
+            if(!node.outputs.has(output.key))
+            node.addOutput(new Output(output.key,output.key, output.socket));
+        });
+        console.log()
+        node.update();
+    }
+
+    worker(node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs) {
+        let n = this.editor?.nodes.find((n:RNode)=>n.id = node.id);
+        if(n)
+        this.updateIos(node.data.id as number, n);
+        SpreadBoardEditor.processModule(node.data.id as number, inputs, outputs);
+    }
+}
+

@@ -4,6 +4,7 @@ import { SpreadBoardEditor } from "../editor/editor";
 import { BoolNode } from "./data/BoolNode";
 import { NumNode } from "./data/NumNode";
 import { InputNumNode } from "./modules/InputNumNode";
+import { ModuleNode } from "./modules/ModuleNode";
 import { OutputNumNode } from "./modules/OutputNumNode";
 import { AddNode } from "./operators/AddNode";
 import { EqualNode } from "./operators/EqualNode";
@@ -24,6 +25,7 @@ const StandardNodes = new ComponentPlugin(
         new SubNode(),
         new InputNumNode(),
         new OutputNumNode(),
+        new ModuleNode()
     ]
 );
 
