@@ -1,26 +1,39 @@
 <template>
     <div>
-        <button onclick="selectMain">{{ mainModule() }}</button>
-        <button v-for='module in modules()' :on-click="(_)=>select(module.index)">{{ module.id }}</button>
+        <button @click="selectMain" class="main-selector">{{ mainModule() }}</button>
+        <button v-for='module in modules()' 
+            :on-click="(_)=>select(module.index)">
+            {{ module.id }}
+        </button>
     </div>
 </template>
+
 <script lang="ts">
 import { SpreadBoardEditor } from '../editor/editor';
 
 
 export default {
-    methods:{
-        selectMain(){
+    setup(){
+
+        const selectMain = (event: MouseEvent)=>{
             SpreadBoardEditor.instance?.loadMainModule;
-        },
-        select(index: number){
+        };
+        const select=(index: number)=>{
             SpreadBoardEditor.instance?.loadModule(index);
-        },
-        mainModule(){
-            return SpreadBoardEditor.getMainModuleID();
-        },
-        modules(){
+        };
+        const mainModule=()=>{
+            let name= SpreadBoardEditor.getMainModuleID();
+            return name?.slice(0,name.length-6);
+        };
+        const modules=()=>{
             return SpreadBoardEditor.getModuleIDs();
+        };
+
+        return {
+            selectMain,
+            select,
+            mainModule,
+            modules
         }
     }
 }
@@ -28,6 +41,7 @@ export default {
 </script>
 
 <style scoped>
+
 div{
     padding: 5px;
 }

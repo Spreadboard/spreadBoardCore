@@ -1,13 +1,11 @@
 <template>
 
-<div>
-    <button v-for="item in map" :on-click="(_)=>select(item.key)">{{ item.key }}</button>
+<div class="sidebar">
+    <button v-for="item in map" @click="(_)=>select(item.key)">{{ item.key }}</button>
 </div>
 
-{{selected}}
-    
-<div v-if="getSelctedComp() != undefined">
-    <component v-bind:is="getSelctedComp()"></component>
+<div :class="isSelected('modules')">
+    <ModuleSelector></ModuleSelector>
 </div>
 
 </template>
@@ -25,17 +23,19 @@ export default{
         const map = [
             {
                 key: "modules",
-                component: ModuleSelector
+                componentName: "ModuleSelector"
             }
         ]
 
         const getSelctedComp = () => {
             let key = selected.value;
             if(key == "") return undefined;
-            return map.find((item)=>item.key==key)?.component?.name;
+            return map.find((item)=>item.key==key)?.componentName;
         }
 
         const selected = ref("");
+
+        const isSelected = (key: string) => {return key == selected.value ? "selected" : "notSelected"};
 
         const select = (key: string) => {
             console.log("Select:",key)
@@ -49,9 +49,38 @@ export default{
             map,
             selected,
             select,
+            isSelected,
             getSelctedComp
         }
     }
 }
 
 </script>
+
+<style scoped>
+
+div.notSelected{
+    width: 0;
+    overflow-y: hidden;
+}
+
+div.selected{
+    width: 10%;
+}
+
+.sidebar{
+    width: 25px;
+    overflow-x: hidden;
+    border-right: 1px solid #6f9aea;
+}
+
+button{
+    writing-mode: sideways-lr;
+    padding: 5px;
+    width: fit-content;
+    border-radius: 0;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+</style>
