@@ -1,5 +1,8 @@
 <template>
-
+    <div>
+        <button onclick="selectMain">{{ mainModule() }}</button>
+        <button v-for='module in modules()' :on-click="(_)=>select(module.index)">{{ module.id }}</button>
+    </div>
 </template>
 <script lang="ts">
 import { SpreadBoardEditor } from '../editor/editor';
@@ -23,3 +26,9 @@ export default {
 }
 
 </script>
+
+<style scoped>
+div{
+    padding: 5px;
+}
+</style>

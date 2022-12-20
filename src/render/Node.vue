@@ -1,5 +1,5 @@
 <template>
-  <div class="node" :class="className">
+  <div class="node" :class="className, selected">
     <div class="title">{{ nodeName() }}</div>
     <!-- Outputs-->
     <div class="output" v-for="output in outputs()" :key="output.key">

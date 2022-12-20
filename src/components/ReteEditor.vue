@@ -25,8 +25,9 @@ export default {
   .rete {
     flex-grow: 1;
     display: block;
-    width: 100% !important;
+    width: 90% !important;
     height: 100% !important;
+    max-height: 100%!important;
     border-left: 1px solid #6f9aea;
     border-top: 1px solid #6f9aea;
     overflow: hidden;
