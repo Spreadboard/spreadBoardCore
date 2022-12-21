@@ -1,5 +1,5 @@
 
-import { Component, Engine, NodeEditor, Socket } from 'rete';
+import { Component, Engine, Node, NodeEditor, Socket } from 'rete';
 import {EventEmitter} from './eventEmitter';
 import { SpreadBoardStack, SpreadBoardVariable } from './variable';
 
@@ -76,7 +76,94 @@ export class SpreadBoardEditor extends NodeEditor{
 
     static instance: SpreadBoardEditor | null;
 
-    static getOrCreate(container: HTMLElement, id = "main@0.1.0", saveObj: SpreadBoardWorkspace = {modules:[{id:"main@0.1.0", nodes: {}}]}){
+    static getOrCreate(container: HTMLElement, id = "main@0.1.0", saveObj: SpreadBoardWorkspace = {modules:[{id:"main@0.1.0", nodes: {}},{
+        "id": "inc@0.1.0",
+        "nodes": {
+          "1": {
+            "id": 1,
+            "data": {
+              "key": "a"
+            },
+            "inputs": {},
+            "outputs": {
+              "val": {
+                "connections": [
+                  {
+                    "node": 3,
+                    "input": "num",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "position": [
+              -78.79275764774988,
+              17.238356996708795
+            ],
+            "name": "InputNumNode"
+          },
+          "2": {
+            "id": 2,
+            "data": {
+              "val": 1,
+              "key": "b"
+            },
+            "inputs": {
+              "val": {
+                "connections": [
+                  {
+                    "node": 3,
+                    "output": "num",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "outputs": {},
+            "position": [
+              559.8066876006092,
+              58.2953985302745
+            ],
+            "name": "OutputNumNode"
+          },
+          "3": {
+            "id": 3,
+            "data": {
+              "num2": 1
+            },
+            "inputs": {
+              "num": {
+                "connections": [
+                  {
+                    "node": 1,
+                    "output": "val",
+                    "data": {}
+                  }
+                ]
+              },
+              "num2": {
+                "connections": []
+              }
+            },
+            "outputs": {
+              "num": {
+                "connections": [
+                  {
+                    "node": 2,
+                    "input": "val",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "position": [
+              201.78632063999544,
+              -35.20510549466775
+            ],
+            "name": "Addition"
+          }
+        }
+      }]}){
         if(!this.instance)
             this.instance  = new SpreadBoardEditor(container, id, saveObj);
         return this.instance
@@ -111,39 +198,11 @@ export class SpreadBoardEditor extends NodeEditor{
         };
     }
 
-    private static insertInput(module: ReteData, inputs: WorkerInputs){
-        for(let nodeKey in module.nodes.keys){
-            let node = module.nodes[nodeKey];
-            if(node.data.module){
-                let moduleData = node.data.module as any;
-                if(moduleData.type == "input"){
-                    let key: string = node.data.key as string;
-                    console.log("Inserting",key, inputs[key][0]);
-                    node.data.val = inputs[key][0];
-                }
-            }
-        }
-        return module;
-    }
-
-    private static extractOutputs(module: ReteData, outputs: WorkerOutputs){
-        for(let key in module.nodes){
-            let node = module.nodes[key];
-            if(node.data.module){
-                let moduleData = node.data.module as any;
-                if(moduleData.type == "output"){
-                    let key: string = node.data.key as string;
-                    outputs[key] = node.data.val;
-                }
-            }
-        }
-        return outputs;
-    }
 
     static async processModule(index: number, inputs: WorkerInputs, outputs: WorkerOutputs){
         let module = SpreadBoardEditor.instance?.modules[index];
         if(!module) return;
-
+        
         await SpreadBoardEditor.instance?.globalProcessor.processModule(module, null, inputs, outputs);
 
         return outputs;
@@ -160,7 +219,7 @@ export class SpreadBoardEditor extends NodeEditor{
             new Engine("global@0.1.0")
         );
 
-        if(saveObj.modules.find((module)=>module.id!="main@0.1.0"))
+        if(!saveObj.modules.find((module)=>module.id==id))
             this.modules = [{id:"main@0.1.0", nodes: {}}];
         this.modules.push(...saveObj.modules);
 
@@ -252,6 +311,7 @@ export class SpreadBoardEditor extends NodeEditor{
     }
     
     clear(): void {
+        let latestId = Node.latestId;
         this.editorProcessor.abort();
         const nodes = this.nodes;
         for (const node of nodes) {
@@ -260,6 +320,7 @@ export class SpreadBoardEditor extends NodeEditor{
         super.clear();
         this.eventEmitter.clear();
         this.editorProcessor.clear();
+        Node.latestId = latestId;
     }
 
     installComponents(plugin: ComponentPlugin){
@@ -286,14 +347,14 @@ export class SpreadBoardEditor extends NodeEditor{
         await this.editorProcessor.process(this.toJSON());
     }
 
-    loadModule(index: number){
+    async loadModule(index: number){
         this.saveCurModule();
         this.clear();
         let module = this.toJSON();
         module.nodes = this.modules[index].nodes;
-        this.fromJSON(module);
-        this.processEditor();
         this.curModule = index;
+        await this.fromJSON(module);
+        await this.processEditor();
     }
 }
 
