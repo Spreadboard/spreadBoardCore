@@ -35,7 +35,9 @@ export class InputNumNode extends Component {
             console.log("Taking input", key, moduleInputs[key][0])
             outputs['val'] = moduleInputs[key][0];
         }
-        outputs['val'] = node.data.val ?? 0;
+        else{
+            outputs['val'] = node.data.val ?? 0;
+        }
     }
 
 

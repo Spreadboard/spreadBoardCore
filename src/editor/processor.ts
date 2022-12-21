@@ -22,8 +22,10 @@ export class Processor{
         this.engine.abort();
     }
 
-    processModule<T extends unknown[]>(data: Data, startId: number | string | null = null, moduleInputs?:WorkerInputs, moduleOuputs?:WorkerOutputs, subStackId?: number, ...args: T): Promise<"success" | "aborted">{
+    processModule<T extends unknown[]>(module: Data, startId: number | string | null = null, moduleInputs?:WorkerInputs, moduleOuputs?:WorkerOutputs, subStackId?: number, ...args: T): Promise<"success" | "aborted">{
+        let data = {...module};
         data.id = this.engine.id;
+        console.log("Process",data);
         if(subStackId)
         return this.engine.clone().process(data, startId,this.stack.subStacks.get(subStackId),moduleInputs, moduleOuputs,  ...args);
         else

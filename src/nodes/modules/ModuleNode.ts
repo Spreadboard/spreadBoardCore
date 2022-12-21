@@ -52,11 +52,8 @@ export class ModuleNode extends Component {
         node.update();
     }
 
-    worker(node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs) {
-        let n = this.editor?.nodes.find((n:RNode)=>n.id = node.id);
-        if(n)
-        this.updateIos(node.data.id as number, n);
-        SpreadBoardEditor.processModule(node.data.id as number, inputs, outputs);
+    async worker(node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs) {
+        await SpreadBoardEditor.processModule(node.data.id as number, inputs, outputs);
     }
 }
 

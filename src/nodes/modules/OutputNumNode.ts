@@ -31,8 +31,8 @@ export class OutputNumNode extends Component {
 
     worker(node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs, stack?:SpreadBoardStack, moduleInputs?:WorkerInputs, moduleOuputs?:WorkerOutputs) {
         let key = node.data.key as string;
-        if(moduleOuputs && moduleOuputs[key]){
-            console.log("Putting output", key, moduleOuputs[key])
+        if(moduleOuputs){
+            console.log("Putting output", key,inputs['val'][0]);
             moduleOuputs[key] = inputs['val'][0];
         }
         node.data.val = inputs['val'][0];
