@@ -3,7 +3,7 @@
         <div><input type="text" :on-submit="addModule" :value="newModuleName" @input="change($event)"/></div>
         <button v-for='module in modules()'
             :class="curModule==module.index?'selected':''"
-            @click="(_)=>select(module.index)">
+            @click="(_)=>select(module.id)">
             {{ module.id }}
         </button>
         <button v-if="newModuleName!=''" class="addModule" @click="addModule"><b>+</b><i>{{ newModuleName }}</i></button>
@@ -19,8 +19,8 @@ export default {
     setup(){
         let curModule = ref(SpreadBoardEditor.getCurModule());
 
-        const select=(index: number)=>{
-            SpreadBoardEditor.instance?.loadModule(index);
+        const select=(id: string)=>{
+            SpreadBoardEditor.instance?.loadModule(id);
             curModule.value = SpreadBoardEditor.getCurModule();
         };
         let modules=()=>{

@@ -18,14 +18,14 @@ export class ModuleNode extends Component {
     }
 
     async builder(node: RNode) {
-        node.addControl(new NumControl((val:number)=>this.updateIos(val, node), 'id', false));
+        node.addControl(new TextControl((val:string)=>this.updateIos(val, node), 'id', false));
         node.addInput(new Input("eval", i18n(["eval"])??"Evaluate", SocketTypes.anySocket));
-        this.updateIos(node.data.id as number, node);
+        this.updateIos(node.data.id as string, node);
     }
 
-    updateIos(moduleIndex:number, node: Node){
+    updateIos(moduleId:string, node: Node){
         //console.log("Updating IO");
-        let ios = SpreadBoardEditor.getIOS(moduleIndex);
+        let ios = SpreadBoardEditor.getIOS(moduleId);
         //console.log("new IO:", ios);
 
         node.inputs.forEach((input)=>{
@@ -54,8 +54,8 @@ export class ModuleNode extends Component {
     }
 
     async worker(node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs) {
-        if(node.data.eval)
-            await SpreadBoardEditor.processModule(node.data.id as number, inputs, outputs);
+        if(inputs["eval"][0] && inputs["eval"][0]==true)
+            await SpreadBoardEditor.processModule(node.data.id as string, inputs, outputs);
     }
 }
 

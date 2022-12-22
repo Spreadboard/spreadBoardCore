@@ -30,15 +30,16 @@ export class OutputNumNode extends Component {
     }
 
     worker(node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs, stack?:SpreadBoardStack, moduleInputs?:WorkerInputs, moduleOuputs?:WorkerOutputs) {
-        let key = node.data.key as string;
         if(moduleOuputs){
-            console.log("Putting output", key,inputs['val'][0]);
-            moduleOuputs[key] = inputs['val'][0];
+            let outp = inputs['val'][0];
+            //console.log("Putting output", node.data.key,outp);
+            moduleOuputs[node.id.toString()] = outp;
+        }else{
+            node.data.val = inputs['val'][0];
+            let preview = this.editor?.nodes.find((n:RNode)=>{return n.id == node.id})?.controls.get('val') as NumControl|undefined;
+    
+            preview?.setValue(inputs['val'][0] as number);
         }
-        node.data.val = inputs['val'][0];
-        let preview = this.editor?.nodes.find((n:RNode)=>{return n.id == node.id})?.controls.get('val') as NumControl|undefined;
-
-        preview?.setValue(inputs['val'][0] as number);
     }
 }
 

@@ -35,7 +35,7 @@ export class AddNode extends Component {
         const n2: number = inputs['num2'][0] as number ?? node.data.num2 as number  ?? 0;
         const sum: number = n1 + n2;
         
-        console.log("Added", n1,"+",n2+"=",sum);
+        //console.log("Added", n1,"+",n2+"=",sum);
         const preview = this.editor?.nodes?.find((n:RNode) => n.id == node.id)?.controls.get('preview') as NumControl|undefined;
         
         preview?.setValue(sum);

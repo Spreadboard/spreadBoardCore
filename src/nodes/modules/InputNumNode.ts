@@ -31,9 +31,10 @@ export class InputNumNode extends Component {
 
     worker(node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs, stack?:SpreadBoardStack, moduleInputs?:WorkerInputs, moduleOuputs?:WorkerOutputs) {
         let key = node.data.key as string;
-        if(moduleInputs && moduleInputs[key]){
-            console.log("Taking input", key, moduleInputs[key][0])
-            outputs['val'] = moduleInputs[key][0];
+        if(moduleInputs && moduleInputs[node.id.toString()]){
+            let inp = moduleInputs[node.id.toString()][0];
+            //console.log("Taking input", key, inp)
+            outputs['val'] = inp;
         }
         else{
             outputs['val'] = node.data.val ?? 0;
