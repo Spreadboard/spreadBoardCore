@@ -175,20 +175,22 @@ export class SpreadBoardEditor extends NodeEditor{
         console.log(SpreadBoardEditor.instance?.modules, "index:",moduleIndex);
         console.log(module);
         if(!module) return {inputs: [], outputs:[]};
-        let inputs: {key:string, socket: Socket}[] = [];
-        let outputs: {key:string, socket: Socket}[] = [];
-        for(let key in module.nodes){
-            let node = module.nodes[key];
+        let inputs: {key:string, name: string, socket: Socket}[] = [];
+        let outputs: {key:string, name: string, socket: Socket}[] = [];
+        for(let nodeKey in module.nodes){
+            let node = module.nodes[nodeKey];
             let data: any = SpreadBoardEditor.instance?.getComponent(node.name)?.data;
             if(data.module){
                 let moduleData = data.module as any;
                 if(moduleData.type == "input"){
-                    let key: string = node.data.key as string;
-                    inputs.push({key: key, socket: moduleData.socket})
+                    let name: string = node.data.key as string;
+                    let key = node.id;
+                    inputs.push({key: key.toString(), name: name, socket: moduleData.socket})
                 }
                 if(moduleData.type == "output"){
-                    let key: string = node.data.key as string;
-                    outputs.push({key: key, socket: moduleData.socket})
+                    let name: string = node.data.key as string;
+                    let key = node.id;
+                    outputs.push({key: key.toString(), name: name, socket: moduleData.socket})
                 }
             }
         }
