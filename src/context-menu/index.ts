@@ -3,8 +3,19 @@ import NodeMenu from './node-menu';
 import VueItem from './menu/Item.vue';
 import VueMenu from './menu/Menu.vue';
 import VueSearch from './menu/Search.vue';
+import { Component, NodeEditor } from 'rete';
+import menu from './menu';
 
-function install(editor, {
+
+interface Plugin {
+    name: string;
+    install: (context: any, options?: any) => void;
+}
+declare type PluginParams<T extends Plugin> = T['install'] extends (arg1: unknown, arg2: infer U) => void ? U : void;
+
+
+
+function install(editor: NodeEditor, {
     searchBar = true,
     searchKeep = () => false,
     delay = 1000,
@@ -17,21 +28,24 @@ function install(editor, {
             title: "Clone"
         }
     },
-    allocate = () => [],
-    rename = component => component.name,
+    allocate = (comp: Component) => {return [] as string[]},
+    rename = (component: Component) => component.name,
     vueComponent = null
 }) {
     editor.bind('hidecontextmenu');
     editor.bind('showcontextmenu');
 
-    let mainMenu;
-    let currentMenu;
+    let mainMenu: MainMenu;
+    let currentMenu: menu;
 
+    //@ts-ignore
     editor.on('hidecontextmenu', () => {
         if (currentMenu) currentMenu.hide();
     });
 
+    //@ts-ignore
     editor.on('click contextmenu', () => {
+        //@ts-ignore
         editor.trigger('hidecontextmenu');
     });
 
@@ -39,13 +53,14 @@ function install(editor, {
         e.preventDefault();
         e.stopPropagation();
 
+        //@ts-ignore
         if (!editor.trigger('showcontextmenu', { e, node })) return;
 
         const [x, y] = [e.clientX, e.clientY];
         let args;
 
         if(node) {
-            currentMenu = new NodeMenu(editor, { searchBar: false, delay }, vueComponent, typeof nodeItems === 'function' ? nodeItems(node) : nodeItems);
+            currentMenu = new NodeMenu(editor, { searchBar: false, delay }, vueComponent, nodeItems);
             args = { node };
         } else {
             if (!mainMenu)
@@ -64,4 +79,4 @@ export const Search = VueSearch;
 export default {
     name: 'context-menu',
     install
-}
+} as Plugin

@@ -1,7 +1,6 @@
 
 import { Component, Engine, Node, NodeEditor, Socket } from 'rete';
 import {EventEmitter} from './eventEmitter';
-import { SpreadBoardStack, SpreadBoardVariable } from './variable';
 
 // @ts-ignore
 import VueRenderPlugin from "rete-vue-render-plugin";
@@ -15,11 +14,9 @@ import StandardNodes from "../nodes";
 
 // @ts-ignore
 import AreaPlugin from "rete-area-plugin";
-// @ts-ignore
+
 import ContextMenuPlugin from "../context-menu";
 
-import { BoolNode } from '../nodes/data/BoolNode';
-import { NumNode } from '../nodes/data/NumNode';
 
 //@ts-ignore
 import NodeVue from '../render/Node.vue';
@@ -1330,7 +1327,7 @@ export class SpreadBoardEditor extends NodeEditor{
             translateExtent: {width: 5000, height: 4000},
         });
         this.use(ContextMenuPlugin, {
-            allocate(component: Component){
+            allocate: (component: Component)=>{
                 //return [];
                 let data = component.data as any;
                 if(data.category){
