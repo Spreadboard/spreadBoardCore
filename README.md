@@ -1,18 +1,20 @@
-# Vue 3 + TypeScript + Vite
+# SpreadBoard
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+This is the core repository for a visual reactive programming language (and associated Editor) called SpreadBoard (*spread*-sheet + bread-*board*).
 
-## Recommended IDE Setup
+# Used Software
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+This project uses the [rete](https://rete.js.org/)-editor, it's [connection-plugin](https://github.com/retejs/connection-plugin), [area-plugin](https://github.com/retejs/area-plugin)
 
-## Type Support For `.vue` Imports in TS
+It also contains (altered) code from the [context-menu-plugin](https://github.com/retejs/context-menu-plugin) and [vue-render-plugin](https://github.com/retejs/vue-render-plugin)
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+It also uses [VueJs](https://vuejs.org/) and [ViteJs](https://vitejs.dev/) for the frontend
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+# Documentation
 
-1. Disable the built-in TypeScript Extension
-   1. Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-   2. Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+Coming soon  
+The [rete docs](https://rete.js.org/#/docs) could be helpful, but there might be differen
+
+# License
+
+[MIT](https://opensource.org/licenses/MIT)
