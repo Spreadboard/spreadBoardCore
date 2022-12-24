@@ -13,7 +13,7 @@ It also uses [VueJs](https://vuejs.org/) and [ViteJs](https://vitejs.dev/) for t
 # Documentation
 
 Coming soon  
-The [rete docs](https://rete.js.org/#/docs) could be helpful, but there might be differen
+The [rete docs](https://rete.js.org/#/docs) could be helpful, but there might be usage-differences
 
 # License
 
