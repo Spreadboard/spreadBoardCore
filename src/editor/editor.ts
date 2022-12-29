@@ -72,6 +72,7 @@ export class SpreadBoardEditor extends NodeEditor{
         return this.modules.map((value: Data, index: number)=>{return {index: index, id: value.id.slice(0,value.id.length-6)}});
     }
 
+
     static instance: SpreadBoardEditor | null;
 
     static getOrCreate(container: HTMLElement, id = "main@0.1.0", saveObj: SpreadBoardWorkspace = {
@@ -90,7 +91,7 @@ export class SpreadBoardEditor extends NodeEditor{
                   "connections": [
                     {
                       "node": 93,
-                      "input": "16",
+                      "input": "ggt-a",
                       "data": {}
                     }
                   ]
@@ -113,7 +114,7 @@ export class SpreadBoardEditor extends NodeEditor{
                   "connections": [
                     {
                       "node": 93,
-                      "input": "17",
+                      "input": "ggt-b",
                       "data": {}
                     }
                   ]
@@ -133,7 +134,7 @@ export class SpreadBoardEditor extends NodeEditor{
                   "connections": [
                     {
                       "node": 93,
-                      "output": "24",
+                      "output": "ggt",
                       "data": {}
                     }
                   ]
@@ -156,26 +157,26 @@ export class SpreadBoardEditor extends NodeEditor{
             "93": {
               "id": 93,
               "data": {
-                "id": "ggt"
+                "id": "ggt",
+                "add_control": {
+                  "key": "addIo",
+                  "data": {},
+                  "parent": null,
+                  "component": {
+                    "props": {},
+                    "__hmrId": "92f05ae7",
+                    "__scopeId": "data-v-92f05ae7",
+                    "__file": "/home/lorenz/Dokumente/VsCode/spreadBoardCore/src/nodes/controls/VueAddIoControl.vue"
+                  },
+                  "props": {
+                    "input": true,
+                    "description": "Add In-/Output"
+                  }
+                }
               },
               "inputs": {
-                "16": {
-                  "connections": [
-                    {
-                      "node": 90,
-                      "output": "num",
-                      "data": {}
-                    }
-                  ]
-                },
-                "17": {
-                  "connections": [
-                    {
-                      "node": 91,
-                      "output": "num",
-                      "data": {}
-                    }
-                  ]
+                "id": {
+                  "connections": []
                 },
                 "eval": {
                   "connections": [
@@ -185,10 +186,28 @@ export class SpreadBoardEditor extends NodeEditor{
                       "data": {}
                     }
                   ]
+                },
+                "ggt-a": {
+                  "connections": [
+                    {
+                      "node": 90,
+                      "output": "num",
+                      "data": {}
+                    }
+                  ]
+                },
+                "ggt-b": {
+                  "connections": [
+                    {
+                      "node": 91,
+                      "output": "num",
+                      "data": {}
+                    }
+                  ]
                 }
               },
               "outputs": {
-                "24": {
+                "ggt": {
                   "connections": [
                     {
                       "node": 92,
@@ -684,7 +703,7 @@ export class SpreadBoardEditor extends NodeEditor{
                 "connections": [
                   {
                     "node": 86,
-                    "input": "2",
+                    "input": "max-a",
                     "data": {}
                   }
                 ]
@@ -708,7 +727,7 @@ export class SpreadBoardEditor extends NodeEditor{
                 "connections": [
                   {
                     "node": 88,
-                    "input": "5",
+                    "input": "max-b",
                     "data": {}
                   }
                 ]
@@ -723,26 +742,26 @@ export class SpreadBoardEditor extends NodeEditor{
           "18": {
             "id": 18,
             "data": {
-              "id": "max"
+              "id": "max",
+              "add_control": {
+                "key": "addIo",
+                "data": {},
+                "parent": null,
+                "component": {
+                  "props": {},
+                  "__hmrId": "92f05ae7",
+                  "__scopeId": "data-v-92f05ae7",
+                  "__file": "/home/lorenz/Dokumente/VsCode/spreadBoardCore/src/nodes/controls/VueAddIoControl.vue"
+                },
+                "props": {
+                  "input": true,
+                  "description": "Add In-/Output"
+                }
+              }
             },
             "inputs": {
-              "2": {
-                "connections": [
-                  {
-                    "node": 86,
-                    "output": "3",
-                    "data": {}
-                  }
-                ]
-              },
-              "5": {
-                "connections": [
-                  {
-                    "node": 88,
-                    "output": "3",
-                    "data": {}
-                  }
-                ]
+              "id": {
+                "connections": []
               },
               "eval": {
                 "connections": [
@@ -752,18 +771,36 @@ export class SpreadBoardEditor extends NodeEditor{
                     "data": {}
                   }
                 ]
+              },
+              "max-a": {
+                "connections": [
+                  {
+                    "node": 86,
+                    "output": "max",
+                    "data": {}
+                  }
+                ]
+              },
+              "max-b": {
+                "connections": [
+                  {
+                    "node": 88,
+                    "output": "max",
+                    "data": {}
+                  }
+                ]
               }
             },
             "outputs": {
-              "3": {
+              "max": {
                 "connections": [
                   {
-                    "node": 22,
+                    "node": 26,
                     "input": "num",
                     "data": {}
                   },
                   {
-                    "node": 26,
+                    "node": 22,
                     "input": "num",
                     "data": {}
                   }
@@ -779,26 +816,26 @@ export class SpreadBoardEditor extends NodeEditor{
           "19": {
             "id": 19,
             "data": {
-              "id": "min"
+              "id": "min",
+              "add_control": {
+                "key": "addIo",
+                "data": {},
+                "parent": null,
+                "component": {
+                  "props": {},
+                  "__hmrId": "92f05ae7",
+                  "__scopeId": "data-v-92f05ae7",
+                  "__file": "/home/lorenz/Dokumente/VsCode/spreadBoardCore/src/nodes/controls/VueAddIoControl.vue"
+                },
+                "props": {
+                  "input": true,
+                  "description": "Add In-/Output"
+                }
+              }
             },
             "inputs": {
-              "2": {
-                "connections": [
-                  {
-                    "node": 86,
-                    "output": "3",
-                    "data": {}
-                  }
-                ]
-              },
-              "5": {
-                "connections": [
-                  {
-                    "node": 88,
-                    "output": "3",
-                    "data": {}
-                  }
-                ]
+              "id": {
+                "connections": []
               },
               "eval": {
                 "connections": [
@@ -808,10 +845,28 @@ export class SpreadBoardEditor extends NodeEditor{
                     "data": {}
                   }
                 ]
+              },
+              "min-a": {
+                "connections": [
+                  {
+                    "node": 86,
+                    "output": "max",
+                    "data": {}
+                  }
+                ]
+              },
+              "min-b": {
+                "connections": [
+                  {
+                    "node": 88,
+                    "output": "max",
+                    "data": {}
+                  }
+                ]
               }
             },
             "outputs": {
-              "3": {
+              "min": {
                 "connections": [
                   {
                     "node": 22,
@@ -825,7 +880,7 @@ export class SpreadBoardEditor extends NodeEditor{
                   },
                   {
                     "node": 27,
-                    "input": "17",
+                    "input": "ggt-b",
                     "data": {}
                   },
                   {
@@ -878,7 +933,7 @@ export class SpreadBoardEditor extends NodeEditor{
                 "connections": [
                   {
                     "node": 18,
-                    "output": "3",
+                    "output": "max",
                     "data": {}
                   }
                 ]
@@ -887,7 +942,7 @@ export class SpreadBoardEditor extends NodeEditor{
                 "connections": [
                   {
                     "node": 19,
-                    "output": "3",
+                    "output": "min",
                     "data": {}
                   }
                 ]
@@ -956,7 +1011,7 @@ export class SpreadBoardEditor extends NodeEditor{
                 "connections": [
                   {
                     "node": 27,
-                    "output": "24",
+                    "output": "ggt",
                     "data": {}
                   }
                 ]
@@ -965,7 +1020,7 @@ export class SpreadBoardEditor extends NodeEditor{
                 "connections": [
                   {
                     "node": 19,
-                    "output": "3",
+                    "output": "min",
                     "data": {}
                   }
                 ]
@@ -996,7 +1051,7 @@ export class SpreadBoardEditor extends NodeEditor{
                 "connections": [
                   {
                     "node": 18,
-                    "output": "3",
+                    "output": "max",
                     "data": {}
                   }
                 ]
@@ -1005,7 +1060,7 @@ export class SpreadBoardEditor extends NodeEditor{
                 "connections": [
                   {
                     "node": 19,
-                    "output": "3",
+                    "output": "min",
                     "data": {}
                   }
                 ]
@@ -1016,7 +1071,7 @@ export class SpreadBoardEditor extends NodeEditor{
                 "connections": [
                   {
                     "node": 27,
-                    "input": "16",
+                    "input": "ggt-a",
                     "data": {}
                   }
                 ]
@@ -1031,26 +1086,26 @@ export class SpreadBoardEditor extends NodeEditor{
           "27": {
             "id": 27,
             "data": {
-              "id": "ggt"
+              "id": "ggt",
+              "add_control": {
+                "key": "addIo",
+                "data": {},
+                "parent": null,
+                "component": {
+                  "props": {},
+                  "__hmrId": "92f05ae7",
+                  "__scopeId": "data-v-92f05ae7",
+                  "__file": "/home/lorenz/Dokumente/VsCode/spreadBoardCore/src/nodes/controls/VueAddIoControl.vue"
+                },
+                "props": {
+                  "input": true,
+                  "description": "Add In-/Output"
+                }
+              }
             },
             "inputs": {
-              "16": {
-                "connections": [
-                  {
-                    "node": 26,
-                    "output": "num",
-                    "data": {}
-                  }
-                ]
-              },
-              "17": {
-                "connections": [
-                  {
-                    "node": 19,
-                    "output": "3",
-                    "data": {}
-                  }
-                ]
+              "id": {
+                "connections": []
               },
               "eval": {
                 "connections": [
@@ -1060,10 +1115,28 @@ export class SpreadBoardEditor extends NodeEditor{
                     "data": {}
                   }
                 ]
+              },
+              "ggt-a": {
+                "connections": [
+                  {
+                    "node": 26,
+                    "output": "num",
+                    "data": {}
+                  }
+                ]
+              },
+              "ggt-b": {
+                "connections": [
+                  {
+                    "node": 19,
+                    "output": "min",
+                    "data": {}
+                  }
+                ]
               }
             },
             "outputs": {
-              "24": {
+              "ggt": {
                 "connections": [
                   {
                     "node": 25,
@@ -1082,26 +1155,26 @@ export class SpreadBoardEditor extends NodeEditor{
           "86": {
             "id": 86,
             "data": {
-              "id": "max"
+              "id": "max",
+              "add_control": {
+                "key": "addIo",
+                "data": {},
+                "parent": null,
+                "component": {
+                  "props": {},
+                  "__hmrId": "92f05ae7",
+                  "__scopeId": "data-v-92f05ae7",
+                  "__file": "/home/lorenz/Dokumente/VsCode/spreadBoardCore/src/nodes/controls/VueAddIoControl.vue"
+                },
+                "props": {
+                  "input": true,
+                  "description": "Add In-/Output"
+                }
+              }
             },
             "inputs": {
-              "2": {
-                "connections": [
-                  {
-                    "node": 16,
-                    "output": "val",
-                    "data": {}
-                  }
-                ]
-              },
-              "5": {
-                "connections": [
-                  {
-                    "node": 87,
-                    "output": "num",
-                    "data": {}
-                  }
-                ]
+              "id": {
+                "connections": []
               },
               "eval": {
                 "connections": [
@@ -1111,19 +1184,37 @@ export class SpreadBoardEditor extends NodeEditor{
                     "data": {}
                   }
                 ]
+              },
+              "max-a": {
+                "connections": [
+                  {
+                    "node": 16,
+                    "output": "val",
+                    "data": {}
+                  }
+                ]
+              },
+              "max-b": {
+                "connections": [
+                  {
+                    "node": 87,
+                    "output": "num",
+                    "data": {}
+                  }
+                ]
               }
             },
             "outputs": {
-              "3": {
+              "max": {
                 "connections": [
                   {
                     "node": 18,
-                    "input": "2",
+                    "input": "max-a",
                     "data": {}
                   },
                   {
                     "node": 19,
-                    "input": "2",
+                    "input": "min-a",
                     "data": {}
                   }
                 ]
@@ -1146,12 +1237,12 @@ export class SpreadBoardEditor extends NodeEditor{
                 "connections": [
                   {
                     "node": 86,
-                    "input": "5",
+                    "input": "max-b",
                     "data": {}
                   },
                   {
                     "node": 88,
-                    "input": "2",
+                    "input": "max-a",
                     "data": {}
                   }
                 ]
@@ -1166,26 +1257,26 @@ export class SpreadBoardEditor extends NodeEditor{
           "88": {
             "id": 88,
             "data": {
-              "id": "max"
+              "id": "max",
+              "add_control": {
+                "key": "addIo",
+                "data": {},
+                "parent": null,
+                "component": {
+                  "props": {},
+                  "__hmrId": "92f05ae7",
+                  "__scopeId": "data-v-92f05ae7",
+                  "__file": "/home/lorenz/Dokumente/VsCode/spreadBoardCore/src/nodes/controls/VueAddIoControl.vue"
+                },
+                "props": {
+                  "input": true,
+                  "description": "Add In-/Output"
+                }
+              }
             },
             "inputs": {
-              "2": {
-                "connections": [
-                  {
-                    "node": 87,
-                    "output": "num",
-                    "data": {}
-                  }
-                ]
-              },
-              "5": {
-                "connections": [
-                  {
-                    "node": 17,
-                    "output": "val",
-                    "data": {}
-                  }
-                ]
+              "id": {
+                "connections": []
               },
               "eval": {
                 "connections": [
@@ -1195,19 +1286,37 @@ export class SpreadBoardEditor extends NodeEditor{
                     "data": {}
                   }
                 ]
+              },
+              "max-a": {
+                "connections": [
+                  {
+                    "node": 87,
+                    "output": "num",
+                    "data": {}
+                  }
+                ]
+              },
+              "max-b": {
+                "connections": [
+                  {
+                    "node": 17,
+                    "output": "val",
+                    "data": {}
+                  }
+                ]
               }
             },
             "outputs": {
-              "3": {
+              "max": {
                 "connections": [
                   {
-                    "node": 19,
-                    "input": "5",
+                    "node": 18,
+                    "input": "max-b",
                     "data": {}
                   },
                   {
-                    "node": 18,
-                    "input": "5",
+                    "node": 19,
+                    "input": "min-b",
                     "data": {}
                   }
                 ]
@@ -1398,7 +1507,7 @@ export class SpreadBoardEditor extends NodeEditor{
     saveCurModule(){
       if(!SpreadBoardEditor.importing){
         SpreadBoardEditor.modules[this.curModule].nodes = this.toJSON().nodes;
-        console.log(SpreadBoardEditor.modules[this.curModule]);
+        console.log((SpreadBoardEditor.modules[this.curModule] as Object));
       }
     }
     

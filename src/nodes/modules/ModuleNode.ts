@@ -61,8 +61,8 @@ export class ModuleNode extends Component {
                 }
             })
 
-            inputs = node.data.module_inputs = ios.inputs;
-            outputs = node.data.module_outputs = ios.outputs;
+            inputs =  ios.inputs;
+            outputs = ios.outputs;
         }
 
 
