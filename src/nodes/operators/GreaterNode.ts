@@ -1,8 +1,8 @@
 import Rete, {Component, Node as RNode} from "rete";
 import {i18n } from "../../editor/editor";
 import {SocketTypes} from "../../editor/sockets";
-import { BoolControl } from "../data/BoolControl";
-import {NumControl} from "../data/NumControl";
+import { BoolControl } from "../controls/BoolControl";
+import {NumControl} from "../controls/NumControl";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 
 export class GreaterNode extends Component {

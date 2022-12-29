@@ -21,6 +21,13 @@ class SocketTypeMap {
     public typeSocket = new RSocket("type");
 
     private types: Map<string, SocketType>;
+
+    typeList(){
+        let valtypes = Array.from(this.types.keys()).map((socket)=>types.get(socket)?.valSocket.name);
+        let reftypes = Array.from(this.types.keys()).map((socket)=>types.get(socket)?.refSocket.name); 
+        return [this.anySocket.name, ...valtypes, ...reftypes].sort();
+    } 
+
     constructor() {
         this.types = new Map();
         this.anySocket.combineWith(this.anyTypeSocket.refSocket);
@@ -68,6 +75,7 @@ class SocketTypeMap {
     numSocket = ()=> this.get("number")!;
     textSocket = ()=> this.get("text")!;
     boolSocket = ()=> this.get("boolean")!;
+    moduleSocket = ()=> this.get('module')!.refSocket;
 }
 const types = new SocketTypeMap();
 
@@ -75,6 +83,7 @@ types.add("text");
 types.add("number");
 types.add("boolean");
 types.add("act");
+types.add("module");
 
 types.numSocket().valSocket.combineWith(types.textSocket().valSocket);
 

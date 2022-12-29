@@ -1,6 +1,6 @@
 import Rete, {Component, Node as RNode} from "rete";
 
-import {BoolControl} from "./BoolControl";
+import {BoolControl} from "../controls/BoolControl";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import {i18n, SpreadBoardEditor} from "../../editor/editor";
 import {SocketTypes} from "../../editor/sockets";

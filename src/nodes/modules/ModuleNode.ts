@@ -1,10 +1,10 @@
 import Rete, {Component, Input, Node, Node as RNode, Output, Socket} from "rete";
 
-import {TextControl} from "../data/TextControl";
+import {TextControl} from "../controls/TextControl";
 import {i18n, SpreadBoardEditor} from "../../editor/editor";
 import {SocketTypes} from "../../editor/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
-import { NumControl } from "../data/NumControl";
+import { ModuleControl } from "../controls/ModuleControl";
 
 export class ModuleNode extends Component {
 
@@ -18,18 +18,28 @@ export class ModuleNode extends Component {
     }
 
     async builder(node: RNode) {
-        node.addControl(new TextControl((val:string)=>this.updateIos(val, node), 'id', false));
+        let inpId = new Input('id', i18n(['id'])??'ID', SocketTypes.moduleSocket())
+        inpId.addControl(new ModuleControl((module:string)=>this.updateIos(module, node), 'id', false));
+        node.addInput(inpId);
         node.addInput(new Input("eval", i18n(["eval"])??"Evaluate", SocketTypes.anySocket));
         this.updateIos(node.data.id as string, node);
     }
 
+    private collapseIos(node:Node){
+
+    }
+
     updateIos(moduleId:string, node: Node){
+        if(node.inputs.get('id')?.hasConnection()){
+            this.collapseIos(node);
+            return;
+        }
         //console.log("Updating IO");
         let ios = SpreadBoardEditor.getIOS(moduleId);
         //console.log("new IO:", ios);
 
         node.inputs.forEach((input)=>{
-            if(!ios.inputs.find((i)=>input.key == i.key) && input.key != "eval"){
+            if(!ios.inputs.find((i)=>input.key == i.key) && input.key != "eval" && input.key != 'id'){
                 node.removeInput(input);
             }
         })

@@ -1,10 +1,10 @@
 import Rete, {Component, Node as RNode} from "rete";
 
-import {TextControl} from "../data/TextControl";
+import {TextControl} from "../controls/TextControl";
 import {i18n, SpreadBoardEditor} from "../../editor/editor";
 import {SocketTypes} from "../../editor/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
-import { NumControl } from "../data/NumControl";
+import { NumControl } from "../controls/NumControl";
 import { SpreadBoardStack } from "../../editor/variable";
 
 export class OutputNumNode extends Component {
