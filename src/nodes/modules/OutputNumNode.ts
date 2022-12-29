@@ -33,7 +33,7 @@ export class OutputNumNode extends Component {
         if(moduleOuputs){
             let outp = inputs['val'][0];
             //console.log("Putting output", node.data.key,outp);
-            moduleOuputs[node.id.toString()] = outp;
+            moduleOuputs[node.data.key as string] = outp;
         }else{
             node.data.val = inputs['val'][0];
             let preview = this.editor?.nodes.find((n:RNode)=>{return n.id == node.id})?.controls.get('val') as NumControl|undefined;

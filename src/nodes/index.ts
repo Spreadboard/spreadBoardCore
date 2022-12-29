@@ -12,6 +12,7 @@ import { EqualNode } from "./operators/EqualNode";
 import { GreaterNode } from "./operators/GreaterNode";
 import { MultNode } from "./operators/MultNode";
 import { SubNode } from "./operators/SubNode";
+import { ModuleSelectorNode } from "./modules/ModuleSelectorNode";
 
 
 const StandardNodes = new ComponentPlugin(
@@ -27,7 +28,8 @@ const StandardNodes = new ComponentPlugin(
         new InputNumNode(),
         new OutputNumNode(),
         new ModuleNode(),
-        new ConditionNode()
+        new ConditionNode(),
+        new ModuleSelectorNode()
     ]
 );
 

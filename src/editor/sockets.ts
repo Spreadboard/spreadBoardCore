@@ -23,9 +23,10 @@ class SocketTypeMap {
     private types: Map<string, SocketType>;
 
     typeList(){
-        let valtypes = Array.from(this.types.keys()).map((socket)=>types.get(socket)?.valSocket.name);
-        let reftypes = Array.from(this.types.keys()).map((socket)=>types.get(socket)?.refSocket.name); 
-        return [this.anySocket.name, ...valtypes, ...reftypes].sort();
+        let types = Array.from(this.types.entries()).map(([name, socketType])=>socketType);
+        let valtypes = types.map((socketType)=>socketType.valSocket);
+        let reftypes = types.map((socketType)=>socketType.refSocket);
+        return [this.anySocket, ...valtypes, ...reftypes].sort();
     } 
 
     constructor() {

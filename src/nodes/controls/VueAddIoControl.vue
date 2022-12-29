@@ -1,34 +1,56 @@
 <template>
-
-<div class="input">
+{{ description }}
+<div>
     <input type="text"
+        class="titleInput"
          :value="title"
          @input="changeTitle($event)"
          @dblclick.stop=""
          @pointerdown.stop=""
          @pointermove.stop=""/>
+
+</div>
+<div class="input">
     <select name="drop_select"
+        class="typeInput"
         @dblclick.stop=""
         @pointerdown.stop=""
-        @pointermove.stop="" 
-        v-model="type.name">
+        @pointermove.stop="">
         <option v-for="(option, index) in types()" 
             @change="changeType(index)"
             :value="index">
-            {{ option }}
+            {{ option.name }}
         </option>
-</select>
-        
+    </select>
+    <select name="input_output_select"
+        class="ioInput"
+        @dblclick.stop=""
+        @pointerdown.stop=""
+        @pointermove.stop="">
+        <option>
+            Input
+        </option>
+        <option>
+            Output
+        </option>
+    </select>
+    <input type="button" value="+" @pointerdown="emit()"/>
 </div>
 
 </template>
 
 <script lang="ts">
+import { Socket } from 'rete';
 import { defineComponent , ref} from 'vue';
 import { SocketType, SocketTypes } from '../../editor/sockets';
 
 export default defineComponent({
-    setup(_){
+    props:{
+        input: Boolean,
+        emitter: Function,
+        description: String
+    },
+    setup({input, emitter, description}){
         const title = ref('');
         const type = ref(SocketTypes.anySocket);
 
@@ -39,11 +61,17 @@ export default defineComponent({
 
         const changeType = (index: number)=>{
             let val = types()[index];
-            type.value = SocketTypes.get(val!)?.valSocket??SocketTypes.anySocket;
-
+            type.value = val??SocketTypes.anySocket;
         };
 
+        const curIndex=()=>types().indexOf(type.value);
+
         const types = ()=>SocketTypes.typeList();
+
+        const emit=()=>{
+            console.log(title.value,type.value)
+            emitter!(title.value,type.value);
+        };
 
         return {
             title,
@@ -51,6 +79,8 @@ export default defineComponent({
             changeTitle,
             changeType,
             types,
+            curIndex,
+            emit
         }
     }
 })
@@ -60,7 +90,9 @@ export default defineComponent({
 <style scoped>
 .input{
     display: inline-block;
-
+    max-width: 120px;
 }
-
+.titleInput{
+    max-width: 110px;
+}
 </style>

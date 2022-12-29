@@ -1273,13 +1273,11 @@ export class SpreadBoardEditor extends NodeEditor{
                 let moduleData = data.module as any;
                 if(moduleData.type == "input"){
                     let name: string = node.data.key as string;
-                    let key = node.id;
-                    inputs.push({key: key.toString(), name: name, socket: moduleData.socket})
+                    inputs.push({key: name, name: name, socket: moduleData.socket})
                 }
                 if(moduleData.type == "output"){
                     let name: string = node.data.key as string;
-                    let key = node.id;
-                    outputs.push({key: key.toString(), name: name, socket: moduleData.socket})
+                    outputs.push({key: name, name: name, socket: moduleData.socket})
                 }
             }
         }
