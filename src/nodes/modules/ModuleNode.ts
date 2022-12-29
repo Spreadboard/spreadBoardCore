@@ -27,9 +27,19 @@ export class ModuleNode extends Component {
         let inpId = new Input('id', i18n(['id'])??'ID', SocketTypes.moduleSocket())
         inpId.addControl(new ModuleControl((module:string)=>this.updateIos(module, node), 'id', false));
         node.data.add_control = new AddIoControl(true,
-            (title:string,type:Socket)=>
+            (title:string,type:Socket, dir:boolean)=>
             {
-                (node.data.custome_inputs as Input[]).push(new Input(title, title, type))
+                if(dir){
+                    if(!node.data.custome_outputs)
+                        node.data.custome_outputs = [] as {key:string, name:string, socket:Socket}[];
+                    (node.data.custome_outputs as {key:string, name:string, socket:Socket}[]).push(new Output(title, title, type))
+                }
+                else{
+                    if(!node.data.custome_inputs)
+                        node.data.custome_inputs = [] as {key:string, name:string, socket:Socket}[];
+                    (node.data.custome_inputs as {key:string, name:string, socket:Socket}[]).push(new Input(title, title, type))
+                }
+                this.updateIos(node.data.id as string, node);
             },'addIo', 'Add In-/Output');
         node.addInput(inpId);
         node.addInput(new Input("eval", i18n(["eval"])??"Evaluate", SocketTypes.anySocket));
@@ -43,8 +53,8 @@ export class ModuleNode extends Component {
         console.log('Test', node)
         if(node.inputs.get('id')?.hasConnection()){
             console.log('Test')
-            inputs = node.data.custome_inputs as Input[];
-            outputs = node.data.custome_outputs as Output[];
+            inputs = (node.data.custome_inputs ?? []) as {key:string, name:string, socket:Socket}[];
+            outputs = (node.data.custome_outputs ?? []) as {key:string, name:string, socket:Socket}[];
             if(!node.controls.has('addIo') && node.data.add_control)
                 node.addControl(node.data.add_control as AddIoControl)
         }
@@ -55,15 +65,16 @@ export class ModuleNode extends Component {
             let ios = SpreadBoardEditor.getIOS(moduleId);
             //console.log("new IO:", ios);
 
-            node.inputs.forEach((input)=>{
-                if(!ios.inputs.find((i)=>input.key == i.key) && input.key != "eval" && input.key != 'id'){
-                    node.removeInput(input);
-                }
-            })
-
             inputs =  ios.inputs;
             outputs = ios.outputs;
         }
+
+
+        node.inputs.forEach((input)=>{
+            if(!inputs.find((i)=>input.key == i.key) && input.key != "eval" && input.key != 'id'){
+                node.removeInput(input);
+            }
+        })
 
 
         node.outputs.forEach((output)=>{

@@ -15,9 +15,10 @@
         class="typeInput"
         @dblclick.stop=""
         @pointerdown.stop=""
-        @pointermove.stop="">
-        <option v-for="(option, index) in types()" 
-            @change="changeType(index)"
+        @pointermove.stop=""
+        @change="changeType(typeIndex)"
+        v-model="typeIndex">
+        <option v-for="(option, index) in types()"
             :value="index">
             {{ option.name }}
         </option>
@@ -26,12 +27,11 @@
         class="ioInput"
         @dblclick.stop=""
         @pointerdown.stop=""
+        v-model="dir"
         @pointermove.stop="">
-        <option>
-            Input
-        </option>
-        <option>
-            Output
+        <option v-for="option in [false, true]"
+            :value="option">
+            {{ option?'Output':'Input' }}
         </option>
     </select>
     <input type="button" value="+" @pointerdown="emit()"/>
@@ -41,18 +41,23 @@
 
 <script lang="ts">
 import { Socket } from 'rete';
-import { defineComponent , ref} from 'vue';
+import { defineComponent , ref, toRaw} from 'vue';
 import { SocketType, SocketTypes } from '../../editor/sockets';
 
 export default defineComponent({
     props:{
-        input: Boolean,
         emitter: Function,
         description: String
     },
-    setup({input, emitter, description}){
+    data(){
+        return {
+            typeIndex : 0
+        }
+    },
+    setup({emitter, description}){
         const title = ref('');
         const type = ref(SocketTypes.anySocket);
+        const dir = ref(false);
 
         const changeTitle = (e: Event)=>{
             //@ts-ignore
@@ -64,23 +69,30 @@ export default defineComponent({
             type.value = val??SocketTypes.anySocket;
         };
 
+        const changeDir = (newDir: boolean)=>{
+            console.log(newDir);
+            dir.value = newDir;
+        };
+
         const curIndex=()=>types().indexOf(type.value);
 
         const types = ()=>SocketTypes.typeList();
 
         const emit=()=>{
-            console.log(title.value,type.value)
-            emitter!(title.value,type.value);
+            console.log(title.value,toRaw(type.value), dir.value)
+            emitter!(title.value,toRaw(type.value), dir.value);
         };
 
         return {
             title,
             type,
             changeTitle,
+            changeDir,
             changeType,
             types,
             curIndex,
-            emit
+            emit,
+            dir
         }
     }
 })
