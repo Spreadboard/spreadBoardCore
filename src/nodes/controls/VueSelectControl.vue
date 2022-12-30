@@ -4,12 +4,12 @@
   
     @dblclick.stop=""
     @pointerdown.stop=""
-    @pointermove.stop="" 
+    @pointermove.stop=""
+    @change="update()"
     v-model="value">
       <option v-if="value == -1" value="-1" style="color: red;">Error</option>
-      <option v-for="(option, index) in options" 
-        @change="change(index)" 
-        :value="index">
+      <option v-for="(option, index) in options"
+        :value="option">
           {{ option }}
       </option>
   </select>

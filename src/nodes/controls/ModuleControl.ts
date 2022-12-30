@@ -7,21 +7,13 @@ export class ModuleControl extends Control {
     private component: any;
     private props: Object;
 
-    private options(){
-        return SpreadBoardEditor.getModuleIDs().map(({index,id})=>id);
-    }
+    private options = SpreadBoardEditor.getModuleIDs().map(({index,id})=>id.replace('@0.1.0',''));
 
     constructor(emitter: Function, key:string, readonly:boolean = false, title:string | null = null) {
         super(key);
         this.component = VueSelectControl;
-        this.props = { emitter, ikey: key, readonly, title: title , options : this.options()};
+        const emit:Function = (index:number)=>{emitter(this.options[index])};
+        this.props = { emitter:emit, ikey: key, readonly, title: title , options : this.options};
     }
 
-    getData(key: string): number {
-        return this.options().indexOf(this.getNode().data[key] as string)?? -1 ;
-    }
-
-    putData(key: string, data: number): void {
-        this.getNode().data[key] = this.options()[data];
-    }
 }

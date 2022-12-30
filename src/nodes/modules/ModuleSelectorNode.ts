@@ -19,7 +19,7 @@ export class ModuleSelectorNode extends Component {
     }
 
     async builder(node: RNode) {
-        node.addControl(new ModuleControl((module:string)=>{this.editor?.trigger('process')}, 'selected', false));
+        node.addControl(new ModuleControl((module:string)=>{this.editor?.trigger('process'); console.log('Selected',module)}, 'selected', false));
         node.addOutput(new Output('module', 'module', SocketTypes.moduleSocket()))
     }
     worker(node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs) {

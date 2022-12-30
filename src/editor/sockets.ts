@@ -26,8 +26,8 @@ class SocketTypeMap {
         let types = Array.from(this.types.entries()).map(([name, socketType])=>socketType);
         let valtypes = types.map((socketType)=>socketType.valSocket);
         let reftypes = types.map((socketType)=>socketType.refSocket);
-        return [this.anySocket, ...valtypes, ...reftypes].sort();
-    } 
+        return [this.anySocket,this.typeSocket, ...valtypes, ...reftypes].sort();
+    }
 
     constructor() {
         this.types = new Map();
@@ -36,6 +36,7 @@ class SocketTypeMap {
 
         this.anyTypeSocket.valSocket.combineWith(this.anySocket);
         this.anyTypeSocket.refSocket.combineWith(this.anySocket);
+        this.types.set('any',this.anyTypeSocket);
     }
 
     add(typeName:string) {
@@ -65,6 +66,10 @@ class SocketTypeMap {
         if(socket.name=="type"||socket.name=="*")
             return socket;
         return this.get(socket.name.replace(" ref",""))!.valSocket;
+    }
+
+    getSocket(socketName:string): RSocket|undefined{
+        return this.typeList().find((s)=>s.name==socketName);
     }
 
     get(typeName:string) {

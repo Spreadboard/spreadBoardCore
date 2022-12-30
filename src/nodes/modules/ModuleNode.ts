@@ -14,33 +14,36 @@ export class ModuleNode extends Component {
         category: [["modules"]],
         custome_inputs : [],
         custome_outputs : [],
-        module_inputs : [],
-        module_outputs : [],
-        add_control:null
     }
 
     constructor(){
         super("Module");
     }
 
-    async builder(node: RNode) {
-        let inpId = new Input('id', i18n(['id'])??'ID', SocketTypes.moduleSocket())
-        inpId.addControl(new ModuleControl((module:string)=>this.updateIos(module, node), 'id', false));
-        node.data.add_control = new AddIoControl(true,
+    addIoControl(node: Node){
+        return new AddIoControl(true,
             (title:string,type:Socket, dir:boolean)=>
             {
+                let io = {key:title,name:title,socket:type.name};
                 if(dir){
                     if(!node.data.custome_outputs)
                         node.data.custome_outputs = [] as {key:string, name:string, socket:Socket}[];
-                    (node.data.custome_outputs as {key:string, name:string, socket:Socket}[]).push(new Output(title, title, type))
+                    (node.data.custome_outputs as {key:string, name:string, socket:string}[]).push(io)
                 }
                 else{
                     if(!node.data.custome_inputs)
                         node.data.custome_inputs = [] as {key:string, name:string, socket:Socket}[];
-                    (node.data.custome_inputs as {key:string, name:string, socket:Socket}[]).push(new Input(title, title, type))
+                    (node.data.custome_inputs as {key:string, name:string, socket:string}[]).push(io)
                 }
                 this.updateIos(node.data.id as string, node);
             },'addIo', 'Add In-/Output');
+    }
+
+    async builder(node: RNode) {
+        let inpId = new Input('id', i18n(['id'])??'ID', SocketTypes.moduleSocket())
+        inpId.addControl(new ModuleControl((module:string)=>{console.log('UpdateIO',module);this.updateIos(module, node)}, 'id', false));
+        node.data.externalSelector = node.data.externalSelector ?? false;
+        console.log('Ext',node.data.externalSelector,node)
         node.addInput(inpId);
         node.addInput(new Input("eval", i18n(["eval"])??"Evaluate", SocketTypes.anySocket));
         this.updateIos(node.data.id as string, node);
@@ -51,15 +54,19 @@ export class ModuleNode extends Component {
         let outputs: {key:string, name:string, socket:Socket}[] = [];
 
         console.log('Test', node)
-        if(node.inputs.get('id')?.hasConnection()){
+        if(node.data.externalSelector){
             console.log('Test')
-            inputs = (node.data.custome_inputs ?? []) as {key:string, name:string, socket:Socket}[];
-            outputs = (node.data.custome_outputs ?? []) as {key:string, name:string, socket:Socket}[];
-            if(!node.controls.has('addIo') && node.data.add_control)
-                node.addControl(node.data.add_control as AddIoControl)
+            inputs = ((node.data.custome_inputs ?? []) as {key:string, name:string, socket:string}[]).map((obj:{key:string, name:string, socket:string})=>{return {
+                key:obj.key, name:obj.name, socket:SocketTypes.getSocket(obj.socket)??SocketTypes.anySocket
+            }});
+            outputs = ((node.data.custome_outputs ?? []) as {key:string, name:string, socket:string}[]).map((obj:{key:string, name:string, socket:string})=>{return {
+                key:obj.key, name:obj.name, socket:SocketTypes.getSocket(obj.socket)??SocketTypes.anySocket
+            }});;
+            if(!node.controls.has('addIo'))
+                node.addControl(this.addIoControl(node))
         }
         else{
-            if(node.controls.get('addIo'))
+            if(node.controls.has('addIo'))
                 node.removeControl(node.controls.get('addIo')!);
             //console.log("Updating IO");
             let ios = SpreadBoardEditor.getIOS(moduleId);
@@ -72,6 +79,9 @@ export class ModuleNode extends Component {
 
         node.inputs.forEach((input)=>{
             if(!inputs.find((i)=>input.key == i.key) && input.key != "eval" && input.key != 'id'){
+                input.connections.forEach((con)=>{
+                    con.remove();
+                });
                 node.removeInput(input);
             }
         })
@@ -79,6 +89,9 @@ export class ModuleNode extends Component {
 
         node.outputs.forEach((output)=>{
             if(!outputs.find((i)=>output.key == i.key)){
+                output.connections.forEach((con)=>{
+                    con.remove();
+                });
                 node.removeOutput(output);
             }
         })
@@ -97,10 +110,17 @@ export class ModuleNode extends Component {
     }
 
     async worker(node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs) {
-        if(inputs['id'] && inputs['id'].length>0 && this.editor?.nodes.find((n)=>n.id==node.id))
-            this.updateIos(inputs['id'][0] as string,this.editor?.nodes.find((n)=>n.id==node.id)!);
-        if(inputs["eval"][0] && inputs["eval"][0]==true)
-            await SpreadBoardEditor.processModule(node.data.id as string, inputs, outputs);
+        let connected = inputs['id'] && inputs['id'].length>0 && this.editor?.nodes.find((n)=>n.id==node.id);
+        let nodeComp = this.editor?.nodes.find((n)=>n.id==node.id);
+        let id = connected ? inputs['id'][0] : node.data.id;
+        if(nodeComp && ((!node.data.externalSelector && connected) || ( node.data.externalSelector && !connected))){
+            nodeComp.data.externalSelector = connected;
+            this.updateIos(inputs['id'][0] as string,nodeComp!);
+        }
+        if(inputs["eval"][0] && inputs["eval"][0]==true){
+            await SpreadBoardEditor.processModule(id as string, inputs, outputs);
+            console.log(id as string,'in',inputs,'out',outputs)
+        }
     }
 }
 
