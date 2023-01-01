@@ -3,8 +3,8 @@ import { Data, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { SpreadBoardStack, SpreadBoardVariable } from "./variable";
 
 export interface ProcessData{
-    moduleInputs?:WorkerInputs,
-    moduleOuputs?:WorkerOutputs,
+    processInputs?:WorkerInputs,
+    processOutputs?:WorkerOutputs,
     stack?: SpreadBoardStack,
     path: string[]
 }
@@ -30,20 +30,20 @@ export class Processor{
         this.engine.abort();
     }
 
-    processModule<T extends unknown[]>(module: Data, startId: number | string | null = null, moduleInputs?:WorkerInputs, moduleOuputs?:WorkerOutputs, path: string[]=[], subStackId?: number, ...args: T): Promise<"success" | "aborted">{
+    processProc<T extends unknown[]>(process: Data, startId: number | string | null = null, processInputs?:WorkerInputs, processOutputs?:WorkerOutputs, path: string[]=[], subStackId?: number, ...args: T): Promise<"success" | "aborted">{
         if(path.length > Processor.max_stack_height){
             console.error("Stack overflow");
             return new Promise<'aborted'>((any)=>{});
         }
 
-        let data = {...module};
+        let data = {...process};
         data.id = this.engine.id;
-        //console.log(...path,"->",module.id,"(",moduleInputs,")");
+        //console.log(...path,"->",process.id,"(",processInputs,")");
         let processData: ProcessData = {
             stack: subStackId ? this.stack.subStacks.get(subStackId): undefined,
-            moduleInputs : moduleInputs,
-            moduleOuputs: moduleOuputs,
-            path : [...path, module.id]
+            processInputs : processInputs,
+            processOutputs: processOutputs,
+            path : [...path, process.id]
         }
         let res;
         if(subStackId)
@@ -51,7 +51,7 @@ export class Processor{
         else
         res = this.engine.clone().process(data, startId,processData,  ...args);
         
-        //console.log(...path,"<-",module.id,"(",moduleInputs,")");
+        //console.log(...path,"<-",process.id,"(",processInputs,")");
         return res;
     }
     

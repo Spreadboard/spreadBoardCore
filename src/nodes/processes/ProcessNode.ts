@@ -1,24 +1,23 @@
 import Rete, {Component, Input, Node, Node as RNode, Output, Socket} from "rete";
 
-import {TextControl} from "../controls/TextControl";
 import {i18n, SpreadBoardEditor} from "../../editor/editor";
 import {SocketTypes} from "../../editor/sockets";
-import { InputData, NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
-import { ModuleControl } from "../controls/ModuleControl";
+import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
+import { ProcessControl } from "../controls/ProcessControl";
 import { AddIoControl } from "../controls/AddIoControl";
 import { ProcessData } from "../../editor/processor";
 
-export class ModuleNode extends Component {
+export class ProcessNode extends Component {
 
     data = {
-        i18nKeys: ["module"],
-        category: [["modules"]],
+        i18nKeys: ["process"],
+        category: [["processes"]],
         custome_inputs : [],
         custome_outputs : [],
     }
 
     constructor(){
-        super("Module");
+        super("ProcessNode");
     }
 
     addIoControl(node: Node){
@@ -41,8 +40,8 @@ export class ModuleNode extends Component {
     }
 
     async builder(node: RNode) {
-        let inpId = new Input('id', i18n(['id'])??'ID', SocketTypes.moduleSocket())
-        inpId.addControl(new ModuleControl((module:string)=>{console.log('UpdateIO',module);this.updateIos(module, node)}, 'id', false));
+        let inpId = new Input('id', i18n(['id'])??'ID', SocketTypes.processSocket())
+        inpId.addControl(new ProcessControl((process:string)=>{console.log('UpdateIO',process);this.updateIos(process, node)}, 'id', false));
         node.data.externalSelector = node.data.externalSelector ?? false;
         console.log('Ext',node.data.externalSelector,node)
         node.addInput(inpId);
@@ -50,7 +49,7 @@ export class ModuleNode extends Component {
         this.updateIos(node.data.id as string, node);
     }
 
-    updateIos(moduleId:string, node: Node){
+    updateIos(processId:string, node: Node){
         let inputs: {key:string, name:string, socket:Socket}[] = [];
         let outputs: {key:string, name:string, socket:Socket}[] = [];
 
@@ -70,7 +69,7 @@ export class ModuleNode extends Component {
             if(node.controls.has('addIo'))
                 node.removeControl(node.controls.get('addIo')!);
             //console.log("Updating IO");
-            let ios = SpreadBoardEditor.getIOS(moduleId);
+            let ios = SpreadBoardEditor.getIOS(processId);
             //console.log("new IO:", ios);
 
             inputs =  ios.inputs;
@@ -121,7 +120,7 @@ export class ModuleNode extends Component {
         if(id != undefined && id != null){
             const uuid = Math.round(Math.random()*100);
             //console.log("(",uuid,") Starting Process", id as string, "with Inputs", inputs);
-            await SpreadBoardEditor.processModule(id as string, inputs, outputs, processData?.path);
+            await SpreadBoardEditor.processProc(id as string, inputs, outputs, processData?.path);
             //console.log("(",uuid,") Result",id as string,'in',inputs,'out',outputs)
         }
     }

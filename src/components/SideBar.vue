@@ -11,18 +11,18 @@
 
 <script lang="ts">
 import { createApp, ref } from 'vue';
-import ModuleSelector from './ModuleSelector.vue';
+import ProcessSelector from './ProcessSelector.vue';
 
 export default{
     components:{
-        ModuleSelector
+        ProcessSelector: ProcessSelector
     },
     setup(){
 
         const map = [
             {
-                key: "modules",
-                componentName: ModuleSelector
+                key: "processes",
+                componentName: ProcessSelector
             }
         ]
 

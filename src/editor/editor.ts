@@ -56,27 +56,32 @@ export class SpreadBoardEditor extends NodeEditor{
             "sub": "Differenz",
             "subIn": "Minuend",
             "subIn2": "Subtrahend",
-            "modules": "Module",
+            "processes": "Prozesse",
+            "process": "Prozess",
+            "processSelector":"Prozess-Auswahl",
+            "cond":"Bedingung",
+            "if": "Falls",
+            "else": "Sonst",
             "numIn": "Eingabe - Zahl",
             "numOut": "Ausgabe - Zahl",
             "controlflow": "Kontroll-Fluss"
         }
     };
-    private static modules: ReteData[] = [];
+    private static processes: ReteData[] = [];
 
-    private curModule: number = 0;
+    private curProcess: number = 0;
 
-    public static getCurModule(){ return this.instance?.curModule};
+    public static getCurProcess(){ return this.instance?.curProcess};
 
-    public static getModuleIDs(){
-        return this.modules.map((value: Data, index: number)=>{return {index: index, id: value.id.slice(0,value.id.length-6)}});
+    public static getProcessIDs(){
+        return this.processes.map((value: Data, index: number)=>{return {index: index, id: value.id.slice(0,value.id.length-6)}});
     }
 
 
     static instance: SpreadBoardEditor | null;
 
     static getOrCreate(container: HTMLElement, id = "main@0.1.0", saveObj: SpreadBoardWorkspace = {
-      modules:[
+      processes:[
         {
           "id": "main@0.1.0",
           "nodes": {
@@ -161,7 +166,7 @@ export class SpreadBoardEditor extends NodeEditor{
               },
               "inputs": {},
               "outputs": {
-                "module": {
+                "process": {
                   "connections": [
                     {
                       "node": 96,
@@ -175,7 +180,7 @@ export class SpreadBoardEditor extends NodeEditor{
                 817,
                 234.68333435058594
               ],
-              "name": "ModuleSelector"
+              "name": "ProcessSelector"
             },
             "96": {
               "id": 96,
@@ -206,7 +211,7 @@ export class SpreadBoardEditor extends NodeEditor{
                   "connections": [
                     {
                       "node": 95,
-                      "output": "module",
+                      "output": "process",
                       "data": {}
                     }
                   ]
@@ -245,7 +250,7 @@ export class SpreadBoardEditor extends NodeEditor{
                 1164,
                 287.68333435058594
               ],
-              "name": "Module"
+              "name": "ProcessNode"
             }
           }
         },
@@ -775,7 +780,7 @@ export class SpreadBoardEditor extends NodeEditor{
               367.51666259765625,
               150.68333435058594
             ],
-            "name": "Module"
+            "name": "ProcessNode"
           },
           "104": {
             "id": 104,
@@ -821,7 +826,7 @@ export class SpreadBoardEditor extends NodeEditor{
               677.5166625976562,
               434.68333435058594
             ],
-            "name": "Module"
+            "name": "ProcessNode"
           },
           "130": {
             "id": 130,
@@ -872,7 +877,7 @@ export class SpreadBoardEditor extends NodeEditor{
               357.51666259765625,
               440.68333435058594
             ],
-            "name": "Module"
+            "name": "ProcessNode"
           },
           "131": {
             "id": 131,
@@ -918,7 +923,7 @@ export class SpreadBoardEditor extends NodeEditor{
               681.5166625976562,
               149.68333435058594
             ],
-            "name": "Module"
+            "name": "ProcessNode"
           }
         }
       },
@@ -1054,7 +1059,7 @@ export class SpreadBoardEditor extends NodeEditor{
                 "connections": [
                   {
                     "node": 111,
-                    "output": "module",
+                    "output": "process",
                     "data": {}
                   }
                 ]
@@ -1063,7 +1068,7 @@ export class SpreadBoardEditor extends NodeEditor{
                 "connections": [
                   {
                     "node": 110,
-                    "output": "module",
+                    "output": "process",
                     "data": {}
                   }
                 ]
@@ -1133,7 +1138,7 @@ export class SpreadBoardEditor extends NodeEditor{
             },
             "inputs": {},
             "outputs": {
-              "module": {
+              "process": {
                 "connections": [
                   {
                     "node": 25,
@@ -1147,7 +1152,7 @@ export class SpreadBoardEditor extends NodeEditor{
               696.244139080432,
               253.05613563022766
             ],
-            "name": "ModuleSelector"
+            "name": "ProcessSelector"
           },
           "111": {
             "id": 111,
@@ -1156,7 +1161,7 @@ export class SpreadBoardEditor extends NodeEditor{
             },
             "inputs": {},
             "outputs": {
-              "module": {
+              "process": {
                 "connections": [
                   {
                     "node": 25,
@@ -1170,7 +1175,7 @@ export class SpreadBoardEditor extends NodeEditor{
               697.2848166476076,
               107.34138078670202
             ],
-            "name": "ModuleSelector"
+            "name": "ProcessSelector"
           },
           "114": {
             "id": 114,
@@ -1256,7 +1261,7 @@ export class SpreadBoardEditor extends NodeEditor{
               1223.7021365502437,
               256.26161340507286
             ],
-            "name": "Module"
+            "name": "ProcessNode"
           },
           "116": {
             "id": 116,
@@ -1326,7 +1331,7 @@ export class SpreadBoardEditor extends NodeEditor{
               274.7520925473664,
               285.8619861884418
             ],
-            "name": "Module"
+            "name": "ProcessNode"
           }
         }
       }
@@ -1334,31 +1339,29 @@ export class SpreadBoardEditor extends NodeEditor{
         if(!this.instance)
             this.instance  = new SpreadBoardEditor(container, id, saveObj);
         SpreadBoardEditor.importing = true;
-        this.instance.loadModule("main");
+        this.instance.loadProcess("main");
         return this.instance;
     }
 
 
-    public static getIOS(moduleId: string){
-      let moduleIndex = this.getModuleIndex(moduleId);
-        let module = SpreadBoardEditor.modules[moduleIndex];
-        //console.log(SpreadBoardEditor.instance?.modules, "index:",moduleIndex);
-        //console.log(module);
-        if(!module) return {inputs: [], outputs:[]};
+    public static getIOS(processId: string){
+      let processIndex = this.getProcessIndex(processId);
+        let process = SpreadBoardEditor.processes[processIndex];
+        if(!process) return {inputs: [], outputs:[]};
         let inputs: {key:string, name: string, socket: Socket}[] = [];
         let outputs: {key:string, name: string, socket: Socket}[] = [];
-        for(let nodeKey in module.nodes){
-            let node = module.nodes[nodeKey];
+        for(let nodeKey in process.nodes){
+            let node = process.nodes[nodeKey];
             let data: any = SpreadBoardEditor.instance?.getComponent(node.name)?.data;
-            if(data.module){
-                let moduleData = data.module as any;
-                if(moduleData.type == "input"){
+            if(data.process){
+                let processData = data.process as any;
+                if(processData.type == "input"){
                     let name: string = node.data.key as string;
-                    inputs.push({key: name, name: name, socket: moduleData.socket})
+                    inputs.push({key: name, name: name, socket: processData.socket})
                 }
-                if(moduleData.type == "output"){
+                if(processData.type == "output"){
                     let name: string = node.data.key as string;
-                    outputs.push({key: name, name: name, socket: moduleData.socket})
+                    outputs.push({key: name, name: name, socket: processData.socket})
                 }
             }
         }
@@ -1369,17 +1372,17 @@ export class SpreadBoardEditor extends NodeEditor{
     }
 
 
-    static async processModule(id: string, inputs: WorkerInputs, outputs: WorkerOutputs, path: string[] = [], subStackId?: number){
-      let index = this.getModuleIndex(id);
-        let module = SpreadBoardEditor.modules[index];
-        if(!module) return;
+    static async processProc(id: string, inputs: WorkerInputs, outputs: WorkerOutputs, path: string[] = [], subStackId?: number){
+      let index = this.getProcessIndex(id);
+        let process = SpreadBoardEditor.processes[index];
+        if(!process) return;
         
-        await SpreadBoardEditor.instance?.globalProcessor.processModule(module, null, inputs, outputs, path, subStackId);
+        await SpreadBoardEditor.instance?.globalProcessor.processProc(process, null, inputs, outputs, path, subStackId);
 
         return outputs;
     }
 
-    private constructor(container: HTMLElement, id = "main@0.1.0",saveObj: SpreadBoardWorkspace = {modules:[{id:"main@0.1.0", nodes: {}}]}){
+    private constructor(container: HTMLElement, id = "main@0.1.0",saveObj: SpreadBoardWorkspace = {processes:[{id:"main@0.1.0", nodes: {}}]}){
         super(id, container);
 
         this.editorProcessor = new Processor(
@@ -1390,9 +1393,9 @@ export class SpreadBoardEditor extends NodeEditor{
             new Engine("global@0.1.0")
         );
 
-        if(!saveObj.modules.find((module)=>module.id==id))
-          SpreadBoardEditor.modules = [{id:"main@0.1.0", nodes: {}}];
-        SpreadBoardEditor.modules.push(...saveObj.modules);
+        if(!saveObj.processes.find((process)=>process.id==id))
+          SpreadBoardEditor.processes = [{id:"main@0.1.0", nodes: {}}];
+        SpreadBoardEditor.processes.push(...saveObj.processes);
 
         this.use(VueRenderPlugin,
             {
@@ -1431,7 +1434,7 @@ export class SpreadBoardEditor extends NodeEditor{
           (data: any) => {
             if(!SpreadBoardEditor.importing){
               //console.log(SpreadBoardEditor.importing,data);
-              this.saveCurModule();
+              this.saveCurProcess();
             }
             this.trigger("process");
           }
@@ -1476,10 +1479,10 @@ export class SpreadBoardEditor extends NodeEditor{
         });
     }
 
-    saveCurModule(){
+    saveCurProcess(){
       if(!SpreadBoardEditor.importing){
-        SpreadBoardEditor.modules[this.curModule].nodes = this.toJSON().nodes;
-        console.log((SpreadBoardEditor.modules[this.curModule] as Object));
+        SpreadBoardEditor.processes[this.curProcess].nodes = this.toJSON().nodes;
+        console.log((SpreadBoardEditor.processes[this.curProcess] as Object));
       }
     }
     
@@ -1510,16 +1513,16 @@ export class SpreadBoardEditor extends NodeEditor{
     }
 
     async load(json: SpreadBoardWorkspace){
-        SpreadBoardEditor.modules = json.modules;
-        return await this.fromJSON(SpreadBoardEditor.modules[0]);
+        SpreadBoardEditor.processes = json.processes;
+        return await this.fromJSON(SpreadBoardEditor.processes[0]);
     }
 
-    addModule(name: string){
+    addProcess(name: string){
         let id = name+"@0.1.0";
-        if(SpreadBoardEditor.modules.find((value:Data)=>value.id == id))
+        if(SpreadBoardEditor.processes.find((value:Data)=>value.id == id))
             return;
-        //console.log("Adding new Module:",id);
-        SpreadBoardEditor.modules.push({
+        //console.log("Adding new Process:",id);
+        SpreadBoardEditor.processes.push({
             id: id,
             nodes: {}
         })
@@ -1529,24 +1532,24 @@ export class SpreadBoardEditor extends NodeEditor{
         await this.editorProcessor.process(this.toJSON());
     }
 
-    static getModuleIndex(name: string){
-      return SpreadBoardEditor.modules.findIndex((module: Data)=>{
-        return (module.id == name || name+"@0.1.0" == module.id)
+    static getProcessIndex(name: string){
+      return SpreadBoardEditor.processes.findIndex((process: Data)=>{
+        return (process.id == name || name+"@0.1.0" == process.id)
       })
     }
 
-    async loadModule(name: string){
-        let index = SpreadBoardEditor.getModuleIndex(name);
-        //console.log("Saving module")
-        this.saveCurModule();
+    async loadProcess(name: string){
+        let index = SpreadBoardEditor.getProcessIndex(name);
+        //console.log("Saving Process")
+        this.saveCurProcess();
         SpreadBoardEditor.importing = true;
-        this.curModule = index;
+        this.curProcess = index;
         //console.log("Clear editor");
         this.clear();
-        //console.log("Loading Module");
-        let module = this.toJSON();
-        module.nodes = SpreadBoardEditor.modules[index].nodes;
-        await this.fromJSON(module);
+        //console.log("Loading Process");
+        let process = this.toJSON();
+        process.nodes = SpreadBoardEditor.processes[index].nodes;
+        await this.fromJSON(process);
         //console.log("Start initial process");
         await this.processEditor();
         SpreadBoardEditor.importing = false;

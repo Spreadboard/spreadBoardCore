@@ -4,15 +4,15 @@ import { SpreadBoardEditor } from "../editor/editor";
 import { ConditionNode } from "./controlFlow/ConditionNode";
 import { BoolNode } from "./data/BoolNode";
 import { NumNode } from "./data/NumNode";
-import { InputNumNode } from "./modules/InputNumNode";
-import { ModuleNode } from "./modules/ModuleNode";
-import { OutputNumNode } from "./modules/OutputNumNode";
+import { InputNumNode } from "./processes/InputNumNode";
+import { ProcessNode } from "./processes/ProcessNode";
+import { OutputNumNode } from "./processes/OutputNumNode";
 import { AddNode } from "./operators/AddNode";
 import { EqualNode } from "./operators/EqualNode";
 import { GreaterNode } from "./operators/GreaterNode";
 import { MultNode } from "./operators/MultNode";
 import { SubNode } from "./operators/SubNode";
-import { ModuleSelectorNode } from "./modules/ModuleSelectorNode";
+import { ProcessSelectorNode } from "./processes/ProcessSelectorNode";
 
 
 const StandardNodes = new ComponentPlugin(
@@ -27,9 +27,9 @@ const StandardNodes = new ComponentPlugin(
         new SubNode(),
         new InputNumNode(),
         new OutputNumNode(),
-        new ModuleNode(),
+        new ProcessNode(),
         new ConditionNode(),
-        new ModuleSelectorNode()
+        new ProcessSelectorNode()
     ]
 );
 

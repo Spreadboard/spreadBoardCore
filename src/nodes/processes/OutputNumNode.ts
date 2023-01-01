@@ -12,8 +12,8 @@ export class OutputNumNode extends Component {
 
     data = {
         i18nKeys: ["numOut"],
-        category: [["modules"]],
-        module: {
+        category: [["processes"]],
+        process: {
             type : "output",
             socket: SocketTypes.numSocket().valSocket
         }
@@ -31,10 +31,10 @@ export class OutputNumNode extends Component {
     }
 
     worker(node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs, processData: ProcessData) {
-        if(processData.moduleOuputs){
+        if(processData.processOutputs){
             let outp = inputs['val'][0];
             //console.log("Putting output", node.data.key,outp);
-            processData.moduleOuputs[node.data.key as string] = outp;
+            processData.processOutputs[node.data.key as string] = outp;
         }else{
             node.data.val = inputs['val'][0];
             let preview = this.editor?.nodes.find((n:RNode)=>{return n.id == node.id})?.controls.get('val') as NumControl|undefined;

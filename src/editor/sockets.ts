@@ -81,7 +81,7 @@ class SocketTypeMap {
     numSocket = ()=> this.get("number")!;
     textSocket = ()=> this.get("text")!;
     boolSocket = ()=> this.get("boolean")!;
-    moduleSocket = ()=> this.get('module')!.refSocket;
+    processSocket = ()=> this.get('process')!.refSocket;
 }
 const types = new SocketTypeMap();
 
@@ -89,7 +89,7 @@ types.add("text");
 types.add("number");
 types.add("boolean");
 types.add("act");
-types.add("module");
+types.add("process");
 
 types.numSocket().valSocket.combineWith(types.textSocket().valSocket);
 

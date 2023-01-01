@@ -12,8 +12,8 @@ export class InputNumNode extends Component {
 
     data = {
         i18nKeys: ["numIn"],
-        category: [["modules"]],
-        module: {
+        category: [["processes"]],
+        process: {
             type : "input",
             socket: SocketTypes.numSocket().valSocket
         }
@@ -32,8 +32,8 @@ export class InputNumNode extends Component {
 
     worker(node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs, processData: ProcessData) {
         let key = node.data.key as string;
-        if(processData.moduleInputs && processData.moduleInputs[key]){
-            let inp = processData.moduleInputs[key][0];
+        if(processData.processInputs && processData.processInputs[key]){
+            let inp = processData.processInputs[key][0];
             //console.log("Taking input", key, inp)
             outputs['val'] = inp;
         }
