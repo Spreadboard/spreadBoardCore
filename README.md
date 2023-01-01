@@ -2,7 +2,7 @@
 
 This is the core repository for a visual reactive programming language (and associated Editor) called SpreadBoard (*spread*-sheet + bread-*board*).
 
-There is a [live demo](https://spreadboard.github.io/spreadBoardCore/dist/) showing off some modules (aka. functions) with a working recursion.
+There is a [live demo](https://spreadboard.github.io/spreadBoardCore/dist/) showing off some processes (aka. functions) with a working recursion.
 
 # Used Software
 
