@@ -1369,12 +1369,12 @@ export class SpreadBoardEditor extends NodeEditor{
     }
 
 
-    static async processModule(id: string, inputs: WorkerInputs, outputs: WorkerOutputs){
+    static async processModule(id: string, inputs: WorkerInputs, outputs: WorkerOutputs, path: string[] = [], subStackId?: number){
       let index = this.getModuleIndex(id);
         let module = SpreadBoardEditor.modules[index];
         if(!module) return;
         
-        await SpreadBoardEditor.instance?.globalProcessor.processModule(module, null, inputs, outputs);
+        await SpreadBoardEditor.instance?.globalProcessor.processModule(module, null, inputs, outputs, path, subStackId);
 
         return outputs;
     }

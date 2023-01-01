@@ -6,6 +6,7 @@ import {SocketTypes} from "../../editor/sockets";
 import { InputData, NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { ModuleControl } from "../controls/ModuleControl";
 import { AddIoControl } from "../controls/AddIoControl";
+import { ProcessData } from "../../editor/processor";
 
 export class ModuleNode extends Component {
 
@@ -109,7 +110,7 @@ export class ModuleNode extends Component {
         node.update();
     }
 
-    async worker(node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs) {
+    async worker(node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs, processData: ProcessData) {
         let connected = inputs['id'] && inputs['id'].length>0;
         let nodeComp = this.editor?.nodes.find((n)=>n.id==node.id);
         let id = connected ? inputs['id'][0] : node.data.id;
@@ -120,7 +121,7 @@ export class ModuleNode extends Component {
         if(id != undefined && id != null){
             const uuid = Math.round(Math.random()*100);
             //console.log("(",uuid,") Starting Process", id as string, "with Inputs", inputs);
-            await SpreadBoardEditor.processModule(id as string, inputs, outputs);
+            await SpreadBoardEditor.processModule(id as string, inputs, outputs, processData?.path);
             //console.log("(",uuid,") Result",id as string,'in',inputs,'out',outputs)
         }
     }

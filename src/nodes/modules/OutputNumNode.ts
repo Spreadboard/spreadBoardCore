@@ -6,6 +6,7 @@ import {SocketTypes} from "../../editor/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { NumControl } from "../controls/NumControl";
 import { SpreadBoardStack } from "../../editor/variable";
+import { ProcessData } from "../../editor/processor";
 
 export class OutputNumNode extends Component {
 
@@ -29,11 +30,11 @@ export class OutputNumNode extends Component {
         node.addControl(new TextControl((val:string)=>SpreadBoardEditor.instance?.trigger("process"), 'key', false)).addInput(in1);
     }
 
-    worker(node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs, stack?:SpreadBoardStack, moduleInputs?:WorkerInputs, moduleOuputs?:WorkerOutputs) {
-        if(moduleOuputs){
+    worker(node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs, processData: ProcessData) {
+        if(processData.moduleOuputs){
             let outp = inputs['val'][0];
             //console.log("Putting output", node.data.key,outp);
-            moduleOuputs[node.data.key as string] = outp;
+            processData.moduleOuputs[node.data.key as string] = outp;
         }else{
             node.data.val = inputs['val'][0];
             let preview = this.editor?.nodes.find((n:RNode)=>{return n.id == node.id})?.controls.get('val') as NumControl|undefined;
