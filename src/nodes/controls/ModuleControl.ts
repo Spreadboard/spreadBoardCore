@@ -12,7 +12,7 @@ export class ModuleControl extends Control {
     constructor(emitter: Function, key:string, readonly:boolean = false, title:string | null = null) {
         super(key);
         this.component = VueSelectControl;
-        const emit:Function = (index:number)=>{emitter(this.options[index])};
+        const emit:Function = (index:any)=>{emitter(index)};
         this.props = { emitter:emit, ikey: key, readonly, title: title , options : this.options};
     }
 

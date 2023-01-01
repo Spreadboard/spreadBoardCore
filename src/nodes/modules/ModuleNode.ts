@@ -45,7 +45,7 @@ export class ModuleNode extends Component {
         node.data.externalSelector = node.data.externalSelector ?? false;
         console.log('Ext',node.data.externalSelector,node)
         node.addInput(inpId);
-        node.addInput(new Input("eval", i18n(["eval"])??"Evaluate", SocketTypes.anySocket));
+        //node.addInput(new Input("eval", i18n(["eval"])??"Evaluate", SocketTypes.anySocket));
         this.updateIos(node.data.id as string, node);
     }
 
@@ -110,16 +110,18 @@ export class ModuleNode extends Component {
     }
 
     async worker(node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs) {
-        let connected = inputs['id'] && inputs['id'].length>0 && this.editor?.nodes.find((n)=>n.id==node.id);
+        let connected = inputs['id'] && inputs['id'].length>0;
         let nodeComp = this.editor?.nodes.find((n)=>n.id==node.id);
         let id = connected ? inputs['id'][0] : node.data.id;
         if(nodeComp && ((!node.data.externalSelector && connected) || ( node.data.externalSelector && !connected))){
             nodeComp.data.externalSelector = connected;
             this.updateIos(inputs['id'][0] as string,nodeComp!);
         }
-        if(inputs["eval"][0] && inputs["eval"][0]==true){
+        if(id != undefined && id != null){
+            const uuid = Math.round(Math.random()*100);
+            //console.log("(",uuid,") Starting Process", id as string, "with Inputs", inputs);
             await SpreadBoardEditor.processModule(id as string, inputs, outputs);
-            console.log(id as string,'in',inputs,'out',outputs)
+            //console.log("(",uuid,") Result",id as string,'in',inputs,'out',outputs)
         }
     }
 }

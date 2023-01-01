@@ -149,33 +149,10 @@ export class SpreadBoardEditor extends NodeEditor{
                 }
               },
               "position": [
-                1557.5034758550414,
-                344.7766339203289
+                1460.5034758550414,
+                338.7766339203289
               ],
               "name": "Addition"
-            },
-            "94": {
-              "id": 94,
-              "data": {
-                "bool": true
-              },
-              "inputs": {},
-              "outputs": {
-                "bool": {
-                  "connections": [
-                    {
-                      "node": 96,
-                      "input": "eval",
-                      "data": {}
-                    }
-                  ]
-                }
-              },
-              "position": [
-                810.6903952012094,
-                235.4900489075044
-              ],
-              "name": "BoolNode"
             },
             "95": {
               "id": 95,
@@ -195,8 +172,8 @@ export class SpreadBoardEditor extends NodeEditor{
                 }
               },
               "position": [
-                810,
-                70.68333435058594
+                817,
+                234.68333435058594
               ],
               "name": "ModuleSelector"
             },
@@ -234,15 +211,6 @@ export class SpreadBoardEditor extends NodeEditor{
                     }
                   ]
                 },
-                "eval": {
-                  "connections": [
-                    {
-                      "node": 94,
-                      "output": "bool",
-                      "data": {}
-                    }
-                  ]
-                },
                 "a": {
                   "connections": [
                     {
@@ -274,101 +242,13 @@ export class SpreadBoardEditor extends NodeEditor{
                 }
               },
               "position": [
-                1192,
-                247.68333435058594
+                1164,
+                287.68333435058594
               ],
               "name": "Module"
             }
           }
         },
-        {
-        "id": "inc@0.1.0",
-        "nodes": {
-          "1": {
-            "id": 1,
-            "data": {
-              "key": "a"
-            },
-            "inputs": {},
-            "outputs": {
-              "val": {
-                "connections": [
-                  {
-                    "node": 3,
-                    "input": "num",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "position": [
-              -78.79275764774988,
-              17.238356996708795
-            ],
-            "name": "InputNumNode"
-          },
-          "2": {
-            "id": 2,
-            "data": {
-              "val": 1,
-              "key": "b"
-            },
-            "inputs": {
-              "val": {
-                "connections": [
-                  {
-                    "node": 3,
-                    "output": "num",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "outputs": {},
-            "position": [
-              559.8066876006092,
-              58.2953985302745
-            ],
-            "name": "OutputNumNode"
-          },
-          "3": {
-            "id": 3,
-            "data": {
-              "num2": 1
-            },
-            "inputs": {
-              "num": {
-                "connections": [
-                  {
-                    "node": 1,
-                    "output": "val",
-                    "data": {}
-                  }
-                ]
-              },
-              "num2": {
-                "connections": []
-              }
-            },
-            "outputs": {
-              "num": {
-                "connections": [
-                  {
-                    "node": 2,
-                    "input": "val",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "position": [
-              201.78632063999544,
-              -35.20510549466775
-            ],
-            "name": "Addition"
-          }
-        }
-      },
       {
         "id": "max@0.1.0",
         "nodes": {
@@ -722,6 +602,327 @@ export class SpreadBoardEditor extends NodeEditor{
         }
       },
       {
+        "id": "clean@0.1.0",
+        "nodes": {
+          "97": {
+            "id": 97,
+            "data": {
+              "key": "a"
+            },
+            "inputs": {},
+            "outputs": {
+              "val": {
+                "connections": [
+                  {
+                    "node": 103,
+                    "input": "a",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "position": [
+              -142.53334045410156,
+              156.68333435058594
+            ],
+            "name": "InputNumNode"
+          },
+          "98": {
+            "id": 98,
+            "data": {
+              "val": 1,
+              "key": "max"
+            },
+            "inputs": {
+              "val": {
+                "connections": [
+                  {
+                    "node": 131,
+                    "output": "res",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "outputs": {},
+            "position": [
+              1001.4666595458984,
+              129.68333435058594
+            ],
+            "name": "OutputNumNode"
+          },
+          "99": {
+            "id": 99,
+            "data": {
+              "key": "b"
+            },
+            "inputs": {},
+            "outputs": {
+              "val": {
+                "connections": [
+                  {
+                    "node": 130,
+                    "input": "b",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "position": [
+              -138.53334045410156,
+              508.68333435058594
+            ],
+            "name": "InputNumNode"
+          },
+          "100": {
+            "id": 100,
+            "data": {
+              "val": 1,
+              "key": "min"
+            },
+            "inputs": {
+              "val": {
+                "connections": [
+                  {
+                    "node": 104,
+                    "output": "res",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "outputs": {},
+            "position": [
+              1006.4666595458984,
+              398.68333435058594
+            ],
+            "name": "OutputNumNode"
+          },
+          "101": {
+            "id": 101,
+            "data": {
+              "num": 1
+            },
+            "inputs": {},
+            "outputs": {
+              "num": {
+                "connections": [
+                  {
+                    "node": 130,
+                    "input": "a",
+                    "data": {}
+                  },
+                  {
+                    "node": 103,
+                    "input": "b",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "position": [
+              94.5333251953125,
+              318.68333435058594
+            ],
+            "name": "NumNode"
+          },
+          "103": {
+            "id": 103,
+            "data": {
+              "externalSelector": false,
+              "id": "max"
+            },
+            "inputs": {
+              "id": {
+                "connections": []
+              },
+              "a": {
+                "connections": [
+                  {
+                    "node": 97,
+                    "output": "val",
+                    "data": {}
+                  }
+                ]
+              },
+              "b": {
+                "connections": [
+                  {
+                    "node": 101,
+                    "output": "num",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "outputs": {
+              "res": {
+                "connections": [
+                  {
+                    "node": 104,
+                    "input": "a",
+                    "data": {}
+                  },
+                  {
+                    "node": 131,
+                    "input": "a",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "position": [
+              367.51666259765625,
+              150.68333435058594
+            ],
+            "name": "Module"
+          },
+          "104": {
+            "id": 104,
+            "data": {
+              "externalSelector": false,
+              "id": "min"
+            },
+            "inputs": {
+              "id": {
+                "connections": []
+              },
+              "a": {
+                "connections": [
+                  {
+                    "node": 103,
+                    "output": "res",
+                    "data": {}
+                  }
+                ]
+              },
+              "b": {
+                "connections": [
+                  {
+                    "node": 130,
+                    "output": "res",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "outputs": {
+              "res": {
+                "connections": [
+                  {
+                    "node": 100,
+                    "input": "val",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "position": [
+              677.5166625976562,
+              434.68333435058594
+            ],
+            "name": "Module"
+          },
+          "130": {
+            "id": 130,
+            "data": {
+              "externalSelector": false,
+              "id": "max"
+            },
+            "inputs": {
+              "id": {
+                "connections": []
+              },
+              "a": {
+                "connections": [
+                  {
+                    "node": 101,
+                    "output": "num",
+                    "data": {}
+                  }
+                ]
+              },
+              "b": {
+                "connections": [
+                  {
+                    "node": 99,
+                    "output": "val",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "outputs": {
+              "res": {
+                "connections": [
+                  {
+                    "node": 104,
+                    "input": "b",
+                    "data": {}
+                  },
+                  {
+                    "node": 131,
+                    "input": "b",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "position": [
+              357.51666259765625,
+              440.68333435058594
+            ],
+            "name": "Module"
+          },
+          "131": {
+            "id": 131,
+            "data": {
+              "externalSelector": false,
+              "id": "max"
+            },
+            "inputs": {
+              "id": {
+                "connections": []
+              },
+              "a": {
+                "connections": [
+                  {
+                    "node": 103,
+                    "output": "res",
+                    "data": {}
+                  }
+                ]
+              },
+              "b": {
+                "connections": [
+                  {
+                    "node": 130,
+                    "output": "res",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "outputs": {
+              "res": {
+                "connections": [
+                  {
+                    "node": 98,
+                    "input": "val",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "position": [
+              681.5166625976562,
+              149.68333435058594
+            ],
+            "name": "Module"
+          }
+        }
+      },
+      {
         "id": "ggt@0.1.0",
         "nodes": {
           "16": {
@@ -735,7 +936,7 @@ export class SpreadBoardEditor extends NodeEditor{
               "val": {
                 "connections": [
                   {
-                    "node": 86,
+                    "node": 116,
                     "input": "a",
                     "data": {}
                   }
@@ -743,8 +944,8 @@ export class SpreadBoardEditor extends NodeEditor{
               }
             },
             "position": [
-              -645.1398674865914,
-              111.17396956787036
+              -31.745339862725608,
+              312.11162002044506
             ],
             "name": "InputNumNode"
           },
@@ -759,7 +960,7 @@ export class SpreadBoardEditor extends NodeEditor{
               "val": {
                 "connections": [
                   {
-                    "node": 88,
+                    "node": 116,
                     "input": "b",
                     "data": {}
                   }
@@ -767,193 +968,10 @@ export class SpreadBoardEditor extends NodeEditor{
               }
             },
             "position": [
-              -645.1398674865915,
-              408.1415212714326
+              -30.504479413394208,
+              497.977324582685
             ],
             "name": "InputNumNode"
-          },
-          "18": {
-            "id": 18,
-            "data": {
-              "id": "max",
-              "add_control": {
-                "key": "addIo",
-                "data": {},
-                "parent": null,
-                "component": {
-                  "props": {},
-                  "__hmrId": "92f05ae7",
-                  "__scopeId": "data-v-92f05ae7",
-                  "__file": "/home/lorenz/Dokumente/VsCode/spreadBoardCore/src/nodes/controls/VueAddIoControl.vue"
-                },
-                "props": {
-                  "input": true,
-                  "description": "Add In-/Output"
-                }
-              },
-              "externalSelector": false
-            },
-            "inputs": {
-              "id": {
-                "connections": []
-              },
-              "eval": {
-                "connections": [
-                  {
-                    "node": 20,
-                    "output": "bool",
-                    "data": {}
-                  }
-                ]
-              },
-              "a": {
-                "connections": [
-                  {
-                    "node": 86,
-                    "output": "res",
-                    "data": {}
-                  }
-                ]
-              },
-              "b": {
-                "connections": [
-                  {
-                    "node": 88,
-                    "output": "res",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "outputs": {
-              "res": {
-                "connections": [
-                  {
-                    "node": 26,
-                    "input": "num",
-                    "data": {}
-                  },
-                  {
-                    "node": 22,
-                    "input": "num",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "position": [
-              344.46665954589844,
-              69.36666870117188
-            ],
-            "name": "Module"
-          },
-          "19": {
-            "id": 19,
-            "data": {
-              "id": "min",
-              "add_control": {
-                "key": "addIo",
-                "data": {},
-                "parent": null,
-                "component": {
-                  "props": {},
-                  "__hmrId": "92f05ae7",
-                  "__scopeId": "data-v-92f05ae7",
-                  "__file": "/home/lorenz/Dokumente/VsCode/spreadBoardCore/src/nodes/controls/VueAddIoControl.vue"
-                },
-                "props": {
-                  "input": true,
-                  "description": "Add In-/Output"
-                }
-              },
-              "externalSelector": false
-            },
-            "inputs": {
-              "id": {
-                "connections": []
-              },
-              "eval": {
-                "connections": [
-                  {
-                    "node": 20,
-                    "output": "bool",
-                    "data": {}
-                  }
-                ]
-              },
-              "a": {
-                "connections": [
-                  {
-                    "node": 86,
-                    "output": "res",
-                    "data": {}
-                  }
-                ]
-              },
-              "b": {
-                "connections": [
-                  {
-                    "node": 88,
-                    "output": "res",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "outputs": {
-              "res": {
-                "connections": [
-                  {
-                    "node": 26,
-                    "input": "num2",
-                    "data": {}
-                  },
-                  {
-                    "node": 22,
-                    "input": "num2",
-                    "data": {}
-                  },
-                  {
-                    "node": 114,
-                    "input": "b",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "position": [
-              342.46665954589844,
-              333.3666687011719
-            ],
-            "name": "Module"
-          },
-          "20": {
-            "id": 20,
-            "data": {
-              "bool": true
-            },
-            "inputs": {},
-            "outputs": {
-              "bool": {
-                "connections": [
-                  {
-                    "node": 18,
-                    "input": "eval",
-                    "data": {}
-                  },
-                  {
-                    "node": 19,
-                    "input": "eval",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "position": [
-              96.46225686899598,
-              -86.31571874534211
-            ],
-            "name": "BoolNode"
           },
           "22": {
             "id": 22,
@@ -962,8 +980,8 @@ export class SpreadBoardEditor extends NodeEditor{
               "num": {
                 "connections": [
                   {
-                    "node": 18,
-                    "output": "res",
+                    "node": 116,
+                    "output": "max",
                     "data": {}
                   }
                 ]
@@ -971,8 +989,8 @@ export class SpreadBoardEditor extends NodeEditor{
               "num2": {
                 "connections": [
                   {
-                    "node": 19,
-                    "output": "res",
+                    "node": 116,
+                    "output": "min",
                     "data": {}
                   }
                 ]
@@ -990,8 +1008,8 @@ export class SpreadBoardEditor extends NodeEditor{
               }
             },
             "position": [
-              664.7147138137684,
-              328.98149922530143
+              700.9958561333885,
+              -145.01406978909012
             ],
             "name": "GreaterNode"
           },
@@ -1014,8 +1032,8 @@ export class SpreadBoardEditor extends NodeEditor{
             },
             "outputs": {},
             "position": [
-              1575.0093388096154,
-              189.7725676711401
+              1483.1156333105785,
+              320.3775464378044
             ],
             "name": "OutputNumNode"
           },
@@ -1063,8 +1081,8 @@ export class SpreadBoardEditor extends NodeEditor{
               }
             },
             "position": [
-              947.1501112190282,
-              491.9865753804838
+              960.0240681258696,
+              -107.23744976832614
             ],
             "name": "ConditionNode"
           },
@@ -1075,8 +1093,8 @@ export class SpreadBoardEditor extends NodeEditor{
               "num": {
                 "connections": [
                   {
-                    "node": 18,
-                    "output": "res",
+                    "node": 116,
+                    "output": "max",
                     "data": {}
                   }
                 ]
@@ -1084,8 +1102,8 @@ export class SpreadBoardEditor extends NodeEditor{
               "num2": {
                 "connections": [
                   {
-                    "node": 19,
-                    "output": "res",
+                    "node": 116,
+                    "output": "min",
                     "data": {}
                   }
                 ]
@@ -1096,223 +1114,17 @@ export class SpreadBoardEditor extends NodeEditor{
                 "connections": [
                   {
                     "node": 114,
-                    "input": "a",
+                    "input": "b",
                     "data": {}
                   }
                 ]
               }
             },
             "position": [
-              676.439473321571,
-              -84.91766710576414
+              699.8466635051366,
+              503.7730701294534
             ],
             "name": "Difference"
-          },
-          "86": {
-            "id": 86,
-            "data": {
-              "id": "max",
-              "add_control": {
-                "key": "addIo",
-                "data": {},
-                "parent": null,
-                "component": {
-                  "props": {},
-                  "__hmrId": "92f05ae7",
-                  "__scopeId": "data-v-92f05ae7",
-                  "__file": "/home/lorenz/Dokumente/VsCode/spreadBoardCore/src/nodes/controls/VueAddIoControl.vue"
-                },
-                "props": {
-                  "input": true,
-                  "description": "Add In-/Output"
-                }
-              },
-              "externalSelector": false
-            },
-            "inputs": {
-              "id": {
-                "connections": []
-              },
-              "eval": {
-                "connections": [
-                  {
-                    "node": 89,
-                    "output": "bool",
-                    "data": {}
-                  }
-                ]
-              },
-              "a": {
-                "connections": [
-                  {
-                    "node": 16,
-                    "output": "val",
-                    "data": {}
-                  }
-                ]
-              },
-              "b": {
-                "connections": [
-                  {
-                    "node": 87,
-                    "output": "num",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "outputs": {
-              "res": {
-                "connections": [
-                  {
-                    "node": 18,
-                    "input": "a",
-                    "data": {}
-                  },
-                  {
-                    "node": 19,
-                    "input": "a",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "position": [
-              -379.94100729873577,
-              37.57762438723701
-            ],
-            "name": "Module"
-          },
-          "87": {
-            "id": 87,
-            "data": {
-              "num": 1
-            },
-            "inputs": {},
-            "outputs": {
-              "num": {
-                "connections": [
-                  {
-                    "node": 86,
-                    "input": "b",
-                    "data": {}
-                  },
-                  {
-                    "node": 88,
-                    "input": "a",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "position": [
-              -644.0932479749742,
-              276.6216314456968
-            ],
-            "name": "NumNode"
-          },
-          "88": {
-            "id": 88,
-            "data": {
-              "id": "max",
-              "add_control": {
-                "key": "addIo",
-                "data": {},
-                "parent": null,
-                "component": {
-                  "props": {},
-                  "__hmrId": "92f05ae7",
-                  "__scopeId": "data-v-92f05ae7",
-                  "__file": "/home/lorenz/Dokumente/VsCode/spreadBoardCore/src/nodes/controls/VueAddIoControl.vue"
-                },
-                "props": {
-                  "input": true,
-                  "description": "Add In-/Output"
-                }
-              },
-              "externalSelector": false
-            },
-            "inputs": {
-              "id": {
-                "connections": []
-              },
-              "eval": {
-                "connections": [
-                  {
-                    "node": 89,
-                    "output": "bool",
-                    "data": {}
-                  }
-                ]
-              },
-              "a": {
-                "connections": [
-                  {
-                    "node": 87,
-                    "output": "num",
-                    "data": {}
-                  }
-                ]
-              },
-              "b": {
-                "connections": [
-                  {
-                    "node": 17,
-                    "output": "val",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "outputs": {
-              "res": {
-                "connections": [
-                  {
-                    "node": 18,
-                    "input": "b",
-                    "data": {}
-                  },
-                  {
-                    "node": 19,
-                    "input": "b",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "position": [
-              -374.94100729873577,
-              335.577624387237
-            ],
-            "name": "Module"
-          },
-          "89": {
-            "id": 89,
-            "data": {
-              "bool": true
-            },
-            "inputs": {},
-            "outputs": {
-              "bool": {
-                "connections": [
-                  {
-                    "node": 86,
-                    "input": "eval",
-                    "data": {}
-                  },
-                  {
-                    "node": 88,
-                    "input": "eval",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "position": [
-              -582.6053628256069,
-              -60.45555421068538
-            ],
-            "name": "BoolNode"
           },
           "110": {
             "id": 110,
@@ -1332,8 +1144,8 @@ export class SpreadBoardEditor extends NodeEditor{
               }
             },
             "position": [
-              659.962996760812,
-              710.6666726293068
+              696.244139080432,
+              253.05613563022766
             ],
             "name": "ModuleSelector"
           },
@@ -1355,8 +1167,8 @@ export class SpreadBoardEditor extends NodeEditor{
               }
             },
             "position": [
-              659.8333185332076,
-              568.4629513202526
+              697.2848166476076,
+              107.34138078670202
             ],
             "name": "ModuleSelector"
           },
@@ -1410,20 +1222,11 @@ export class SpreadBoardEditor extends NodeEditor{
                   }
                 ]
               },
-              "eval": {
-                "connections": [
-                  {
-                    "node": 115,
-                    "output": "bool",
-                    "data": {}
-                  }
-                ]
-              },
               "a": {
                 "connections": [
                   {
-                    "node": 26,
-                    "output": "num",
+                    "node": 116,
+                    "output": "min",
                     "data": {}
                   }
                 ]
@@ -1431,8 +1234,8 @@ export class SpreadBoardEditor extends NodeEditor{
               "b": {
                 "connections": [
                   {
-                    "node": 19,
-                    "output": "res",
+                    "node": 26,
+                    "output": "num",
                     "data": {}
                   }
                 ]
@@ -1450,33 +1253,80 @@ export class SpreadBoardEditor extends NodeEditor{
               }
             },
             "position": [
-              1250.0221820939832,
-              77.14444656085406
+              1223.7021365502437,
+              256.26161340507286
             ],
             "name": "Module"
           },
-          "115": {
-            "id": 115,
+          "116": {
+            "id": 116,
             "data": {
-              "bool": true
+              "externalSelector": false,
+              "id": "clean"
             },
-            "inputs": {},
-            "outputs": {
-              "bool": {
+            "inputs": {
+              "id": {
+                "connections": []
+              },
+              "a": {
                 "connections": [
                   {
+                    "node": 16,
+                    "output": "val",
+                    "data": {}
+                  }
+                ]
+              },
+              "b": {
+                "connections": [
+                  {
+                    "node": 17,
+                    "output": "val",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "outputs": {
+              "max": {
+                "connections": [
+                  {
+                    "node": 26,
+                    "input": "num",
+                    "data": {}
+                  },
+                  {
+                    "node": 22,
+                    "input": "num",
+                    "data": {}
+                  }
+                ]
+              },
+              "min": {
+                "connections": [
+                  {
+                    "node": 26,
+                    "input": "num2",
+                    "data": {}
+                  },
+                  {
+                    "node": 22,
+                    "input": "num2",
+                    "data": {}
+                  },
+                  {
                     "node": 114,
-                    "input": "eval",
+                    "input": "a",
                     "data": {}
                   }
                 ]
               }
             },
             "position": [
-              912.2960774127788,
-              -172.72661413140196
+              274.7520925473664,
+              285.8619861884418
             ],
-            "name": "BoolNode"
+            "name": "Module"
           }
         }
       }
