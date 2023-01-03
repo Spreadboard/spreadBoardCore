@@ -1,11 +1,11 @@
 import Rete, {Component, Input, Node, Node as RNode, Output, Socket} from "rete";
 
 import {i18n, SpreadBoardEditor} from "../../editor/editor";
-import {SocketTypes} from "../../editor/sockets";
+import {SocketTypes} from "../../processor/connections/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { ProcessControl } from "../controls/ProcessControl";
 import { AddIoControl } from "../controls/AddIoControl";
-import { ProcessData } from "../../editor/processor";
+import { ProcessData } from "../../processor/processor";
 
 export class ProcessNode extends Component {
 

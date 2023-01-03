@@ -42,7 +42,7 @@
 <script lang="ts">
 import { Socket } from 'rete';
 import { defineComponent , ref, toRaw} from 'vue';
-import { SocketType, SocketTypes } from '../../editor/sockets';
+import { SocketType, SocketTypes } from '../../processor/connections/sockets';
 
 export default defineComponent({
     props:{

@@ -1,6 +1,6 @@
 import Rete, {Connection, Input, Node as RNode, Output, Socket, Component} from "rete";
 import { i18n } from "../../editor/editor";
-import {SocketTypes} from "../../editor/sockets";
+import {SocketTypes} from "../../processor/connections/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 
 export class ConditionNode extends Component {

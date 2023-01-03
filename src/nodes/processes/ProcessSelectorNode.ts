@@ -2,7 +2,7 @@ import Rete, {Component, Input, Node, Node as RNode, Output, Socket} from "rete"
 
 import {TextControl} from "../controls/TextControl";
 import {i18n, SpreadBoardEditor} from "../../editor/editor";
-import {SocketTypes} from "../../editor/sockets";
+import {SocketTypes} from "../../processor/connections/sockets";
 import { InputData, NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { ProcessControl } from "../controls/ProcessControl";
 import { AddIoControl } from "../controls/AddIoControl";

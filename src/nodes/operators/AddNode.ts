@@ -3,7 +3,7 @@ import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import {NumControl} from "../controls/NumControl";
 
 import { SpreadBoardEditor, i18n } from "../../editor/editor";
-import {SocketTypes} from "../../editor/sockets";
+import {SocketTypes} from "../../processor/connections/sockets";
 
 export class AddNode extends Component {
 

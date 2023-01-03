@@ -2,7 +2,7 @@ import Rete, {Component, Node as RNode} from "rete";
 
 import {NumControl} from "../controls/NumControl";
 import {i18n, SpreadBoardEditor} from "../../editor/editor";
-import {SocketTypes} from "../../editor/sockets";
+import {SocketTypes} from "../../processor/connections/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 
 export class NumNode extends Component {

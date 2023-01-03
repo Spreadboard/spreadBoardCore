@@ -1,7 +1,7 @@
 import Rete, {Component, Node as RNode} from "rete";
 
 import {i18n } from "../../editor/editor";
-import {SocketTypes} from "../../editor/sockets";
+import {SocketTypes} from "../../processor/connections/sockets";
 import { BoolControl } from "../controls/BoolControl";
 import {NumControl} from "../controls/NumControl";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";

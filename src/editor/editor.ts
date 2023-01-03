@@ -1,6 +1,6 @@
 
 import { Component, Engine, Node, NodeEditor, Socket } from 'rete';
-import {EventEmitter} from './eventEmitter';
+import {EventEmitter} from '../processor/eventEmitter';
 
 // @ts-ignore
 import VueRenderPlugin from "rete-vue-render-plugin";
@@ -20,7 +20,7 @@ import ContextMenuPlugin from "../context-menu";
 
 //@ts-ignore
 import NodeVue from '../render/Node.vue';
-import { Processor } from './processor';
+import { Processor } from '../processor/processor';
 
 interface i18nObj{
     [index:string]: i18nObj | string;

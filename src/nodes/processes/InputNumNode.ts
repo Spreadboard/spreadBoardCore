@@ -2,11 +2,11 @@ import Rete, {Component, Node as RNode} from "rete";
 
 import {TextControl} from "../controls/TextControl";
 import {i18n, SpreadBoardEditor} from "../../editor/editor";
-import {SocketTypes} from "../../editor/sockets";
+import {SocketTypes} from "../../processor/connections/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { NumControl } from "../controls/NumControl";
-import { SpreadBoardStack } from "../../editor/variable";
-import { ProcessData } from "../../editor/processor";
+import { SpreadBoardStack } from "../../processor/variable";
+import { ProcessData } from "../../processor/processor";
 
 export class InputNumNode extends Component {
 

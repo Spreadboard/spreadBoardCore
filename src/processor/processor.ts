@@ -57,7 +57,7 @@ export class Processor{
     
     process<T extends unknown[]>(data: Data, startId: number | string | null = null, ...args: T): Promise<"success" | "aborted">{
         this.engine.abort();
-        return this.engine.process(data, startId,this.stack, ...args);
+        return this.engine.process(data, startId,{stack:this.stack, path:[data.id]}, ...args);
     }
 
 }
