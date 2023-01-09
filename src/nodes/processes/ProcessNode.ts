@@ -22,10 +22,10 @@ export class ProcessNode extends CompilerNode {
 
 
     async builder(node: RNode) {
-        let inpId = new Input('id', i18n(['id'])??'ID', SocketTypes.processSocket())
-        inpId.addControl(new ProcessControl((process:string)=>{console.log('UpdateIO',process);this.updateIos(process, node)}, 'id', false));
+        //let inpId = new Input('id', i18n(['id'])??'ID', SocketTypes.processSocket())
+        node.addControl(new ProcessControl((process:string)=>{console.log('UpdateIO',process);this.updateIos(process, node)}, 'id', false));
         node.data.externalSelector = node.data.externalSelector ?? false;
-        node.addInput(inpId);
+        //node.addInput(inpId);
         //node.addInput(new Input("eval", i18n(["eval"])??"Evaluate", SocketTypes.anySocket));
         this.updateIos(node.data.id as string, node);
     }
