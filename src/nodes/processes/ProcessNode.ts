@@ -4,10 +4,10 @@ import {i18n, SpreadBoardEditor} from "../../editor/editor";
 import {SocketTypes} from "../../processor/connections/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { ProcessControl } from "../controls/ProcessControl";
-import { AddIoControl } from "../controls/AddIoControl";
-import { ProcessData } from "../../processor/processor";
+import { CompilerIO, Evaluation, ProcessIO } from "../../processor/connections/packet";
+import { CompilerNode, CompilerOptions } from "../CompilerNode";
 
-export class ProcessNode extends Component {
+export class ProcessNode extends CompilerNode {
 
     data = {
         i18nKeys: ["process"],
@@ -20,30 +20,11 @@ export class ProcessNode extends Component {
         super("ProcessNode");
     }
 
-    addIoControl(node: Node){
-        return new AddIoControl(true,
-            (title:string,type:Socket, dir:boolean)=>
-            {
-                let io = {key:title,name:title,socket:type.name};
-                if(dir){
-                    if(!node.data.custome_outputs)
-                        node.data.custome_outputs = [] as {key:string, name:string, socket:Socket}[];
-                    (node.data.custome_outputs as {key:string, name:string, socket:string}[]).push(io)
-                }
-                else{
-                    if(!node.data.custome_inputs)
-                        node.data.custome_inputs = [] as {key:string, name:string, socket:Socket}[];
-                    (node.data.custome_inputs as {key:string, name:string, socket:string}[]).push(io)
-                }
-                this.updateIos(node.data.id as string, node);
-            },'addIo', 'Add In-/Output');
-    }
 
     async builder(node: RNode) {
         let inpId = new Input('id', i18n(['id'])??'ID', SocketTypes.processSocket())
         inpId.addControl(new ProcessControl((process:string)=>{console.log('UpdateIO',process);this.updateIos(process, node)}, 'id', false));
         node.data.externalSelector = node.data.externalSelector ?? false;
-        console.log('Ext',node.data.externalSelector,node)
         node.addInput(inpId);
         //node.addInput(new Input("eval", i18n(["eval"])??"Evaluate", SocketTypes.anySocket));
         this.updateIos(node.data.id as string, node);
@@ -53,17 +34,13 @@ export class ProcessNode extends Component {
         let inputs: {key:string, name:string, socket:Socket}[] = [];
         let outputs: {key:string, name:string, socket:Socket}[] = [];
 
-        console.log('Test', node)
         if(node.data.externalSelector){
-            console.log('Test')
             inputs = ((node.data.custome_inputs ?? []) as {key:string, name:string, socket:string}[]).map((obj:{key:string, name:string, socket:string})=>{return {
                 key:obj.key, name:obj.name, socket:SocketTypes.getSocket(obj.socket)??SocketTypes.anySocket
             }});
             outputs = ((node.data.custome_outputs ?? []) as {key:string, name:string, socket:string}[]).map((obj:{key:string, name:string, socket:string})=>{return {
                 key:obj.key, name:obj.name, socket:SocketTypes.getSocket(obj.socket)??SocketTypes.anySocket
-            }});;
-            if(!node.controls.has('addIo'))
-                node.addControl(this.addIoControl(node))
+            }});
         }
         else{
             if(node.controls.has('addIo'))
@@ -109,7 +86,9 @@ export class ProcessNode extends Component {
         node.update();
     }
 
-    async worker(node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs, processData: ProcessData) {
+    worker(node: NodeData, inputs: WorkerInputs, outputs: CompilerIO, compilerOptions:CompilerOptions) {
+
+        //console.log("Update io");
         let connected = inputs['id'] && inputs['id'].length>0;
         let nodeComp = this.editor?.nodes.find((n)=>n.id==node.id);
         let id = connected ? inputs['id'][0] : node.data.id;
@@ -117,12 +96,36 @@ export class ProcessNode extends Component {
             nodeComp.data.externalSelector = connected;
             this.updateIos(inputs['id'][0] as string,nodeComp!);
         }
-        if(id != undefined && id != null){
-            const uuid = Math.round(Math.random()*100);
-            //console.log("(",uuid,") Starting Process", id as string, "with Inputs", inputs);
-            await SpreadBoardEditor.processProc(id as string, inputs, outputs, processData?.path);
-            //console.log("(",uuid,") Result",id as string,'in',inputs,'out',outputs)
-        }
+        //console.log("now passing on");
+        super.worker(node,inputs, outputs, compilerOptions);
     }
+
+
+    process = (node: NodeData, outKey: string, inputConnections: CompilerIO, compilerOptions: CompilerOptions) =>{
+
+        let outputs = SpreadBoardEditor.instance!.processProcess(node.data.id as string);
+
+        return (processI0: ProcessIO)=>{
+            let externalInput: ProcessIO = {};
+            Object.keys(inputConnections).forEach(
+                (inputKey)=>{
+                    externalInput[inputKey]= inputConnections[inputKey](processI0);
+                }
+            );
+
+            //console.log("Process",node.data.id, inputConnections, Object.keys(processI0));
+            if(!outputs){
+                outputs = SpreadBoardEditor.instance!.processProcess(node.data.id as string);
+                console.log("Fetching the Compiled Process");
+            }
+            if(outputs && outputs[outKey]){
+                let evaluate: Evaluation<any> = outputs[outKey];
+                //console.log(evaluate);
+                return evaluate(externalInput);
+            }else{
+                console.trace();
+            }
+        }
+    };
 }
 

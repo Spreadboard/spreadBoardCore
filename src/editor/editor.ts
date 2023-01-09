@@ -35,7 +35,6 @@ type Locale = "de";
 
 export class SpreadBoardEditor extends NodeEditor{
     readonly eventEmitter: EventEmitter = new EventEmitter;
-    private globalProcessor: Processor;
     private editorProcessor: Processor;
 
     private curLocale: Locale = "de";
@@ -95,7 +94,7 @@ export class SpreadBoardEditor extends NodeEditor{
                 "num": {
                   "connections": [
                     {
-                      "node": 96,
+                      "node": 97,
                       "input": "a",
                       "data": {}
                     }
@@ -118,7 +117,7 @@ export class SpreadBoardEditor extends NodeEditor{
                 "num": {
                   "connections": [
                     {
-                      "node": 96,
+                      "node": 97,
                       "input": "b",
                       "data": {}
                     }
@@ -138,7 +137,7 @@ export class SpreadBoardEditor extends NodeEditor{
                 "num": {
                   "connections": [
                     {
-                      "node": 96,
+                      "node": 97,
                       "output": "res",
                       "data": {}
                     }
@@ -159,62 +158,15 @@ export class SpreadBoardEditor extends NodeEditor{
               ],
               "name": "Addition"
             },
-            "95": {
-              "id": 95,
+            "97": {
+              "id": 97,
               "data": {
-                "selected": "ggt"
-              },
-              "inputs": {},
-              "outputs": {
-                "process": {
-                  "connections": [
-                    {
-                      "node": 96,
-                      "input": "id",
-                      "data": {}
-                    }
-                  ]
-                }
-              },
-              "position": [
-                817,
-                234.68333435058594
-              ],
-              "name": "ProcessSelector"
-            },
-            "96": {
-              "id": 96,
-              "data": {
-                "externalSelector": true,
-                "custome_inputs": [
-                  {
-                    "key": "a",
-                    "name": "a",
-                    "socket": "number val"
-                  },
-                  {
-                    "key": "b",
-                    "name": "b",
-                    "socket": "number val"
-                  }
-                ],
-                "custome_outputs": [
-                  {
-                    "key": "res",
-                    "name": "res",
-                    "socket": "number val"
-                  }
-                ]
+                "externalSelector": false,
+                "id": "ggt"
               },
               "inputs": {
                 "id": {
-                  "connections": [
-                    {
-                      "node": 95,
-                      "output": "process",
-                      "data": {}
-                    }
-                  ]
+                  "connections": []
                 },
                 "a": {
                   "connections": [
@@ -247,8 +199,8 @@ export class SpreadBoardEditor extends NodeEditor{
                 }
               },
               "position": [
-                1164,
-                287.68333435058594
+                1131,
+                346.68333435058594
               ],
               "name": "ProcessNode"
             }
@@ -734,7 +686,6 @@ export class SpreadBoardEditor extends NodeEditor{
           "103": {
             "id": 103,
             "data": {
-              "externalSelector": false,
               "id": "max"
             },
             "inputs": {
@@ -785,7 +736,6 @@ export class SpreadBoardEditor extends NodeEditor{
           "104": {
             "id": 104,
             "data": {
-              "externalSelector": false,
               "id": "min"
             },
             "inputs": {
@@ -831,7 +781,6 @@ export class SpreadBoardEditor extends NodeEditor{
           "130": {
             "id": 130,
             "data": {
-              "externalSelector": false,
               "id": "max"
             },
             "inputs": {
@@ -882,7 +831,6 @@ export class SpreadBoardEditor extends NodeEditor{
           "131": {
             "id": 131,
             "data": {
-              "externalSelector": false,
               "id": "max"
             },
             "inputs": {
@@ -1028,7 +976,7 @@ export class SpreadBoardEditor extends NodeEditor{
               "val": {
                 "connections": [
                   {
-                    "node": 114,
+                    "node": 25,
                     "output": "res",
                     "data": {}
                   }
@@ -1058,8 +1006,8 @@ export class SpreadBoardEditor extends NodeEditor{
               "if": {
                 "connections": [
                   {
-                    "node": 111,
-                    "output": "process",
+                    "node": 114,
+                    "output": "res",
                     "data": {}
                   }
                 ]
@@ -1067,8 +1015,8 @@ export class SpreadBoardEditor extends NodeEditor{
               "else": {
                 "connections": [
                   {
-                    "node": 110,
-                    "output": "process",
+                    "node": 116,
+                    "output": "min",
                     "data": {}
                   }
                 ]
@@ -1078,16 +1026,16 @@ export class SpreadBoardEditor extends NodeEditor{
               "res": {
                 "connections": [
                   {
-                    "node": 114,
-                    "input": "id",
+                    "node": 24,
+                    "input": "val",
                     "data": {}
                   }
                 ]
               }
             },
             "position": [
-              960.0240681258696,
-              -107.23744976832614
+              1223.0240681258697,
+              380.76255023167386
             ],
             "name": "ConditionNode"
           },
@@ -1119,68 +1067,22 @@ export class SpreadBoardEditor extends NodeEditor{
                 "connections": [
                   {
                     "node": 114,
-                    "input": "b",
+                    "input": "a",
                     "data": {}
                   }
                 ]
               }
             },
             "position": [
-              699.8466635051366,
-              503.7730701294534
+              610.8466635051366,
+              163.7730701294534
             ],
             "name": "Difference"
-          },
-          "110": {
-            "id": 110,
-            "data": {
-              "selected": "max"
-            },
-            "inputs": {},
-            "outputs": {
-              "process": {
-                "connections": [
-                  {
-                    "node": 25,
-                    "input": "else",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "position": [
-              696.244139080432,
-              253.05613563022766
-            ],
-            "name": "ProcessSelector"
-          },
-          "111": {
-            "id": 111,
-            "data": {
-              "selected": "ggt"
-            },
-            "inputs": {},
-            "outputs": {
-              "process": {
-                "connections": [
-                  {
-                    "node": 25,
-                    "input": "if",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "position": [
-              697.2848166476076,
-              107.34138078670202
-            ],
-            "name": "ProcessSelector"
           },
           "114": {
             "id": 114,
             "data": {
-              "id": "max",
+              "id": "ggt",
               "add_control": {
                 "key": "addIo",
                 "data": {},
@@ -1196,7 +1098,6 @@ export class SpreadBoardEditor extends NodeEditor{
                   "description": "Add In-/Output"
                 }
               },
-              "externalSelector": true,
               "custome_inputs": [
                 {
                   "key": "a",
@@ -1215,23 +1116,18 @@ export class SpreadBoardEditor extends NodeEditor{
                   "name": "res",
                   "socket": "number val"
                 }
-              ]
+              ],
+              "externalSelector": false
             },
             "inputs": {
               "id": {
-                "connections": [
-                  {
-                    "node": 25,
-                    "output": "res",
-                    "data": {}
-                  }
-                ]
+                "connections": []
               },
               "a": {
                 "connections": [
                   {
-                    "node": 116,
-                    "output": "min",
+                    "node": 26,
+                    "output": "num",
                     "data": {}
                   }
                 ]
@@ -1239,8 +1135,8 @@ export class SpreadBoardEditor extends NodeEditor{
               "b": {
                 "connections": [
                   {
-                    "node": 26,
-                    "output": "num",
+                    "node": 116,
+                    "output": "min",
                     "data": {}
                   }
                 ]
@@ -1250,24 +1146,24 @@ export class SpreadBoardEditor extends NodeEditor{
               "res": {
                 "connections": [
                   {
-                    "node": 24,
-                    "input": "val",
+                    "node": 25,
+                    "input": "if",
                     "data": {}
                   }
                 ]
               }
             },
             "position": [
-              1223.7021365502437,
-              256.26161340507286
+              852.7021365502437,
+              257.26161340507286
             ],
             "name": "ProcessNode"
           },
           "116": {
             "id": 116,
             "data": {
-              "externalSelector": false,
-              "id": "clean"
+              "id": "clean",
+              "externalSelector": false
             },
             "inputs": {
               "id": {
@@ -1321,7 +1217,12 @@ export class SpreadBoardEditor extends NodeEditor{
                   },
                   {
                     "node": 114,
-                    "input": "a",
+                    "input": "b",
+                    "data": {}
+                  },
+                  {
+                    "node": 25,
+                    "input": "else",
                     "data": {}
                   }
                 ]
@@ -1339,7 +1240,6 @@ export class SpreadBoardEditor extends NodeEditor{
         if(!this.instance)
             this.instance  = new SpreadBoardEditor(container, id, saveObj);
         SpreadBoardEditor.importing = true;
-        this.instance.loadProcess("main");
         return this.instance;
     }
 
@@ -1371,17 +1271,6 @@ export class SpreadBoardEditor extends NodeEditor{
         };
     }
 
-
-    static async processProc(id: string, inputs: WorkerInputs, outputs: WorkerOutputs, path: string[] = [], subStackId?: number){
-      let index = this.getProcessIndex(id);
-        let process = SpreadBoardEditor.processes[index];
-        if(!process) return;
-        
-        await SpreadBoardEditor.instance?.globalProcessor.processProc(process, null, inputs, outputs, path, subStackId);
-
-        return outputs;
-    }
-
     private constructor(container: HTMLElement, id = "main@0.1.0",saveObj: SpreadBoardWorkspace = {processes:[{id:"main@0.1.0", nodes: {}}]}){
         super(id, container);
 
@@ -1389,66 +1278,77 @@ export class SpreadBoardEditor extends NodeEditor{
             new Engine(id)
         );
 
-        this.globalProcessor = new Processor(
-            new Engine("global@0.1.0")
-        );
-
         if(!saveObj.processes.find((process)=>process.id==id))
           SpreadBoardEditor.processes = [{id:"main@0.1.0", nodes: {}}];
         SpreadBoardEditor.processes.push(...saveObj.processes);
 
-        this.use(VueRenderPlugin,
-            {
-                component: NodeVue
-            });
-        this.use(ConnectionPlugin);
-        this.use(AreaPlugin,{
-            background: false,
-            snap: false,
-            scaleExtent: {min: 0.25, max: 1},
-            translateExtent: {width: 5000, height: 4000},
-        });
-        this.use(ContextMenuPlugin, {
-            allocate: (component: Component)=>{
-                //return [];
-                let data = component.data as any;
-                if(data.category){
-                    return data.category.map((sub:string[]) => {
-                        return i18n(sub);
-                    });
-                }
-                else return [];
-            },
-            rename(component: Component){
-                let data = component.data as any;
-                if(data.i18nKeys)
-                    return i18n(data.i18nKeys) || component.name;
-                return component.name;
-            }
-        });
-        this.use(StandardNodes);
+        this.init();
 
+    }
 
-        this.on(
-          ["connectioncreated", 'connectionremoved', "nodecreated", 'noderemoved'],
-          (data: any) => {
-            if(!SpreadBoardEditor.importing){
-              //console.log(SpreadBoardEditor.importing,data);
-              this.saveCurProcess();
+    async init(){
+      this.use(VueRenderPlugin,
+        {
+            component: NodeVue
+        });
+
+      this.use(ConnectionPlugin);
+
+      this.use(AreaPlugin,{
+        background: false,
+        snap: false,
+        scaleExtent: {min: 0.25, max: 1},
+        translateExtent: {width: 5000, height: 4000},
+      });
+
+      this.use(ContextMenuPlugin, {
+        allocate: (component: Component)=>{
+            //return [];
+            let data = component.data as any;
+            if(data.category){
+                return data.category.map((sub:string[]) => {
+                    return i18n(sub);
+                });
             }
+            else return [];
+        },
+        rename(component: Component){
+            let data = component.data as any;
+            if(data.i18nKeys)
+                return i18n(data.i18nKeys) || component.name;
+            return component.name;
+        }
+      });
+      this.use(StandardNodes);
+
+      for(let process of SpreadBoardEditor.processes){
+        await this.editorProcessor.compileProcess(process.id, process);
+      }
+
+      this.on(
+        ["connectioncreated", 'connectionremoved', "nodecreated", 'noderemoved'],
+        (data: any) => {
+          if(!SpreadBoardEditor.importing){
+            //console.log(SpreadBoardEditor.importing,data);
+            this.saveCurProcess();
             this.trigger("process");
           }
+      }
       );
 
       this.on('process', async () => {
-          //console.log('json', editor.toJSON());
-          await this.processEditor();
-      });
+        //console.log('Start Processing');
+        await this.processEditor();
+      }
+      );
 
 
       this.view.resize();
       this.trigger('process');
       console.log("Started editor");
+
+      await this.loadProcess("main");
+
     }
 
     i18n(keys: string[]): string | undefined{
@@ -1470,7 +1370,6 @@ export class SpreadBoardEditor extends NodeEditor{
         console.log("Register: ",component.name);
         super.register(component);
         this.editorProcessor.register(component);
-        this.globalProcessor.register(component);
     }
 
     registerAll(components: Component[]): void {
@@ -1479,9 +1378,10 @@ export class SpreadBoardEditor extends NodeEditor{
         });
     }
 
-    saveCurProcess(){
+    async saveCurProcess(){
       if(!SpreadBoardEditor.importing){
         SpreadBoardEditor.processes[this.curProcess].nodes = this.toJSON().nodes;
+        await this.editorProcessor.compileProcess(SpreadBoardEditor.processes[this.curProcess].id,this.toJSON());
         console.log((SpreadBoardEditor.processes[this.curProcess] as Object));
       }
     }
@@ -1528,7 +1428,12 @@ export class SpreadBoardEditor extends NodeEditor{
         })
     }
 
+    processProcess(id: string){
+      return this.editorProcessor.processProcess(id);
+    }
+
     async processEditor(){
+      //console.log("Process Editor")
         await this.editorProcessor.process(this.toJSON());
     }
 
@@ -1541,7 +1446,7 @@ export class SpreadBoardEditor extends NodeEditor{
     async loadProcess(name: string){
         let index = SpreadBoardEditor.getProcessIndex(name);
         //console.log("Saving Process")
-        this.saveCurProcess();
+        await this.saveCurProcess();
         SpreadBoardEditor.importing = true;
         this.curProcess = index;
         //console.log("Clear editor");
@@ -1550,8 +1455,8 @@ export class SpreadBoardEditor extends NodeEditor{
         let process = this.toJSON();
         process.nodes = SpreadBoardEditor.processes[index].nodes;
         await this.fromJSON(process);
-        //console.log("Start initial process");
-        await this.processEditor();
+        console.log("Start initial process");
+        this.trigger('process');
         SpreadBoardEditor.importing = false;
     }
 }

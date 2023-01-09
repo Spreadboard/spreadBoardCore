@@ -2,9 +2,56 @@ import Rete, {Connection, Input, Node as RNode, Output, Socket, Component} from 
 import { i18n } from "../../editor/editor";
 import {SocketTypes} from "../../processor/connections/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
+import { CompilerNode, CompilerOptions } from "../CompilerNode";
+import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
 
-export class ConditionNode extends Component {
+export class ConditionNode extends CompilerNode{
+    process =
+        (node: NodeData,outKey:string, inputConnection:CompilerIO, compilerOptions:CompilerOptions)=>
+        {
+            switch(outKey){
+                case 'res':
+                    return (inputs: ProcessIO)=>{
+                        
+                        if(!compilerOptions.silent){
+                            const nodeComp: RNode | undefined = this.editor!.nodes!.find(n => n.id == node.id);
+                            if(nodeComp){
+                                const ifConn = nodeComp.getConnections().find((value, index) => (value.input.key == 'if'));
+                    
+                                const elseConn = nodeComp.getConnections().find((value, index) => (value.input.key == 'else'));
+                        
+                                const resConn = nodeComp.getConnections().find((value, index) => (value.input.key == 'res'));
+                        
+                        
+                                let socketType = SocketTypes.anySocket;
+                        
+                        
+                                if (ifConn && ifConn.output.socket) {
+                                    socketType = ifConn.output.socket;
+                                } else if (elseConn && elseConn.output.socket) {
+                                    socketType = elseConn.output.socket;
+                                }else if(resConn && resConn.output.socket){
+                                    socketType = resConn.output.socket;
+                                }
+                        
+                        
+                                this.reconnectInput(nodeComp.inputs.get('if'), ifConn,socketType);
+                                this.reconnectInput(nodeComp.inputs.get('else'), elseConn,socketType);
+                                this.reconnectOutput(nodeComp.outputs.get('res'), resConn,socketType);
+                            }
+                        }
 
+                        let res = (inputConnection['bool'](inputs)
+                            ?(inputConnection['if'])
+                            :(inputConnection['else']))
+                        //console.log("Condition",res,res(inputs));
+                        return res(inputs);
+                    };
+                    default:
+                        return (_:ProcessIO)=>undefined;
+            }
+        }
+    ;
 
     data = {
         i18nKeys: ["cond"],
@@ -48,39 +95,5 @@ export class ConditionNode extends Component {
         }
     }
 
-    worker(node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs): any {
-
-        const nodeComp: RNode | undefined = this.editor!.nodes!.find(n => n.id == node.id);
-
-        if(nodeComp){
-            const ifConn = nodeComp.getConnections().find((value, index) => (value.input.key == 'if'));
-
-            const elseConn = nodeComp.getConnections().find((value, index) => (value.input.key == 'else'));
-    
-            const resConn = nodeComp.getConnections().find((value, index) => (value.input.key == 'res'));
-    
-    
-            let socketType = SocketTypes.anySocket;
-    
-    
-            if (ifConn && ifConn.output.socket) {
-                socketType = ifConn.output.socket;
-            } else if (elseConn && elseConn.output.socket) {
-                socketType = elseConn.output.socket;
-            }else if(resConn && resConn.output.socket){
-                socketType = resConn.output.socket;
-            }
-    
-    
-            this.reconnectInput(nodeComp.inputs.get('if'), ifConn,socketType);
-            this.reconnectInput(nodeComp.inputs.get('else'), elseConn,socketType);
-            this.reconnectOutput(nodeComp.outputs.get('res'), resConn,socketType);
-        }
-
-
-        //console.log(inputs['bool'][0]);
-
-        outputs['res'] = (inputs['bool'][0])?(inputs['if'][0]):(inputs['else'][0]);
-    }
 }
 

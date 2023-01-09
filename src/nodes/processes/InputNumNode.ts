@@ -6,9 +6,11 @@ import {SocketTypes} from "../../processor/connections/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { NumControl } from "../controls/NumControl";
 import { SpreadBoardStack } from "../../processor/variable";
-import { ProcessData } from "../../processor/processor";
+import { CompilerNode, CompilerOptions } from "../CompilerNode";
+import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
 
-export class InputNumNode extends Component {
+
+export class InputNumNode extends CompilerNode {
 
     data = {
         i18nKeys: ["numIn"],
@@ -30,17 +32,20 @@ export class InputNumNode extends Component {
         node.addControl(new TextControl((val:string)=>SpreadBoardEditor.instance?.trigger("process"), 'key', false)).addOutput(out1);
     }
 
-    worker(node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs, processData: ProcessData) {
-        let key = node.data.key as string;
-        if(processData.processInputs && processData.processInputs[key]){
-            let inp = processData.processInputs[key][0];
-            //console.log("Taking input", key, inp)
-            outputs['val'] = inp;
+    process = (node: NodeData,outKey:string, inputConnection:CompilerIO, compilerOptions:CompilerOptions)=>{
+        switch(outKey){
+            case 'val': 
+                return function inputNum(inputs: ProcessIO)
+                {
+                    let key = node.data.key as string;
+                    let val = (compilerOptions.silent)?inputs[key]:node.data.val ?? 0;
+                    //console.log(inputs," -> ",val);
+                    return val;
+                };
+            default: 
+                return (inputs: ProcessIO)=>undefined;
         }
-        else{
-            outputs['val'] = node.data.val ?? 0;
-        }
-    }
+    };
 
 
 }

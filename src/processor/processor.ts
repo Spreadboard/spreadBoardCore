@@ -1,18 +1,28 @@
 import { Component, Engine } from "rete";
 import { Data, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
+import { CompilerOptions } from "../nodes/CompilerNode";
+import { CompilerIO, Evaluation, ProcessIO } from "./connections/packet";
 import { SpreadBoardStack, SpreadBoardVariable } from "./variable";
 
-export interface ProcessData{
+
+
+export interface ProcessInc{
     processInputs?:WorkerInputs,
-    processOutputs?:WorkerOutputs,
-    stack?: SpreadBoardStack,
-    path: string[]
+    path: string[],
 }
 
 export class Processor{
     private static max_stack_height: number = 2000;
     private engine: Engine;
     private stack: SpreadBoardStack;
+
+    private compiledProcesses: Map<string,CompilerIO>= new Map();
+
+    processProcess(processId: string): CompilerIO{
+        processId = processId.replace('@0.1.0','');
+        return this.compiledProcesses.get(processId)!;
+    }
+
     constructor(engine:Engine,stack: SpreadBoardStack =  {variables: new Map<string,SpreadBoardVariable<any>>(), subStacks: new Map<number,SpreadBoardStack>()}){
         this.engine = engine;
         this.stack = stack;
@@ -30,34 +40,37 @@ export class Processor{
         this.engine.abort();
     }
 
-    processProc<T extends unknown[]>(process: Data, startId: number | string | null = null, processInputs?:WorkerInputs, processOutputs?:WorkerOutputs, path: string[]=[], subStackId?: number, ...args: T): Promise<"success" | "aborted">{
-        if(path.length > Processor.max_stack_height){
-            console.error("Stack overflow");
-            return new Promise<'aborted'>((any)=>{});
-        }
+    async compileProcess(id: string, data: Data): Promise<CompilerIO>{
+        let compilerOptions: CompilerOptions = {silent: true, compilerOutputs:{}}
+        const compiler = this.engine.clone();
+        const compilerData = {...data};
+        compilerData.id = compiler.id = "compiler@0.1.0";
 
-        let data = {...process};
-        data.id = this.engine.id;
-        //console.log(...path,"->",process.id,"(",processInputs,")");
-        let processData: ProcessData = {
-            stack: subStackId ? this.stack.subStacks.get(subStackId): undefined,
-            processInputs : processInputs,
-            processOutputs: processOutputs,
-            path : [...path, process.id]
-        }
-        let res;
-        if(subStackId)
-        res = this.engine.clone().process(data, startId,processData,  ...args);
-        else
-        res = this.engine.clone().process(data, startId,processData,  ...args);
+
+        await compiler.process(
+            compilerData, 
+            null,
+            compilerOptions
+        );
         
-        //console.log(...path,"<-",process.id,"(",processInputs,")");
-        return res;
+        id = id.replace('@0.1.0','');
+        const result = compilerOptions.compilerOutputs ?? {};
+        this.compiledProcesses.set(id, result);
+        console.log('Compiled:',id,' ->', Object.keys(compilerOptions.compilerOutputs!));
+        return result;
     }
     
-    process<T extends unknown[]>(data: Data, startId: number | string | null = null, ...args: T): Promise<"success" | "aborted">{
-        this.engine.abort();
-        return this.engine.process(data, startId,{stack:this.stack, path:[data.id]}, ...args);
+    async process(data: Data, options?: {[key:string]:any}): Promise<"success" | "aborted">{
+        await await this.engine.abort();
+        let compilerOptions: CompilerOptions = {
+            silent: false,
+            options: options,
+        }
+        const processData = {...data};
+        processData.id = this.engine.id;
+        //console.log("Processor", data);
+        
+        return await this.engine.process(processData,null,compilerOptions);
     }
 
 }

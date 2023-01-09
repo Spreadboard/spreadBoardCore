@@ -5,8 +5,10 @@ import {SocketTypes} from "../../processor/connections/sockets";
 import { BoolControl } from "../controls/BoolControl";
 import {NumControl} from "../controls/NumControl";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
+import { CompilerNode, CompilerOptions } from "../CompilerNode";
+import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
 
-export class EqualNode extends Component {
+export class EqualNode extends CompilerNode {
     category:string[] = ["Mathe"];
 
     data = {
@@ -35,14 +37,22 @@ export class EqualNode extends Component {
             .addOutput(out);
     }
 
-    worker(node: NodeData, inputs:WorkerInputs, outputs:WorkerOutputs, ...args: any) {
-        const n1: number = (<number>(inputs['num'].length ? inputs['num'][0] : node.data.num))||0;
-        const n2: number = <number>(inputs['num2'].length?inputs['num2'][0]:node.data.num2)||0;
-        const compare: boolean = n1 == n2;
+    process = (node: NodeData,outKey:string, inputConnection:CompilerIO, compilerOptions:CompilerOptions)=>{
+        switch(outKey){
+            case 'bool':
+                return (inputs: ProcessIO)=>{
+                    const n1: number = inputConnection['num'](inputs) as number ?? node.data.num as number  ?? 0;
+                    const n2: number = inputConnection['num2'](inputs) as number ?? node.data.num2 as number  ?? 0;
+                    const res: boolean = n1 == n2;
 
-        const preview = this.editor?.nodes?.find((n: RNode) => n.id == node.id)?.controls.get('preview') as BoolControl|undefined;
+                    if(!compilerOptions.silent){
+                        const preview = this.editor?.nodes?.find((n:RNode) => n.id == node.id)?.controls.get('preview') as BoolControl|undefined;
+                        preview?.setValue(res);
+                    }
 
-        preview?.setValue(compare);
-        outputs['bool'] = compare;
-    }
+                    return res;
+                }
+            default:
+                return (inputs: ProcessIO)=>undefined;
+    }};
 }

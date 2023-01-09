@@ -4,8 +4,10 @@ import {NumControl} from "../controls/NumControl";
 
 import { SpreadBoardEditor, i18n } from "../../editor/editor";
 import {SocketTypes} from "../../processor/connections/sockets";
+import { CompilerNode, CompilerOptions } from "../CompilerNode";
+import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
 
-export class AddNode extends Component {
+export class AddNode extends CompilerNode {
 
     data = {
         i18nKeys: ["add"],
@@ -30,15 +32,25 @@ export class AddNode extends Component {
             .addOutput(out);
     }
 
-    worker(node: NodeData, inputs:WorkerInputs, outputs:WorkerOutputs, ...args: any) {
-        const n1: number = inputs['num'][0] as number ?? node.data.num as number  ?? 0;
-        const n2: number = inputs['num2'][0] as number ?? node.data.num2 as number  ?? 0;
-        const sum: number = n1 + n2;
-        
-        //console.log("Added", n1,"+",n2+"=",sum);
-        const preview = this.editor?.nodes?.find((n:RNode) => n.id == node.id)?.controls.get('preview') as NumControl|undefined;
-        
-        preview?.setValue(sum);
-        outputs['num'] = sum;
-    }
+    process = (node: NodeData,outKey:string, inputConnection:CompilerIO, compilerOptions:CompilerOptions)=>{
+        switch(outKey){
+            case 'num':
+                return (inputs: ProcessIO)=>{
+                    const n1: number = inputConnection['num'](inputs) as number ?? node.data.num as number  ?? 0;
+                    const n2: number = inputConnection['num2'](inputs) as number ?? node.data.num2 as number  ?? 0;
+                    const res: number = n1 + n2;
+
+                    if(!compilerOptions.silent){
+                        const preview = this.editor?.nodes?.find((n:RNode) => n.id == node.id)?.controls.get('preview') as NumControl|undefined;
+                        preview?.setValue(res);
+                    }else{
+                        console.log(n1,"+",n2,"=",res);
+                        console.trace();
+                    }
+
+                    return res;
+                }
+            default:
+                return (inputs: ProcessIO)=>undefined;
+    }};
 }

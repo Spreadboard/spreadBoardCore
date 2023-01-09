@@ -6,9 +6,10 @@ import {SocketTypes} from "../../processor/connections/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { NumControl } from "../controls/NumControl";
 import { SpreadBoardStack } from "../../processor/variable";
-import { ProcessData } from "../../processor/processor";
+import { CompilerNode, CompilerOptions } from "../CompilerNode";
+import { CompilerIO, Evaluation, ProcessIO } from "../../processor/connections/packet";
 
-export class OutputNumNode extends Component {
+export class OutputNumNode extends CompilerNode {
 
     data = {
         i18nKeys: ["numOut"],
@@ -30,17 +31,46 @@ export class OutputNumNode extends Component {
         node.addControl(new TextControl((val:string)=>SpreadBoardEditor.instance?.trigger("process"), 'key', false)).addInput(in1);
     }
 
-    worker(node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs, processData: ProcessData) {
-        if(processData.processOutputs){
-            let outp = inputs['val'][0];
-            //console.log("Putting output", node.data.key,outp);
-            processData.processOutputs[node.data.key as string] = outp;
-        }else{
-            node.data.val = inputs['val'][0];
-            let preview = this.editor?.nodes.find((n:RNode)=>{return n.id == node.id})?.controls.get('val') as NumControl|undefined;
-    
-            preview?.setValue(inputs['val'][0] as number);
+    process = (node: NodeData, outKey:string, inputConnection:CompilerIO, compilerOptions:CompilerOptions) => {
+        switch (outKey) {
+            case 'res':
+                return (inputs: ProcessIO)=>{
+                    let val =inputConnection['val'](inputs);
+                    //console.log("Outputting->",val);
+                    //console.log("Out silent:",compilerOptions.silent);
+
+
+                    if(!compilerOptions.silent){
+                        const preview = this.editor?.nodes?.find((n:RNode) => n.id == node.id)?.controls.get('val') as NumControl|undefined;
+                        preview?.setValue(val);
+                    }
+
+
+                    return val;
+                }
+            default:
+                return (inputs: ProcessIO)=>undefined;
+        }
+    };
+
+    worker(node: NodeData, inputs: WorkerInputs, outputs: CompilerIO, compilerOptions:CompilerOptions): void {
+        super.worker(node, inputs,outputs,compilerOptions);
+        
+        const key = node.data.key as string;
+        const inputEval = inputs['val'][0] as Evaluation<number>??((_:ProcessIO)=>undefined)
+
+        let proc = this.process(node,"res",{'val': inputEval},compilerOptions) ?? ( (_)=>{return undefined});
+
+
+        if(compilerOptions.compilerOutputs){
+            //console.log("Outputs:",key,"->",inputEval);
+            compilerOptions.compilerOutputs[key] = proc; 
+        }
+        if(!compilerOptions.silent){
+            //console.log("Output-Not-Silent",proc);
+            proc({});
         }
     }
+
 }
 
