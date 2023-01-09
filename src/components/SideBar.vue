@@ -1,7 +1,9 @@
 <template>
 
 <div class="sidebar">
-    <button v-for="item in map" @click="(_)=>select(item.key)" >{{ item.key }}</button>
+    <button v-for="item in map" @click="(_)=>select(item.key)" >
+        <img src="/process.svg" class="svg"/>
+    </button>
 </div>
 
 <div id="bar">
@@ -67,18 +69,24 @@ export default{
 <style scoped>
 
 .sidebar{
-    width: 25px;
+    width: 30px;
     overflow-x: hidden;
     border-right: 1px solid #6f9aea;
 }
 
 button{
-    writing-mode: sideways-lr;
-    padding: 5px;
-    width: fit-content;
+    max-width: 100%;
+    width: 100%;
+    aspect-ratio: 1;
+    padding: 1px;
     border-radius: 0;
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
+}
+.svg {
+    width: 100%;
+    padding: 0;
+    color: white;
 }
 
 </style>
