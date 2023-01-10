@@ -33,7 +33,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "dev.spreadboard.editor",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
@@ -61,6 +61,7 @@
       {
         "fullscreen": false,
         "height": 600,
+        "theme":"Dark",
         "resizable": true,
         "title": "spreadBoardCore",
         "width": 800

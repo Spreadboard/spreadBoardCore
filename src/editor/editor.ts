@@ -161,7 +161,6 @@ export class SpreadBoardEditor extends NodeEditor{
             "97": {
               "id": 97,
               "data": {
-                "externalSelector": false,
                 "id": "ggt"
               },
               "inputs": {
@@ -1116,8 +1115,7 @@ export class SpreadBoardEditor extends NodeEditor{
                   "name": "res",
                   "socket": "number val"
                 }
-              ],
-              "externalSelector": false
+              ]
             },
             "inputs": {
               "id": {
@@ -1163,12 +1161,8 @@ export class SpreadBoardEditor extends NodeEditor{
             "id": 116,
             "data": {
               "id": "clean",
-              "externalSelector": false
             },
             "inputs": {
-              "id": {
-                "connections": []
-              },
               "a": {
                 "connections": [
                   {
@@ -1380,9 +1374,31 @@ export class SpreadBoardEditor extends NodeEditor{
 
     async saveCurProcess(){
       if(!SpreadBoardEditor.importing){
-        SpreadBoardEditor.processes[this.curProcess].nodes = this.toJSON().nodes;
-        await this.editorProcessor.compileProcess(SpreadBoardEditor.processes[this.curProcess].id,this.toJSON());
-        console.log((SpreadBoardEditor.processes[this.curProcess] as Object));
+        try {
+          let json = this.toJSON();
+          SpreadBoardEditor.processes[this.curProcess].nodes = json.nodes;
+          await this.editorProcessor.compileProcess(SpreadBoardEditor.processes[this.curProcess].id,this.toJSON());
+          console.log((SpreadBoardEditor.processes[this.curProcess] as Object));
+        } catch (error) {
+          this.nodes.forEach(node => {
+            node.inputs.forEach(input => {
+              input.connections.forEach(
+                (con)=>{
+                  if (!con.output.node)
+                    this.removeConnection(con);
+                }
+              )
+            });
+            node.outputs.forEach(output => {
+              output.connections.forEach(
+                (con)=>{
+                  if (!con.input.node)
+                    this.removeConnection(con);
+                }
+              )
+            });
+          });
+        }
       }
     }
     

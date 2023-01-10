@@ -1,11 +1,19 @@
 <template>
     <div class="selector-bar">
         <div><input type="text" :on-submit="addProcess" :value="newProcessName" @input="change($event)"/></div>
-        <button v-for='process in processes()'
+        <div style="display: inline-flex; width: 100%; padding-bottom: 5px;" v-for='process in processes()'>
+            <button
+            style="flex-grow: 1; margin-right: 5px; padding-right: 5px;"
             :class="curProcess==process.index?'selected':''"
             @click="(_)=>select(process.id)">
             {{ process.id }}
         </button>
+            <button>
+                <span class="material-symbols-outlined">
+                    backspace
+                </span>
+            </button>
+        </div>
         <button v-if="newProcessName!=''" class="addProcess" @click="addProcess"><b>+</b><i>{{ newProcessName }}</i></button>
     </div>
 </template>
@@ -19,8 +27,12 @@ export default {
         let curProcess = ref(SpreadBoardEditor.getCurProcess());
 
         const select=(id: string)=>{
-            SpreadBoardEditor.instance?.loadProcess(id);
-            curProcess.value = SpreadBoardEditor.getCurProcess();
+            curProcess.value = processes().find((proc)=>proc.id==id)?.index;
+            SpreadBoardEditor.instance?.loadProcess(id).then(
+                ()=>{
+                    curProcess.value = SpreadBoardEditor.getCurProcess();
+                }
+            );
         };
         let processes=()=>{
             return SpreadBoardEditor.getProcessIDs()?.map((process)=>{return {id: process.id, index: process.index, className : selected(process.index)}});
@@ -51,9 +63,12 @@ export default {
 </script>
 
 <style scoped>
+
 .selector-bar{
     display: flex;
     flex-flow: column;
+    max-height: 100%;
+    overflow-y: scroll;
     margin: 5px;
 }
 
@@ -63,6 +78,13 @@ button{
 
 button.selected{
     border-color: bisque;
+}
+
+@media (prefers-color-scheme: light) {
+    button.selected{
+        border-width: 2px;
+        border-color: coral;
+    }
 }
 
 .addProcess{

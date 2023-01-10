@@ -55,22 +55,20 @@ export class ProcessNode extends CompilerNode {
 
 
         node.inputs.forEach((input)=>{
-            if(!inputs.find((i)=>input.key == i.key) && input.key != "eval" && input.key != 'id'){
-                input.connections.forEach((con)=>{
-                    con.remove();
-                });
-                node.removeInput(input);
-            }
+            input.connections.forEach((con)=>{
+                this.editor?.removeConnection(con);
+                con.remove();
+            });
+            node.removeInput(input);
         })
 
 
         node.outputs.forEach((output)=>{
-            if(!outputs.find((i)=>output.key == i.key)){
-                output.connections.forEach((con)=>{
-                    con.remove();
-                });
-                node.removeOutput(output);
-            }
+            output.connections.forEach((con)=>{
+                this.editor?.removeConnection(con);
+                con.remove();
+            });
+            node.removeOutput(output);
         })
 
         inputs.forEach((input)=>{

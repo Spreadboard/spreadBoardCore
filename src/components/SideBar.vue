@@ -1,8 +1,9 @@
 <template>
-
 <div class="sidebar">
-    <button v-for="item in map" @click="(_)=>select(item.key)" >
-        <img src="/process.svg" class="svg"/>
+    <button v-for="item in map" @click="(_)=>select(item.key)" :class="selected==item.key?'selected':''" >
+        <span class="material-symbols-outlined" :title="item.title">
+            {{item.code_point}}
+        </span>
     </button>
 </div>
 
@@ -12,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { createApp, ref } from 'vue';
+import { App, createApp, ref } from 'vue';
 import ProcessSelector from './ProcessSelector.vue';
 
 export default{
@@ -24,6 +25,8 @@ export default{
         const map = [
             {
                 key: "processes",
+                title: "Prozesse",
+                code_point:'function',
                 componentName: ProcessSelector
             }
         ]
@@ -38,6 +41,8 @@ export default{
 
         const isSelected = (key: string) => {return key == selected.value ? "selected" : "notSelected"};
 
+        let curComp: App|undefined;
+
         const select = (key: string) => {
             console.log("Select:",key)
             if(selected.value != key)
@@ -46,10 +51,13 @@ export default{
                 selected.value = "";
             
             let barEl = document.getElementById("bar")!;
+            if(curComp)
+                curComp.unmount();
             barEl.innerHTML = "";
             if(getSelctedComp()!=undefined){
                 let bar = createApp(getSelctedComp()!);
-                bar.mount(barEl);
+                curComp = bar;
+                bar.mount("#bar");
             }
             
         }
@@ -67,8 +75,9 @@ export default{
 </script>
 
 <style scoped>
-
 .sidebar{
+    padding: 5px;
+    padding-right: 0;
     width: 30px;
     overflow-x: hidden;
     border-right: 1px solid #6f9aea;
@@ -82,11 +91,21 @@ button{
     border-radius: 0;
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
+    border-right-width: 0;
+    border-color: #6f9aea;
 }
-.svg {
-    width: 100%;
-    padding: 0;
-    color: white;
+
+
+button.selected{
+    border-color: bisque;
+}
+
+@media (prefers-color-scheme: light) {
+    button.selected{
+        border-width: 2px;
+        border-right-width: 0;
+        border-color: coral;
+    }
 }
 
 </style>
