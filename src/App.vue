@@ -4,7 +4,6 @@ import SideBar from './components/SideBar.vue';
 </script>
 
 <template>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   <div class="editor">
     <SideBar></SideBar>
     <ReteEditor></ReteEditor>
@@ -12,13 +11,6 @@ import SideBar from './components/SideBar.vue';
   
 </template>
 <style>
-.material-symbols-outlined {
-  font-variation-settings:
-  'FILL' 0,
-  'wght' 400,
-  'GRAD' 0,
-  'opsz' 48
-}
 body, html, #app{
   width: 100%;
   height: 100%;
@@ -35,4 +27,21 @@ body, html, #app{
   display: flex;
   flex-flow: row;
 }
+
+
+@media (prefers-color-scheme: dark) {
+    .light{
+        display: none;
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    .dark{
+        display: none;
+    }
+    button.selected{
+        border-color: coral;
+    }
+}
+
 </style>

@@ -1,13 +1,11 @@
 <template>
 <div class="sidebar">
     <button v-for="item in map" @click="(_)=>select(item.key)" :class="selected==item.key?'selected':''" >
-        <span class="material-symbols-outlined" :title="item.title">
-            {{item.code_point}}
-        </span>
+        <Icon :icon="item.icon"></Icon>
     </button>
 </div>
 
-<div id="bar">
+<div id="bar" :class="selected!=''?'visible':'hidden'">
 </div>
 
 </template>
@@ -15,10 +13,14 @@
 <script lang="ts">
 import { App, createApp, ref } from 'vue';
 import ProcessSelector from './ProcessSelector.vue';
+import Info from './Info.vue';
+import Icon from './VS-Icon.vue'
 
 export default{
     components:{
-        ProcessSelector: ProcessSelector
+        ProcessSelector: ProcessSelector,
+        Info: Info,
+        Icon: Icon
     },
     setup(){
 
@@ -26,8 +28,14 @@ export default{
             {
                 key: "processes",
                 title: "Prozesse",
-                code_point:'function',
+                icon:'symbol-interface',
                 componentName: ProcessSelector
+            },
+            {
+                key: "info",
+                title: "Info",
+                icon:'lightbulb',
+                componentName: Info
             }
         ]
 
@@ -44,22 +52,23 @@ export default{
         let curComp: App|undefined;
 
         const select = (key: string) => {
-            console.log("Select:",key)
             if(selected.value != key)
                 selected.value = key;
             else
                 selected.value = "";
-            
-            let barEl = document.getElementById("bar")!;
-            if(curComp)
-                curComp.unmount();
-            barEl.innerHTML = "";
-            if(getSelctedComp()!=undefined){
-                let bar = createApp(getSelctedComp()!);
-                curComp = bar;
-                bar.mount("#bar");
+            console.log("Select:",selected.value);
+
+            (async ()=>{
+                let barEl = document.getElementById("bar")!;
+
+                if(curComp)
+                        curComp.unmount();
+                if(getSelctedComp()!=undefined){
+                    let bar = createApp(getSelctedComp()!);
+                    curComp = bar;
+                    bar.mount("#bar");
             }
-            
+            })();        
         }
 
         return {
@@ -75,22 +84,32 @@ export default{
 </script>
 
 <style scoped>
+
+.sidebar:deep() .icon{
+    width: 100%;
+}
+
 .sidebar{
     padding: 5px;
     padding-right: 0;
+    padding-top: 0;
     width: 30px;
+    min-width: 30px;
     overflow-x: hidden;
     border-right: 1px solid #6f9aea;
 }
 
 button{
+    display: flex;
+    justify-content: center;
     max-width: 100%;
     width: 100%;
-    aspect-ratio: 1;
-    padding: 1px;
+    padding: 2px;
+    margin-bottom: 5px;
     border-radius: 0;
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
+    border-width: 2px;
     border-right-width: 0;
     border-color: #6f9aea;
 }
@@ -100,12 +119,18 @@ button.selected{
     border-color: bisque;
 }
 
-@media (prefers-color-scheme: light) {
-    button.selected{
-        border-width: 2px;
-        border-right-width: 0;
-        border-color: coral;
-    }
+#bar {
+    overflow-x: hidden;
+    max-width: 0;
+    min-width: 0;
+    width: 0;
+}
+
+#bar.visible{
+    max-width: 100%;
+    min-width: 200px;
+    width: 200px;
+    transition: ease-in-out all 500ms;
 }
 
 </style>

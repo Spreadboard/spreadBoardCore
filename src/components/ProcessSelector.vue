@@ -9,9 +9,11 @@
             {{ process.id }}
         </button>
             <button>
-                <span class="material-symbols-outlined">
-                    backspace
-                </span>
+                <img class="icon light" 
+                src="https://raw.githubusercontent.com/microsoft/vscode-icons/master/icons/light/chrome-close.svg">
+
+                <img class="icon dark" 
+                src="https://raw.githubusercontent.com/microsoft/vscode-icons/master/icons/dark/chrome-close.svg">
             </button>
         </div>
         <button v-if="newProcessName!=''" class="addProcess" @click="addProcess"><b>+</b><i>{{ newProcessName }}</i></button>
@@ -65,15 +67,22 @@ export default {
 <style scoped>
 
 .selector-bar{
+    width: 190px;
     display: flex;
     flex-flow: column;
     max-height: 100%;
     overflow-y: scroll;
-    margin: 5px;
+    padding: 5px;
 }
 
 button{
     padding: 5px;
+}
+
+@media (prefers-color-scheme: light) {
+    button{
+        box-shadow: 1px 2px 1px gray;
+    }
 }
 
 button.selected{
