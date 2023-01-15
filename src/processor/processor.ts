@@ -1,6 +1,6 @@
 import { Component, Engine } from "rete";
 import { Data, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
-import { CompilerOptions } from "../nodes/CompilerNode";
+import { Command, CompilerOptions } from "../nodes/CompilerNode";
 import { CompilerIO, Evaluation, ProcessIO } from "./connections/packet";
 import { SpreadBoardStack, SpreadBoardVariable } from "./variable";
 
@@ -16,11 +16,42 @@ export class Processor{
     private engine: Engine;
     private stack: SpreadBoardStack;
 
-    private compiledProcesses: Map<string,CompilerIO>= new Map();
+    private compiledProcesses: Map<string,Command>= new Map();
+
+    private collectDependencys(id: string): string[]{
+        let dependencys: string[] = [];
+
+        this.compiledProcesses.get(id)!.processDependencys.forEach(
+            (dependency)=>{
+                dependencys.concat(this.collectDependencys(dependency));
+            }
+        )
+
+        return dependencys;
+    }
+
+    private commandToFunction(id: string): Function {
+        let command: Command = this.compiledProcesses.get(id)!;
+        let dependencys = this.collectDependencys(id);
+
+        let function_string = "";
+        dependencys.forEach(
+            (dependency)=>{
+                function_string = function_string +
+                `const ${dependency} = function${dependency}(input){\n${this.compiledProcesses.get(dependency)!.command_string}\n}\n`
+            }
+        )
+        function_string  = function_string +
+        `const ${id} = function${id}(input){\n${command.command_string}\n}\n`+
+        `return ${id}(input)`;
+        
+        return new Function('input',function_string); 
+    }
 
     processProcess(processId: string): CompilerIO{
         processId = processId.replace('@0.1.0','');
-        return this.compiledProcesses.get(processId)!;
+        let func =  this.commandToFunction(processId);
+        
     }
 
     constructor(engine:Engine,stack: SpreadBoardStack =  {variables: new Map<string,SpreadBoardVariable<any>>(), subStacks: new Map<number,SpreadBoardStack>()}){
@@ -40,24 +71,37 @@ export class Processor{
         this.engine.abort();
     }
 
-    async compileProcess(id: string, data: Data): Promise<CompilerIO>{
-        let compilerOptions: CompilerOptions = {silent: true, compilerOutputs:{}}
+    async compileProcess(id: string, data: Data): Promise<Command>{
+        let compilerOptions: CompilerOptions = {silent: true, compilerCommands:[]}
         const compiler = this.engine.clone();
         const compilerData = {...data};
         compilerData.id = compiler.id = "compiler@0.1.0";
 
-
         await compiler.process(
-            compilerData, 
+            compilerData,
             null,
             compilerOptions
         );
+
+        let function_command: Command = {
+            command_string: "",
+            outputs: {},
+            processDependencys:[]
+        }
+
+        compilerOptions.compilerCommands?.forEach(
+            (command)=>{
+                function_command.command_string = function_command.command_string + command.command_string;
+                function_command.processDependencys.concat(command.processDependencys);
+            }
+        )
         
-        id = id.replace('@0.1.0','');
-        const result = compilerOptions.compilerOutputs ?? {};
-        this.compiledProcesses.set(id, result);
-        console.log('Compiled:',id,' ->', Object.keys(compilerOptions.compilerOutputs!));
-        return result;
+        function_command.command_string = function_command +
+        `return output`;
+        
+        this.compiledProcesses.set(id, function_command)
+
+        return function_command
     }
     
     async process(data: Data, options?: {[key:string]:any}): Promise<"success" | "aborted">{

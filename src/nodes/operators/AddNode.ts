@@ -4,10 +4,27 @@ import {NumControl} from "../controls/NumControl";
 
 import { SpreadBoardEditor, i18n } from "../../editor/editor";
 import {SocketTypes} from "../../processor/connections/sockets";
-import { CompilerNode, CompilerOptions } from "../CompilerNode";
+import { Command, CompilerNode, CompilerOptions } from "../CompilerNode";
 import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
 
 export class AddNode extends CompilerNode {
+
+    compile(node: NodeData, worker_input_name: string, worker_output_name: string): Command {
+        return {
+            command_string:
+            `let ${node.name}_${node.id}_num1 = ${worker_input_name}.num1\n`+
+            `if(${node.name}_${node.id}_num1 == undefined)\n`+
+            `   ${node.name}_${node.id}_num1 = ${node.data.num1}\n`+
+            `let ${node.name}_${node.id}_num2 = ${worker_input_name}.num2\n`+
+            `if(${node.name}_${node.id}_num2 == undefined)\n`+
+            `   ${node.name}_${node.id}_num2 = ${node.data.num2}\n`+
+            `${worker_output_name}.res = ${node.name}_${node.id}_num1 + ${node.name}_${node.id}_num2\n`,
+            outputs: {
+                'res': `${worker_output_name}.res`
+            },
+            processDependencys: []
+        }
+    }
 
     data = {
         i18nKeys: ["add"],

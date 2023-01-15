@@ -2,10 +2,25 @@ import Rete, {Connection, Input, Node as RNode, Output, Socket, Component} from 
 import { i18n } from "../../editor/editor";
 import {SocketTypes} from "../../processor/connections/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
-import { CompilerNode, CompilerOptions } from "../CompilerNode";
+import { Command, CompilerNode, CompilerOptions } from "../CompilerNode";
 import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
 
 export class ConditionNode extends CompilerNode{
+    compile(node: NodeData, worker_input_name: string, worker_output_name: string): Command {
+        return {
+            command_string: 
+            `if(${worker_input_name}.bool){\n`+
+            `   ${worker_output_name}.res = ${worker_input_name}['if']\n`+
+            `}\n`+
+            `else{\n`+
+            `   ${worker_output_name}.res = ${worker_input_name}['else']\n`+
+            `}\n`,
+            outputs:{
+                res: `${worker_output_name}.res`
+            },
+            processDependencys:[],
+        }
+    }
     process =
         (node: NodeData,outKey:string, inputConnection:CompilerIO, compilerOptions:CompilerOptions)=>
         {

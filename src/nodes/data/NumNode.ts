@@ -4,10 +4,19 @@ import {NumControl} from "../controls/NumControl";
 import {i18n, SpreadBoardEditor} from "../../editor/editor";
 import {SocketTypes} from "../../processor/connections/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
-import { CompilerNode, CompilerOptions } from "../CompilerNode";
+import { Command, CompilerNode, CompilerOptions } from "../CompilerNode";
 import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
 
 export class NumNode extends CompilerNode {
+    compile(node: NodeData, worker_input_name: string, worker_output_name: string): Command {
+        return {
+            command_string: `${worker_output_name}.num = ${node.data.num}`,
+            outputs: {
+                'num': `${worker_output_name}.num`
+            },
+            processDependencys: []
+        }
+    }
 
     process = (node: NodeData,outKey: string, inputConnection:CompilerIO, compilerOptions:CompilerOptions)=>{
         switch (outKey){

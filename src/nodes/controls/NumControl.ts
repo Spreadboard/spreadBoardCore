@@ -1,24 +1,17 @@
 import Rete, { Control } from "rete";
+import { ValueControl } from "./ValueControl";
 //@ts-ignore
 import VueNumControl from "./VueNumControl.vue";
 
 
-export class NumControl extends Control {
+export class NumControl extends ValueControl<number> {
     private component: any;
     private props: Object;
 
     constructor(emitter: Function, key:string, readonly:boolean = false, title:string | null = null) {
-        super(key);
+        super(0,key);
         this.component = VueNumControl;
         this.props = { emitter, ikey: key, readonly, title: title };
     }
 
-    setValue(val: number) {
-        //@ts-ignore
-        this.vueContext.value = val ?? 0;
-    }
-    getValue() {
-        //@ts-ignore
-        return this.vueContext.value ?? 0;
-    }
 }

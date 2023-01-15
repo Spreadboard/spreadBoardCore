@@ -5,7 +5,7 @@ import {SocketTypes} from "../../processor/connections/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { ProcessControl } from "../controls/ProcessControl";
 import { CompilerIO, Evaluation, ProcessIO } from "../../processor/connections/packet";
-import { CompilerNode, CompilerOptions } from "../CompilerNode";
+import { Command, CompilerNode, CompilerOptions } from "../CompilerNode";
 
 export class ProcessNode extends CompilerNode {
 
@@ -125,5 +125,26 @@ export class ProcessNode extends CompilerNode {
             }
         }
     };
+
+
+    compile(node: NodeData, worker_input_name: string, worker_output_name: string): Command {
+
+        let function_id = node.data.id as string;
+
+        let out = SpreadBoardEditor.getIOS(function_id).outputs;
+
+        let outputs: {[key:string]:string} = {}
+
+        out.forEach(({key})=>{
+            outputs[key] = `${worker_output_name}.${key}`;
+        });
+
+        return {
+            command_string:
+            `${worker_output_name} = ${function_id}(${worker_input_name})`,
+            outputs: outputs,
+            processDependencys: [function_id]
+        }
+    }
 }
 
