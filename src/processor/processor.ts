@@ -91,8 +91,7 @@ export class Processor{
 
 
         function_string  = function_string +
-        `\n\nfunction ${id}(inputs){\nlet output = {}\n${command.command_string}\n}\n`+
-        `export ${id}`;
+        `\n\n export function ${id}(inputs){\nlet output = {}\n${command.command_string}\n}\n`;
 
         return function_string;
 
@@ -135,7 +134,6 @@ export class Processor{
         );
 
         let function_command: Command = {
-            inputsNeeded:false,
             command_string: "",
             outputs: {},
             processDependencys:[]

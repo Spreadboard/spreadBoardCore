@@ -164,9 +164,6 @@ export class SpreadBoardEditor extends NodeEditor{
                 "id": "ggt"
               },
               "inputs": {
-                "id": {
-                  "connections": []
-                },
                 "a": {
                   "connections": [
                     {
@@ -688,9 +685,6 @@ export class SpreadBoardEditor extends NodeEditor{
               "id": "max"
             },
             "inputs": {
-              "id": {
-                "connections": []
-              },
               "a": {
                 "connections": [
                   {
@@ -738,9 +732,6 @@ export class SpreadBoardEditor extends NodeEditor{
               "id": "min"
             },
             "inputs": {
-              "id": {
-                "connections": []
-              },
               "a": {
                 "connections": [
                   {
@@ -783,9 +774,6 @@ export class SpreadBoardEditor extends NodeEditor{
               "id": "max"
             },
             "inputs": {
-              "id": {
-                "connections": []
-              },
               "a": {
                 "connections": [
                   {
@@ -833,9 +821,6 @@ export class SpreadBoardEditor extends NodeEditor{
               "id": "max"
             },
             "inputs": {
-              "id": {
-                "connections": []
-              },
               "a": {
                 "connections": [
                   {
@@ -1082,45 +1067,8 @@ export class SpreadBoardEditor extends NodeEditor{
             "id": 114,
             "data": {
               "id": "ggt",
-              "add_control": {
-                "key": "addIo",
-                "data": {},
-                "parent": null,
-                "component": {
-                  "props": {},
-                  "__hmrId": "92f05ae7",
-                  "__scopeId": "data-v-92f05ae7",
-                  "__file": "/home/lorenz/Dokumente/VsCode/spreadBoardCore/src/nodes/controls/VueAddIoControl.vue"
-                },
-                "props": {
-                  "input": true,
-                  "description": "Add In-/Output"
-                }
-              },
-              "custome_inputs": [
-                {
-                  "key": "a",
-                  "name": "a",
-                  "socket": "number val"
-                },
-                {
-                  "key": "b",
-                  "name": "b",
-                  "socket": "number val"
-                }
-              ],
-              "custome_outputs": [
-                {
-                  "key": "res",
-                  "name": "res",
-                  "socket": "number val"
-                }
-              ]
             },
             "inputs": {
-              "id": {
-                "connections": []
-              },
               "a": {
                 "connections": [
                   {

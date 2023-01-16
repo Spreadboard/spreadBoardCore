@@ -24,7 +24,6 @@ export class ProcessNode extends CompilerNode {
     async builder(node: RNode) {
         //let inpId = new Input('id', i18n(['id'])??'ID', SocketTypes.processSocket())
         node.addControl(new ProcessControl((process:string)=>{console.log('UpdateIO',process);this.updateIos(process, node)}, 'id', false));
-        node.data.externalSelector = node.data.externalSelector ?? false;
         //node.addInput(inpId);
         //node.addInput(new Input("eval", i18n(["eval"])??"Evaluate", SocketTypes.anySocket));
         this.updateIos(node.data.id as string, node);
@@ -34,41 +33,36 @@ export class ProcessNode extends CompilerNode {
         let inputs: {key:string, name:string, socket:Socket}[] = [];
         let outputs: {key:string, name:string, socket:Socket}[] = [];
 
-        if(node.data.externalSelector){
-            inputs = ((node.data.custome_inputs ?? []) as {key:string, name:string, socket:string}[]).map((obj:{key:string, name:string, socket:string})=>{return {
-                key:obj.key, name:obj.name, socket:SocketTypes.getSocket(obj.socket)??SocketTypes.anySocket
-            }});
-            outputs = ((node.data.custome_outputs ?? []) as {key:string, name:string, socket:string}[]).map((obj:{key:string, name:string, socket:string})=>{return {
-                key:obj.key, name:obj.name, socket:SocketTypes.getSocket(obj.socket)??SocketTypes.anySocket
-            }});
-        }
-        else{
-            if(node.controls.has('addIo'))
-                node.removeControl(node.controls.get('addIo')!);
-            //console.log("Updating IO");
-            let ios = SpreadBoardEditor.getIOS(processId);
-            //console.log("new IO:", ios);
+        
+        if(node.controls.has('addIo'))
+        node.removeControl(node.controls.get('addIo')!);
+        //console.log("Updating IO");
+        let ios = SpreadBoardEditor.getIOS(processId);
+        //console.log("new IO:", ios);
 
-            inputs =  ios.inputs;
-            outputs = ios.outputs;
-        }
+        inputs =  ios.inputs;
+        outputs = ios.outputs;
 
 
         node.inputs.forEach((input)=>{
-            input.connections.forEach((con)=>{
-                this.editor?.removeConnection(con);
-                con.remove();
-            });
-            node.removeInput(input);
+            if(!inputs.find( (i)=>input.key==i.key)){
+                input.connections.forEach((con)=>{
+                    this.editor?.removeConnection(con);
+                    con.remove();
+                });
+                node.removeInput(input);
+            }
         })
 
 
         node.outputs.forEach((output)=>{
-            output.connections.forEach((con)=>{
-                this.editor?.removeConnection(con);
-                con.remove();
-            });
-            node.removeOutput(output);
+            if(!outputs.find( (o)=>output.key==o.key)){
+                output.connections.forEach((con)=>{
+                    this.editor?.removeConnection(con);
+                    con.remove();
+                });
+                node.removeOutput(output);
+            }
         })
 
         inputs.forEach((input)=>{
@@ -86,14 +80,10 @@ export class ProcessNode extends CompilerNode {
 
     worker(node: NodeData, inputs: WorkerInputs, outputs: CompilerIO, compilerOptions:CompilerOptions) {
 
-        //console.log("Update io");
-        let connected = inputs['id'] && inputs['id'].length>0;
         let nodeComp = this.editor?.nodes.find((n)=>n.id==node.id);
-        let id = connected ? inputs['id'][0] : node.data.id;
-        if(nodeComp && ((!node.data.externalSelector && connected) || ( node.data.externalSelector && !connected))){
-            nodeComp.data.externalSelector = connected;
-            this.updateIos(inputs['id'][0] as string,nodeComp!);
-        }
+        
+        if(nodeComp)
+            this.updateIos(node.data.id as string, nodeComp);
         //console.log("now passing on");
         super.worker(node,inputs, outputs, compilerOptions);
     }
@@ -134,27 +124,42 @@ export class ProcessNode extends CompilerNode {
     };
 
 
-    compile(node: NodeData, worker_input_names: {[key:string]:string}, worker_output_name: string): Command {
+    compile(node: NodeData, worker_input_names: {[key:string]:string}, worker_id: string): Command {
 
         let function_id = node.data.id as string;
+
+        worker_id = function_id+"_"+node.id
 
         let out = SpreadBoardEditor.getIOS(function_id).outputs;
 
         let outputs: {[key:string]:string} = {}
 
-        let a;
 
-        out.forEach(({key})=>{
-            outputs[key] = ` (${function_id}(${node.name}_${node.id}_temp).${key}) `;
-        });
-        let command_string = `let ${node.name}_${node.id}_temp = {}\n`;
+
+
+
+        let temp = "";
         Object.keys(worker_input_names).forEach((key)=>{
-            command_string = command_string + `${node.name}_${node.id}_temp.${key} = ${worker_input_names[key]}\n`
+            temp = temp += `, ${key}: ${worker_input_names[key]}`
         })
 
+        temp = `{ ${temp} }`.replace("{ ,","{ ");
+
+
+        out.forEach(({key})=>{
+            outputs[key] = `( ${worker_id}_get().${key} )`;
+        });
+
         return {
-            inputsNeeded: true,
-            command_string:command_string,
+            command_string:
+`
+let ${worker_id}_result
+const ${worker_id}_get = ()=>{
+    if(!${worker_id}_result)
+        ${worker_id}_result = ${function_id}( ${temp} )
+    return ${worker_id}_result
+}
+`,
             outputs: outputs,
             processDependencys: [function_id]
         }

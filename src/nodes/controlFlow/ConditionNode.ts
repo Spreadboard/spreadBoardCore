@@ -6,18 +6,19 @@ import { Command, CompilerNode, CompilerOptions } from "../CompilerNode";
 import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
 
 export class ConditionNode extends CompilerNode{
-    compile(node: NodeData, worker_input_name: {[key:string]:string}, worker_output_name: string): Command {
+    compile(node: NodeData, worker_input_name: {[key:string]:string}, worker_id: string): Command {
         return {
-            inputsNeeded: true,
             command_string: 
-            `if(${worker_input_name.bool}){\n`+
-            `   ${worker_output_name}.res = ${worker_input_name.if}\n`+
-            `}\n`+
-            `else{\n`+
-            `   ${worker_output_name}.res = ${worker_input_name.else}\n`+
-            `}\n`,
+            `
+            let ${worker_id}_result; 
+            if(${worker_input_name.bool}){
+            ${worker_id}_result = ${worker_input_name.if}
+            }
+            else{
+            ${worker_id}_result = ${worker_input_name.else}
+            }`,
             outputs:{
-                res: `${worker_output_name}.res`
+                res: `${worker_id}_result`
             },
             processDependencys:[],
         }

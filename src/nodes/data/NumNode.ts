@@ -8,12 +8,11 @@ import { Command, CompilerNode, CompilerOptions } from "../CompilerNode";
 import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
 
 export class NumNode extends CompilerNode {
-    compile(node: NodeData, worker_input_names: {[key:string]:string}, worker_output_name: string): Command {
+    compile(node: NodeData, worker_input_names: {[key:string]:string}, worker_id: string): Command {
         return {
-            inputsNeeded: false,
-            command_string: `${worker_output_name}.num = ${node.data.num}`,
+            command_string: `${worker_id}_result = ${node.data.num}`,
             outputs: {
-                'num': `${worker_output_name}.num`
+                'num': `${worker_id}_result`
             },
             processDependencys: []
         }

@@ -14,7 +14,6 @@ export type CompilerOptions = {
 }
 
 export type Command = {
-    inputsNeeded:boolean,
     outputs:{[key:string]:string}
     processDependencys:string[],
     command_string:string
@@ -22,7 +21,7 @@ export type Command = {
 
 export abstract class CompilerNode extends Component{
 
-    abstract compile(node: NodeData, worker_input_names:{[key:string]:string}, worker_output_name:string):Command;
+    abstract compile(node: NodeData, worker_input_names:{[key:string]:string}, worker_id:string):Command;
     
     abstract process:(node: NodeData,outkey:string, inputConnections:CompilerIO, compilerOptions:CompilerOptions)=>Evaluation<any>;
 
@@ -36,13 +35,12 @@ export abstract class CompilerNode extends Component{
 
             Object.keys(inputs).forEach( (key) =>worker_input_names[key]=(inputs[key][0] as string))
 
-            let worker_output_name = "output_"+node.name.toLowerCase()+"_"+node.id;
+            let worker_output_name = node.name.toLowerCase()+"_"+node.id;
 
             let command = this.compile(node, worker_input_names, worker_output_name);
 
             let stitches: string = "";
             Object.keys(inputs).forEach((key)=>{
-
                 let command_out = inputs[key][0] as string;
                 let stitch = `${worker_input_names}.${key} = ${command_out}\n`;
                 stitches = stitches + stitch;
@@ -50,10 +48,8 @@ export abstract class CompilerNode extends Component{
 
             command.command_string =
             (command.command_string.length>0?
-                (`\n//Init Outputs ${node.name}\n`+
-                `let ${worker_output_name} = {}\n`+
-                `//Process Node ${node.name}-${node.id}\n`+
-                `${command.command_string}`):""
+                (`\n//Process Node ${node.name}-${node.id}\n
+                ${command.command_string}`):""
                 )
             
 
