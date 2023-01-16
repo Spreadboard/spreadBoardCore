@@ -10,18 +10,15 @@ import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
 export class AddNode extends CompilerNode {
 
     compile(node: NodeData, worker_input_names: {[key:string]:string}, worker_output_name: string): Command {
+
+
+        let num = (worker_input_names.num)?worker_input_names.num:node.data.num??0;
+        let num2 = (worker_input_names.num2)?worker_input_names.num2:node.data.num2??0;
+        
         return {
-            inputsNeeded: true,
-            command_string:
-            `${worker_output_name}.num = ${worker_input_names.num}\n`+
-            `if(${worker_output_name}.num == undefined)\n`+
-            `   ${worker_output_name}.num = ${node.data.num1}\n`+
-            `${worker_output_name}.num2 = ${worker_input_names.num2}\n`+
-            `if(${worker_output_name}.num2 == undefined)\n`+
-            `   ${worker_output_name}.num2 = ${node.data.num2}\n`+
-            `${worker_output_name}.res = ${worker_output_name}.num + ${worker_output_name}.num2\n`,
+            command_string: "",
             outputs: {
-                'num': `${worker_output_name}.res`
+                'num': `( ${num} + ${num2} )`
             },
             processDependencys: []
         }
