@@ -18,40 +18,66 @@ export class Processor{
 
     private compiledProcesses: Map<string,Command>= new Map();
 
-    private collectDependencys(id: string): string[]{
-        let dependencys: string[] = [];
+    private collectDependencys(id: string, dependencys:string[]=[]): string[]|undefined{
+        
+        let proc = this.compiledProcesses.get(id);
+        if(proc){
+            proc.processDependencys.forEach(
+                (dependency)=>{
+                    if(!dependencys.find((d)=>d==dependency)){
+                        dependencys.push(dependency)
+                        this.collectDependencys(dependency, dependencys);
+                    }
+                }
+            )
+        }
+        else{
+            return undefined;
+        }
+        
+        let clean_dependencys: string[] = []
 
-        this.compiledProcesses.get(id)!.processDependencys.forEach(
+        dependencys.forEach(
             (dependency)=>{
-                dependencys.concat(this.collectDependencys(dependency));
+                if(!clean_dependencys.find((d)=>d==dependency))
+                    clean_dependencys.push(dependency)
             }
         )
 
         return dependencys;
     }
 
-    private commandToFunction(id: string): Function {
+    private commandToFunction(id: string): Function | undefined {
         let command: Command = this.compiledProcesses.get(id)!;
         let dependencys = this.collectDependencys(id);
-
+        if(!dependencys) return undefined;
         let function_string = "";
+
         dependencys.forEach(
             (dependency)=>{
-                function_string = function_string +
-                `const ${dependency} = function${dependency}(input){\n${this.compiledProcesses.get(dependency)!.command_string}\n}\n`
+                if(dependency != id){
+                    function_string = function_string +
+                    `const ${dependency} = function ${dependency}(inputs){\nlet output = {}\n${this.compiledProcesses.get(dependency)!.command_string}\n}\n`
+                }
             }
         )
         function_string  = function_string +
-        `const ${id} = function${id}(input){\n${command.command_string}\n}\n`+
-        `return ${id}(input)`;
-        
-        return new Function('input',function_string); 
+        `const ${id} = function ${id}(inputs){\nlet output = {}\n${command.command_string}\n}\n`+
+        `return ${id}(inputs)`;
+
+        try{
+            let func = new Function('inputs',function_string);
+            return func;
+        }catch(e){
+            console.log("Error while converting");
+            console.log(function_string);
+        }
     }
 
-    processProcess(processId: string): CompilerIO{
+    processProcess(processId: string): Function|undefined{
         processId = processId.replace('@0.1.0','');
         let func =  this.commandToFunction(processId);
-        
+        return func;
     }
 
     constructor(engine:Engine,stack: SpreadBoardStack =  {variables: new Map<string,SpreadBoardVariable<any>>(), subStacks: new Map<number,SpreadBoardStack>()}){
@@ -72,6 +98,7 @@ export class Processor{
     }
 
     async compileProcess(id: string, data: Data): Promise<Command>{
+        id = id.replace("@0.1.0","");
         let compilerOptions: CompilerOptions = {silent: true, compilerCommands:[]}
         const compiler = this.engine.clone();
         const compilerData = {...data};
@@ -84,6 +111,7 @@ export class Processor{
         );
 
         let function_command: Command = {
+            inputsNeeded:false,
             command_string: "",
             outputs: {},
             processDependencys:[]
@@ -92,15 +120,20 @@ export class Processor{
         compilerOptions.compilerCommands?.forEach(
             (command)=>{
                 function_command.command_string = function_command.command_string + command.command_string;
-                function_command.processDependencys.concat(command.processDependencys);
+                command.processDependencys.forEach(
+                    (dependency)=>{
+                        if(!function_command.processDependencys.find((d)=>d == dependency))
+                            function_command.processDependencys.push(dependency)
+                    }
+                )
             }
         )
         
-        function_command.command_string = function_command +
-        `return output`;
+        function_command.command_string = function_command.command_string +
+        `\nreturn output`;
         
         this.compiledProcesses.set(id, function_command)
-
+        console.log(`Compiled ${id}`)
         return function_command
     }
     

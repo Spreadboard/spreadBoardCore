@@ -53,9 +53,10 @@ export class OutputNumNode extends CompilerNode {
         }
     };
 
-    compile(node: NodeData, worker_input_name: string, worker_output_name: string): Command {
+    compile(node: NodeData, worker_input_names: {[key:string]:string}, worker_output_name: string): Command {
         return {
-            command_string: `output.${node.data.key as string} = ${worker_input_name}.val[0]`,
+            inputsNeeded: true,
+            command_string: `output.${node.data.key as string} = ${worker_input_names.val}`,
             outputs: {},
             processDependencys:[]
         }

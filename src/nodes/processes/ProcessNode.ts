@@ -101,7 +101,7 @@ export class ProcessNode extends CompilerNode {
 
     process = (node: NodeData, outKey: string, inputConnections: CompilerIO, compilerOptions: CompilerOptions) =>{
 
-        let outputs = SpreadBoardEditor.instance!.processProcess(node.data.id as string);
+        let func = SpreadBoardEditor.instance!.processProcess(node.data.id as string);
 
         return (processI0: ProcessIO)=>{
             let externalInput: ProcessIO = {};
@@ -112,22 +112,29 @@ export class ProcessNode extends CompilerNode {
             );
 
             //console.log("Process",node.data.id, inputConnections, Object.keys(processI0));
-            if(!outputs){
-                outputs = SpreadBoardEditor.instance!.processProcess(node.data.id as string);
+            if(!func){
+                func = SpreadBoardEditor.instance!.processProcess(node.data.id as string);
                 console.log("Fetching the Compiled Process");
             }
-            if(outputs && outputs[outKey]){
-                let evaluate: Evaluation<any> = outputs[outKey];
-                //console.log(evaluate);
-                return evaluate(externalInput);
-            }else{
-                console.trace();
+            if (func){
+                let result;
+                try{
+                    result = func(externalInput);
+                }catch(e){
+                    console.log("Error During:", func.toString())
+                }
+                if(result && result[outKey]){
+                    //console.log(evaluate);
+                    return result[outKey];
+                }else{
+                    console.trace();
+                }
             }
         }
     };
 
 
-    compile(node: NodeData, worker_input_name: string, worker_output_name: string): Command {
+    compile(node: NodeData, worker_input_names: {[key:string]:string}, worker_output_name: string): Command {
 
         let function_id = node.data.id as string;
 
@@ -135,13 +142,19 @@ export class ProcessNode extends CompilerNode {
 
         let outputs: {[key:string]:string} = {}
 
+        let a;
+
         out.forEach(({key})=>{
-            outputs[key] = `${worker_output_name}.${key}`;
+            outputs[key] = ` (${function_id}(${node.name}_${node.id}_temp).${key}) `;
         });
+        let command_string = `let ${node.name}_${node.id}_temp = {}\n`;
+        Object.keys(worker_input_names).forEach((key)=>{
+            command_string = command_string + `${node.name}_${node.id}_temp.${key} = ${worker_input_names[key]}\n`
+        })
 
         return {
-            command_string:
-            `${worker_output_name} = ${function_id}(${worker_input_name})`,
+            inputsNeeded: true,
+            command_string:command_string,
             outputs: outputs,
             processDependencys: [function_id]
         }

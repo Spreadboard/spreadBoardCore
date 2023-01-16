@@ -8,8 +8,9 @@ import { Command, CompilerNode, CompilerOptions } from "../CompilerNode";
 import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
 
 export class BoolNode extends CompilerNode {
-    compile(node: NodeData, worker_input_name: string, worker_output_name: string): Command {
+    compile(node: NodeData, worker_input_names: {[key:string]:string}, worker_output_name: string): Command {
         return {
+            inputsNeeded: false,
             command_string: `${worker_output_name}.bool = ${node.data.bool}`,
             outputs: {
                 'bool': `${worker_output_name}.bool`

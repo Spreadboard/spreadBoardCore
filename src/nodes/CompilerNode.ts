@@ -14,6 +14,7 @@ export type CompilerOptions = {
 }
 
 export type Command = {
+    inputsNeeded:boolean,
     outputs:{[key:string]:string}
     processDependencys:string[],
     command_string:string
@@ -21,7 +22,7 @@ export type Command = {
 
 export abstract class CompilerNode extends Component{
 
-    abstract compile(node: NodeData, worker_input_name:string, worker_output_name:string):Command;
+    abstract compile(node: NodeData, worker_input_names:{[key:string]:string}, worker_output_name:string):Command;
     
     abstract process:(node: NodeData,outkey:string, inputConnections:CompilerIO, compilerOptions:CompilerOptions)=>Evaluation<any>;
 
@@ -31,27 +32,30 @@ export abstract class CompilerNode extends Component{
         if(compilerOptions.compilerCommands) //Compile the whole Process
         {
 
-            let worker_input_name = node.id+"_input";
-            let worker_output_name = node.id+"_output";
+            let worker_input_names: {[key:string]:string} = {}
 
-            let command = this.compile(node, worker_input_name, worker_output_name);
+            Object.keys(inputs).forEach( (key) =>worker_input_names[key]=(inputs[key][0] as string))
+
+            let worker_output_name = "output_"+node.name.toLowerCase()+"_"+node.id;
+
+            let command = this.compile(node, worker_input_names, worker_output_name);
 
             let stitches: string = "";
-            Object.keys(inputs).forEach((key)=>inputs[key].map( (value,index:number)=>{
-                let command_out = value as string;
-                let stitch = `${worker_input_name}.${key}[${index}] = ${command_out}`;
-                stitches = stitches + stitch;
-            } ));
+            Object.keys(inputs).forEach((key)=>{
 
-            command.command_string = 
-            `\n//Init Inputs\n`+
-            `let ${worker_input_name} = {}\n`+
-            `\n//Stitch inputs\n`+
-            `${stitches}\n`+
-            `\n//Init Outputs\n`+
-            `let ${worker_output_name} = {}\n`+
-            `//Process Node ${node.name}-${node.id}\n`+
-            `${command.command_string}`
+                let command_out = inputs[key][0] as string;
+                let stitch = `${worker_input_names}.${key} = ${command_out}\n`;
+                stitches = stitches + stitch;
+            });
+
+            command.command_string =
+            (command.command_string.length>0?
+                (`\n//Init Outputs ${node.name}\n`+
+                `let ${worker_output_name} = {}\n`+
+                `//Process Node ${node.name}-${node.id}\n`+
+                `${command.command_string}`):""
+                )
+            
 
             compilerOptions.compilerCommands.push(command);
             
