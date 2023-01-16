@@ -34,16 +34,16 @@ export default{
                 componentName: ProcessSelector
             },
             {
+                key: "code",
+                title: "Code",
+                icon:'code',
+                componentName: CompiledPreview
+            },
+            {
                 key: "info",
                 title: "Info",
                 icon:'lightbulb',
                 componentName: Info
-            },
-            {
-                key: "code",
-                title: "Code",
-                icon:'build',
-                componentName: CompiledPreview
             }
         ]
 
