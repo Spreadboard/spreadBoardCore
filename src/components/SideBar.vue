@@ -14,13 +14,15 @@
 import { App, createApp, ref } from 'vue';
 import ProcessSelector from './ProcessSelector.vue';
 import Info from './Info.vue';
+import CompiledPreview from './CompiledPreview.vue';
 import Icon from './VS-Icon.vue'
 
 export default{
     components:{
         ProcessSelector: ProcessSelector,
         Info: Info,
-        Icon: Icon
+        Icon: Icon,
+        CompiledPreview: CompiledPreview
     },
     setup(){
 
@@ -36,6 +38,12 @@ export default{
                 title: "Info",
                 icon:'lightbulb',
                 componentName: Info
+            },
+            {
+                key: "code",
+                title: "Code",
+                icon:'build',
+                componentName: CompiledPreview
             }
         ]
 
@@ -121,15 +129,11 @@ button.selected{
 
 #bar {
     overflow-x: hidden;
-    max-width: 0;
-    min-width: 0;
-    width: 0;
 }
 
 #bar.visible{
-    max-width: 100%;
     min-width: 200px;
-    width: 200px;
+    width: fit-content;
     transition: ease-in-out all 500ms;
 }
 

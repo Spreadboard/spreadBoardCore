@@ -70,12 +70,12 @@ export class SpreadBoardEditor extends NodeEditor{
 
     private curProcess: number = 0;
 
+
     public static getCurProcess(){ return this.instance?.curProcess};
 
     public static getProcessIDs(){
         return this.processes.map((value: Data, index: number)=>{return {index: index, id: value.id.slice(0,value.id.length-6)}});
     }
-
 
     static instance: SpreadBoardEditor | null;
 
@@ -1370,6 +1370,10 @@ export class SpreadBoardEditor extends NodeEditor{
         components.forEach(component => {
             this.register(component); 
         });
+    }
+
+    getCurProcessCode(){
+      return this.editorProcessor.commandToCode(SpreadBoardEditor.processes[this.curProcess].id.replace("@0.1.0",""));
     }
 
     async saveCurProcess(){

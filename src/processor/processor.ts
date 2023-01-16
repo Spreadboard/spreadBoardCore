@@ -74,6 +74,30 @@ export class Processor{
         }
     }
 
+    public commandToCode(id: string){
+        let command: Command = this.compiledProcesses.get(id)!;
+        let dependencys = command.processDependencys;
+        if(!dependencys) return undefined;
+        let function_string = "";
+
+        dependencys.forEach(
+            (dependency)=>{
+                if(dependency != id){
+                    function_string = function_string +
+                    `import { ${dependency} } from './${dependency}.js'\n`
+                }
+            }
+        )
+
+
+        function_string  = function_string +
+        `\n\nfunction ${id}(inputs){\nlet output = {}\n${command.command_string}\n}\n`+
+        `export ${id}`;
+
+        return function_string;
+
+    }
+
     processProcess(processId: string): Function|undefined{
         processId = processId.replace('@0.1.0','');
         let func =  this.commandToFunction(processId);
