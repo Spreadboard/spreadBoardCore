@@ -61,7 +61,7 @@ export class SubNode extends CompilerNode {
             node_id: node.id,
             command_string: "",
             outputs: {
-                'num': ` ( ${num} + ${num2} ) `
+                'num': ` ( ${num} - ${num2} ) `
             },
             processDependencys: []
         }

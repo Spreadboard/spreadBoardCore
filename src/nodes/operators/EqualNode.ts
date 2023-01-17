@@ -66,7 +66,7 @@ export class EqualNode extends CompilerNode {
             node_id: node.id,
             command_string: "",
             outputs: {
-                'num': ` ( ${num} + ${num2} ) `
+                'bool': ` ( ${num} == ${num2} ) `
             },
             processDependencys: []
         }
