@@ -10,9 +10,10 @@ import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
 export class NumNode extends CompilerNode {
     compile(node: NodeData, worker_input_names: {[key:string]:string}, worker_id: string): Command {
         return {
-            command_string: `${worker_id}_result = ${node.data.num}`,
+            node_id:node.id,
+            command_string: ``,
             outputs: {
-                'num': `${worker_id}_result`
+                'num': `${node.data.num}`
             },
             processDependencys: []
         }

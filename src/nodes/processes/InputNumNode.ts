@@ -50,6 +50,7 @@ export class InputNumNode extends CompilerNode {
 
     compile(node: NodeData, worker_input_names: {[key:string]:string}, worker_output_name: string): Command {
         return {
+            node_id:node.id,
             command_string: '',
             outputs:{
                 val: `inputs.${node.data.key as string}`

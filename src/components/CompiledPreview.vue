@@ -1,9 +1,8 @@
 <template>
     <div style=" width: fit-content; padding: 5px; margin-left: 0; justify-content: start; text-align: start; overflow-x: auto;">
-        <b v-for="line of code">
-            {{ line }}
-        <br>
-        </b>
+        <p v-for="command of code">
+            <b v-for="line of command.command_string.split('\n')">{{ line }}<br></b>
+        </p>
     </div>
 </template>
 
@@ -15,9 +14,8 @@ export default defineComponent({
     name: "CompiledPreview",
     setup(){
         const code = computed(()=>{
-            let curProc = SpreadBoardEditor.instance?.getCurProcessCode()
-            console.log("Test")
-            return curProc?.split("\n");
+            let curProc = SpreadBoardEditor.instance?.getCurProcessCode();
+            return curProc;
         })
 
         return {

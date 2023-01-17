@@ -17,6 +17,7 @@ export class Processor{
     private stack: SpreadBoardStack;
 
     private compiledProcesses: Map<string,Command>= new Map();
+    private compiledCommandList: Map<string,Command[]>= new Map();
 
     private collectDependencys(id: string, dependencys:string[]=[]): string[]|undefined{
         
@@ -72,6 +73,43 @@ export class Processor{
             console.log("Error while converting");
             console.log(function_string);
         }
+    }
+
+    public commandList(id:string){
+        let command: Command = this.compiledProcesses.get(id)!;
+        let dependencys = this.collectDependencys(id);
+        if(!dependencys) return undefined;
+        let function_string:string[] = [];
+
+        dependencys.forEach(
+            (dependency)=>{
+                if(dependency != id){
+                    function_string.push(`import { ${dependency} } = from "./${dependency}.js"\n`)
+                }
+            }
+        )
+
+        let commands = this.compiledCommandList.get(id)?.filter((c)=>c.command_string.length>0)!;
+
+        return [
+            ...(function_string.map(
+                (str)=>{
+                    return {
+                        node_id:-1,
+                        command_string:str
+                    }
+                }
+            )),
+            {
+                node_id:-1,
+                command_string:`function ${id}(inputs){\nlet output = {};\n`
+            },
+            ...commands,
+            {
+                node_id:-1,
+                command_string:"return output\n}"
+            }
+        ] as Command[]
     }
 
     public commandToCode(id: string){
@@ -134,6 +172,7 @@ export class Processor{
         );
 
         let function_command: Command = {
+            node_id:-1,
             command_string: "",
             outputs: {},
             processDependencys:[]
@@ -150,6 +189,8 @@ export class Processor{
                 )
             }
         )
+        if(compilerOptions.compilerCommands)
+            this.compiledCommandList.set(id, compilerOptions.compilerCommands)
         
         function_command.command_string = function_command.command_string +
         `\nreturn output`;

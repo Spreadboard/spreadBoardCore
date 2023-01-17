@@ -10,9 +10,10 @@ import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
 export class BoolNode extends CompilerNode {
     compile(node: NodeData, worker_input_names: {[key:string]:string}, worker_id: string): Command {
         return {
-            command_string: `${worker_id}_result = ${node.data.bool}`,
+            node_id:node.id,
+            command_string: `const ${worker_id} = ${node.data.bool}`,
             outputs: {
-                'bool': `${worker_id}_result`
+                'bool': `${worker_id}`
             },
             processDependencys: []
         }

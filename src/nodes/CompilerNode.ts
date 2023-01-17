@@ -2,7 +2,6 @@ import { Component } from "rete";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { Evaluation, CompilerIO, ProcessIO } from "../processor/connections/packet";
 
-import uuidUtils from 'uuid'
 
 export type CompilerOptions = {
     silent: boolean,
@@ -14,7 +13,8 @@ export type CompilerOptions = {
 }
 
 export type Command = {
-    outputs:{[key:string]:string}
+    node_id:number,
+    outputs:{[key:string]:string},
     processDependencys:string[],
     command_string:string
 }
@@ -48,8 +48,7 @@ export abstract class CompilerNode extends Component{
 
             command.command_string =
             (command.command_string.length>0?
-                (`\n//Process Node ${node.name}-${node.id}\n
-                ${command.command_string}`):""
+                (`\n//Process Node ${node.name}-${node.id}\n${command.command_string}`):""
                 )
             
 

@@ -151,14 +151,10 @@ export class ProcessNode extends CompilerNode {
         });
 
         return {
+            node_id:node.id,
             command_string:
-`
-let ${worker_id}_result
-const ${worker_id}_get = ()=>{
-    if(!${worker_id}_result)
-        ${worker_id}_result = ${function_id}( ${temp} )
-    return ${worker_id}_result
-}
+`let ${worker_id}_result;
+const ${worker_id}_get = ()=> ${worker_id}_result||=${function_id}( ${temp} );
 `,
             outputs: outputs,
             processDependencys: [function_id]

@@ -567,8 +567,18 @@ export class SpreadBoardEditor extends NodeEditor{
               "val": {
                 "connections": [
                   {
-                    "node": 103,
-                    "input": "a",
+                    "node": 146,
+                    "input": "num",
+                    "data": {}
+                  },
+                  {
+                    "node": 147,
+                    "input": "if",
+                    "data": {}
+                  },
+                  {
+                    "node": 148,
+                    "input": "else",
                     "data": {}
                   }
                 ]
@@ -590,7 +600,7 @@ export class SpreadBoardEditor extends NodeEditor{
               "val": {
                 "connections": [
                   {
-                    "node": 131,
+                    "node": 150,
                     "output": "res",
                     "data": {}
                   }
@@ -599,8 +609,8 @@ export class SpreadBoardEditor extends NodeEditor{
             },
             "outputs": {},
             "position": [
-              1001.4666595458984,
-              129.68333435058594
+              1592.5778033368656,
+              81.90555393139121
             ],
             "name": "OutputNumNode"
           },
@@ -614,8 +624,18 @@ export class SpreadBoardEditor extends NodeEditor{
               "val": {
                 "connections": [
                   {
-                    "node": 130,
-                    "input": "b",
+                    "node": 146,
+                    "input": "num2",
+                    "data": {}
+                  },
+                  {
+                    "node": 147,
+                    "input": "else",
+                    "data": {}
+                  },
+                  {
+                    "node": 148,
+                    "input": "if",
                     "data": {}
                   }
                 ]
@@ -637,7 +657,7 @@ export class SpreadBoardEditor extends NodeEditor{
               "val": {
                 "connections": [
                   {
-                    "node": 104,
+                    "node": 152,
                     "output": "res",
                     "data": {}
                   }
@@ -646,8 +666,8 @@ export class SpreadBoardEditor extends NodeEditor{
             },
             "outputs": {},
             "position": [
-              1006.4666595458984,
-              398.68333435058594
+              1587.5778027840108,
+              329.7944416531424
             ],
             "name": "OutputNumNode"
           },
@@ -661,31 +681,39 @@ export class SpreadBoardEditor extends NodeEditor{
               "num": {
                 "connections": [
                   {
-                    "node": 130,
-                    "input": "a",
+                    "node": 149,
+                    "input": "num2",
                     "data": {}
                   },
                   {
-                    "node": 103,
-                    "input": "b",
+                    "node": 150,
+                    "input": "else",
+                    "data": {}
+                  },
+                  {
+                    "node": 151,
+                    "input": "num2",
+                    "data": {}
+                  },
+                  {
+                    "node": 152,
+                    "input": "else",
                     "data": {}
                   }
                 ]
               }
             },
             "position": [
-              94.5333251953125,
-              318.68333435058594
+              465.64445682347605,
+              668.6833537005007
             ],
             "name": "NumNode"
           },
-          "103": {
-            "id": 103,
-            "data": {
-              "id": "max"
-            },
+          "146": {
+            "id": 146,
+            "data": {},
             "inputs": {
-              "a": {
+              "num": {
                 "connections": [
                   {
                     "node": 97,
@@ -694,96 +722,61 @@ export class SpreadBoardEditor extends NodeEditor{
                   }
                 ]
               },
-              "b": {
+              "num2": {
                 "connections": [
                   {
-                    "node": 101,
-                    "output": "num",
+                    "node": 99,
+                    "output": "val",
                     "data": {}
                   }
                 ]
               }
             },
             "outputs": {
-              "res": {
+              "bool": {
                 "connections": [
                   {
-                    "node": 104,
-                    "input": "a",
+                    "node": 147,
+                    "input": "bool",
                     "data": {}
                   },
                   {
-                    "node": 131,
-                    "input": "a",
+                    "node": 148,
+                    "input": "bool",
                     "data": {}
                   }
                 ]
               }
             },
             "position": [
-              367.51666259765625,
-              150.68333435058594
+              144.6851997969293,
+              -103.53705815199035
             ],
-            "name": "ProcessNode"
+            "name": "GreaterNode"
           },
-          "104": {
-            "id": 104,
-            "data": {
-              "id": "min"
-            },
+          "147": {
+            "id": 147,
+            "data": {},
             "inputs": {
-              "a": {
+              "bool": {
                 "connections": [
                   {
-                    "node": 103,
-                    "output": "res",
+                    "node": 146,
+                    "output": "bool",
                     "data": {}
                   }
                 ]
               },
-              "b": {
+              "if": {
                 "connections": [
                   {
-                    "node": 130,
-                    "output": "res",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "outputs": {
-              "res": {
-                "connections": [
-                  {
-                    "node": 100,
-                    "input": "val",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "position": [
-              677.5166625976562,
-              434.68333435058594
-            ],
-            "name": "ProcessNode"
-          },
-          "130": {
-            "id": 130,
-            "data": {
-              "id": "max"
-            },
-            "inputs": {
-              "a": {
-                "connections": [
-                  {
-                    "node": 101,
-                    "output": "num",
+                    "node": 97,
+                    "output": "val",
                     "data": {}
                   }
                 ]
               },
-              "b": {
+              "else": {
                 "connections": [
                   {
                     "node": 99,
@@ -797,44 +790,145 @@ export class SpreadBoardEditor extends NodeEditor{
               "res": {
                 "connections": [
                   {
-                    "node": 104,
-                    "input": "b",
+                    "node": 149,
+                    "input": "num",
                     "data": {}
                   },
                   {
-                    "node": 131,
-                    "input": "b",
+                    "node": 150,
+                    "input": "if",
                     "data": {}
                   }
                 ]
               }
             },
             "position": [
-              357.51666259765625,
-              440.68333435058594
+              383.5740874163001,
+              158.68519683198986
             ],
-            "name": "ProcessNode"
+            "name": "ConditionNode"
           },
-          "131": {
-            "id": 131,
-            "data": {
-              "id": "max"
-            },
+          "148": {
+            "id": 148,
+            "data": {},
             "inputs": {
-              "a": {
+              "bool": {
                 "connections": [
                   {
-                    "node": 103,
+                    "node": 146,
+                    "output": "bool",
+                    "data": {}
+                  }
+                ]
+              },
+              "if": {
+                "connections": [
+                  {
+                    "node": 99,
+                    "output": "val",
+                    "data": {}
+                  }
+                ]
+              },
+              "else": {
+                "connections": [
+                  {
+                    "node": 97,
+                    "output": "val",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "outputs": {
+              "res": {
+                "connections": [
+                  {
+                    "node": 151,
+                    "input": "num",
+                    "data": {}
+                  },
+                  {
+                    "node": 152,
+                    "input": "if",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "position": [
+              348.0185335397846,
+              432.01852045965256
+            ],
+            "name": "ConditionNode"
+          },
+          "149": {
+            "id": 149,
+            "data": {},
+            "inputs": {
+              "num": {
+                "connections": [
+                  {
+                    "node": 147,
                     "output": "res",
                     "data": {}
                   }
                 ]
               },
-              "b": {
+              "num2": {
                 "connections": [
                   {
-                    "node": 130,
+                    "node": 101,
+                    "output": "num",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "outputs": {
+              "bool": {
+                "connections": [
+                  {
+                    "node": 150,
+                    "input": "bool",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "position": [
+              868.0185068389524,
+              -105.7592799237384
+            ],
+            "name": "GreaterNode"
+          },
+          "150": {
+            "id": 150,
+            "data": {},
+            "inputs": {
+              "bool": {
+                "connections": [
+                  {
+                    "node": 149,
+                    "output": "bool",
+                    "data": {}
+                  }
+                ]
+              },
+              "if": {
+                "connections": [
+                  {
+                    "node": 147,
                     "output": "res",
+                    "data": {}
+                  }
+                ]
+              },
+              "else": {
+                "connections": [
+                  {
+                    "node": 101,
+                    "output": "num",
                     "data": {}
                   }
                 ]
@@ -852,10 +946,99 @@ export class SpreadBoardEditor extends NodeEditor{
               }
             },
             "position": [
-              681.5166625976562,
-              149.68333435058594
+              1244.6851671580287,
+              102.01853262245498
             ],
-            "name": "ProcessNode"
+            "name": "ConditionNode"
+          },
+          "151": {
+            "id": 151,
+            "data": {},
+            "inputs": {
+              "num": {
+                "connections": [
+                  {
+                    "node": 148,
+                    "output": "res",
+                    "data": {}
+                  }
+                ]
+              },
+              "num2": {
+                "connections": [
+                  {
+                    "node": 101,
+                    "output": "num",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "outputs": {
+              "bool": {
+                "connections": [
+                  {
+                    "node": 152,
+                    "input": "bool",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "position": [
+              801.3518429979872,
+              265.3518178779088
+            ],
+            "name": "GreaterNode"
+          },
+          "152": {
+            "id": 152,
+            "data": {},
+            "inputs": {
+              "bool": {
+                "connections": [
+                  {
+                    "node": 151,
+                    "output": "bool",
+                    "data": {}
+                  }
+                ]
+              },
+              "if": {
+                "connections": [
+                  {
+                    "node": 148,
+                    "output": "res",
+                    "data": {}
+                  }
+                ]
+              },
+              "else": {
+                "connections": [
+                  {
+                    "node": 101,
+                    "output": "num",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "outputs": {
+              "res": {
+                "connections": [
+                  {
+                    "node": 100,
+                    "input": "val",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "position": [
+              1233.5740568250094,
+              387.5740780218658
+            ],
+            "name": "ConditionNode"
           }
         }
       },
@@ -1321,7 +1504,7 @@ export class SpreadBoardEditor extends NodeEditor{
     }
 
     getCurProcessCode(){
-      return this.editorProcessor.commandToCode(SpreadBoardEditor.processes[this.curProcess].id.replace("@0.1.0",""));
+      return this.editorProcessor.commandList(SpreadBoardEditor.processes[this.curProcess].id.replace("@0.1.0",""));
     }
 
     async saveCurProcess(){
