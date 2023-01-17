@@ -79,6 +79,11 @@ export class SpreadBoardEditor extends NodeEditor{
 
     static instance: SpreadBoardEditor | null;
 
+    unselectNode(){
+      this.selected.clear();
+      this.trigger("nodeselected");
+    }
+
     static getOrCreate(container: HTMLElement, id = "main@0.1.0", saveObj: SpreadBoardWorkspace = {
       processes:[
         {

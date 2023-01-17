@@ -56,16 +56,17 @@ export class EqualNode extends CompilerNode {
                 return (inputs: ProcessIO)=>undefined;
     }};
 
-    compile(node: NodeData, worker_input_names: {[key:string]:string}, worker_output_name: string): Command {
+    compile(node: NodeData, worker_input_names: {[key:string]:string}, worker_id: string): Command {
 
 
         let num = (worker_input_names.num)?worker_input_names.num:node.data.num??0;
         let num2 = (worker_input_names.num2)?worker_input_names.num2:node.data.num2??0;
         
         return {
+            node_id: node.id,
             command_string: "",
             outputs: {
-                'bool': `( ${num} == ${num2} )`
+                'num': ` ( ${num} + ${num2} ) `
             },
             processDependencys: []
         }

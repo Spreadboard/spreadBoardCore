@@ -11,9 +11,9 @@ export class NumNode extends CompilerNode {
     compile(node: NodeData, worker_input_names: {[key:string]:string}, worker_id: string): Command {
         return {
             node_id:node.id,
-            command_string: ``,
+            command_string: `const ${worker_id} = ${node.data.num};\n`,
             outputs: {
-                'num': `${node.data.num}`
+                'num': `${worker_id}`
             },
             processDependencys: []
         }

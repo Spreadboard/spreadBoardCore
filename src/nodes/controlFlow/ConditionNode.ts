@@ -9,11 +9,9 @@ export class ConditionNode extends CompilerNode{
     compile(node: NodeData, worker_input_name: {[key:string]:string}, worker_id: string): Command {
         return {
             node_id:node.id,
-            command_string: 
-            `
-            let ${worker_id}_result = ( ${worker_input_name.bool} )?${worker_input_name.if}:${worker_input_name.else};`,
+            command_string: "",
             outputs:{
-                res: `${worker_id}_result`
+                res: ` ( ( ${worker_input_name.bool} )?${worker_input_name.if}:${worker_input_name.else} ) `
             },
             processDependencys:[],
         }
