@@ -2,23 +2,40 @@ import Rete, {Connection, Input, Node as RNode, Output, Socket, Component} from 
 import { i18n } from "../../editor/editor";
 import {SocketTypes} from "../../processor/connections/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
-import { Command, CompilerNode, CompilerOptions } from "../CompilerNode";
+import { ProcessCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
 import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
 
 export class ConditionNode extends CompilerNode{
-    compile(node: NodeData, worker_input_name: {[key:string]:string}, worker_id: string): Command {
+    compile(node: NodeData, worker_input_name: {[key:string]:Command}, worker_id: string): ProcessCommand {
         return {
-            command_string: 
-            `
-            let ${worker_id}_result; 
-            if(${worker_input_name.bool}){
-            ${worker_id}_result = ${worker_input_name.if}
-            }
-            else{
-            ${worker_id}_result = ${worker_input_name.else}
-            }`,
+            node_id:node.id,
+            commands: [],
             outputs:{
-                res: `${worker_id}_result`
+                res: {
+                    node_id: node.id,
+                    commands: [
+                        {
+                            node_id: node.id,
+                            commands:` ( ( `
+                        },
+                        worker_input_name.bool,
+                        {
+                            node_id: node.id,
+                            commands:` )?`
+                        },
+                        worker_input_name.if,
+                        {
+                            node_id: node.id,
+                            commands:`:`
+                        },
+                        worker_input_name.else,
+                        {
+                            node_id: node.id,
+                            commands:` ) `
+                        },
+
+                    ]
+                }
             },
             processDependencys:[],
         }

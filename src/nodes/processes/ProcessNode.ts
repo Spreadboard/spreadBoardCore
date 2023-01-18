@@ -5,15 +5,13 @@ import {SocketTypes} from "../../processor/connections/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { ProcessControl } from "../controls/ProcessControl";
 import { CompilerIO, Evaluation, ProcessIO } from "../../processor/connections/packet";
-import { Command, CompilerNode, CompilerOptions } from "../CompilerNode";
+import { ProcessCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
 
 export class ProcessNode extends CompilerNode {
 
     data = {
         i18nKeys: ["process"],
         category: [["processes"]],
-        custome_inputs : [],
-        custome_outputs : [],
     }
 
     constructor(){
@@ -33,9 +31,6 @@ export class ProcessNode extends CompilerNode {
         let inputs: {key:string, name:string, socket:Socket}[] = [];
         let outputs: {key:string, name:string, socket:Socket}[] = [];
 
-        
-        if(node.controls.has('addIo'))
-        node.removeControl(node.controls.get('addIo')!);
         //console.log("Updating IO");
         let ios = SpreadBoardEditor.getIOS(processId);
         //console.log("new IO:", ios);
@@ -124,7 +119,7 @@ export class ProcessNode extends CompilerNode {
     };
 
 
-    compile(node: NodeData, worker_input_names: {[key:string]:string}, worker_id: string): Command {
+    compile(node: NodeData, worker_input_names: {[key:string]:Command}, worker_id: string): ProcessCommand {
 
         let function_id = node.data.id as string;
 
@@ -132,34 +127,63 @@ export class ProcessNode extends CompilerNode {
 
         let out = SpreadBoardEditor.getIOS(function_id).outputs;
 
-        let outputs: {[key:string]:string} = {}
+        let outputs: {[key:string]:Command} = {}
 
 
 
+        console.log(node.data.id as string,node.id,worker_input_names);
 
-
-        let temp = "";
+        let temp: Command[] = [{
+            node_id:node.id,
+            commands:"{"
+        }];
         Object.keys(worker_input_names).forEach((key)=>{
-            temp = temp += `, ${key}: ${worker_input_names[key]}`
+            if(temp.length>1)
+                temp.push({
+                    node_id:node.id,
+                    commands:`, `
+                })
+            
+            
+            temp.push({
+                node_id:node.id,
+                commands:`${key}: `
+            })
+            temp.push(worker_input_names[key])
+        })
+        temp.push({
+            node_id:node.id,
+            commands:"} "
         })
 
-        temp = `{ ${temp} }`.replace("{ ,","{ ");
 
 
         out.forEach(({key})=>{
-            outputs[key] = `( ${worker_id}_get().${key} )`;
+            outputs[key] = {
+                node_id: node.id,
+                commands: `( ${worker_id}_get().${key} )`
+            } as Command;
         });
 
         return {
-            command_string:
-`
-let ${worker_id}_result
-const ${worker_id}_get = ()=>{
-    if(!${worker_id}_result)
-        ${worker_id}_result = ${function_id}( ${temp} )
-    return ${worker_id}_result
-}
-`,
+            node_id:node.id,
+            commands:[
+                {
+                    node_id:node.id,
+                    commands: `\nlet ${worker_id}_result;
+                    \nconst ${worker_id}_get = ()=> ${worker_id}_result||=${function_id}(
+                    `
+                },
+                {
+                    node_id:node.id,
+                    commands: temp
+                },
+                {
+                    node_id:node.id,
+                    commands: ` );
+                    `
+                },
+            ],
             outputs: outputs,
             processDependencys: [function_id]
         }

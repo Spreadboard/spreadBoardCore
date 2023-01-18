@@ -37,12 +37,13 @@
   </div>
 </template>
 
-<script lang="js">
-import { defineComponent, computed } from "vue";
+<script lang="ts">
+import { defineComponent, computed, ref } from "vue";
 import Mixin from './mixin';
 import Socket from "./Socket.vue";
 import { kebab } from "./utils";
 import {SpreadBoardEditor} from '../editor/editor';
+import { NodeEditor } from "rete";
 export default defineComponent({
   name: "node",
   components: {
@@ -52,18 +53,26 @@ export default defineComponent({
   setup(props) {
     //@ts-ignore
     let node = props.node;
+    //@ts-ignore
+    let editor = props.editor as NodeEditor
 
-    const selected = () => {
-      //@ts-ignore
-      return props.editor.selected.contains(props.node) ? "selected" : "";
-    };
-    const className = computed(() => {
-      //@ts-ignore
-      return kebab([selected(), props.node.name]);
+
+    let selected = ref(editor.selected.contains(node) ? "selected" : "");
+    
+    if(editor)
+        (editor as NodeEditor)?.on('nodeselected', ()=>{
+            selected.value = editor.selected.contains(node) ? "selected" : ""
+        })
+
+    let className = computed(() => {
+      return kebab([node.name]);
     });
+
     const nodeName = ()=>{
       let editor = SpreadBoardEditor.instance;
+    //@ts-ignore
       let data = editor.components.get(node.name).data
+    //@ts-ignore
       let keys = data.i18nKeys;
       if(keys)
         return editor?.i18n(keys) || node.name;

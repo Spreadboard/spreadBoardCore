@@ -4,21 +4,41 @@ import {NumControl} from "../controls/NumControl";
 
 import { SpreadBoardEditor, i18n } from "../../editor/editor";
 import {SocketTypes} from "../../processor/connections/sockets";
-import { Command, CompilerNode, CompilerOptions } from "../CompilerNode";
+import { ProcessCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
 import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
 
 export class AddNode extends CompilerNode {
 
-    compile(node: NodeData, worker_input_names: {[key:string]:string}, worker_output_name: string): Command {
+    compile(node: NodeData, worker_input_names: {[key:string]:Command}, worker_id: string): ProcessCommand {
 
 
-        let num = (worker_input_names.num)?worker_input_names.num:node.data.num??0;
-        let num2 = (worker_input_names.num2)?worker_input_names.num2:node.data.num2??0;
+        let num: Command = (worker_input_names.num)?worker_input_names.num:{node_id:node.id, commands: `${node.data.num??0}`};
+        let num2: Command = (worker_input_names.num2)?worker_input_names.num2:{node_id:node.id, commands: `${node.data.num2??0}`};
         
         return {
-            command_string: "",
+            node_id: node.id,
+            commands: [],
             outputs: {
-                'num': `( ${num} + ${num2} )`
+                'num': {
+                    commands:[
+                        {
+                            node_id:node.id, 
+                            commands:` ( `
+                        },
+                        num,
+                        {
+                            node_id:node.id, 
+                            commands:` + `
+                        },
+                        num2,
+                        {
+                            node_id:node.id, 
+                            commands:` ) `
+                        },
+
+                    ],
+                    node_id:node.id
+                }
             },
             processDependencys: []
         }

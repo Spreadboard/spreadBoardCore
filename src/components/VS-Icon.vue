@@ -1,5 +1,5 @@
 <template>
-    <img v-for="theme in ['light', 'dark']" :class="['icon', theme]"
+    <img style="min-height:25px ;" v-for="theme in ['light', 'dark']" :class="['icon', theme]"
         :src='"https://raw.githubusercontent.com/microsoft/vscode-icons/master/icons/"+
         theme+"/"+
         ((icon && icon!="")?icon:"error")
