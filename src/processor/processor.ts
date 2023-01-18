@@ -130,7 +130,7 @@ export class Processor{
         dependencys.forEach(
             (dependency)=>{
                 if(dependency != id){
-                    function_string.push(`import { ${dependency} } = from "./${dependency}.js"\n`)
+                    function_string.push(`import { ${dependency} } from "./${dependency}.js"\n`)
                 }
             }
         )

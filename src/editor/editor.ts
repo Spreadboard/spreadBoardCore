@@ -107,8 +107,8 @@ export class SpreadBoardEditor extends NodeEditor {
               }
             },
             "position": [
-              815.5500179668154,
-              384.6244892932236
+              20.550017966815403,
+              87.62448929322358
             ],
             "name": "NumNode"
           },
@@ -130,8 +130,8 @@ export class SpreadBoardEditor extends NodeEditor {
               }
             },
             "position": [
-              815.2345256982412,
-              538.659015685939
+              20.234525698241214,
+              241.65901568593904
             ],
             "name": "NumNode"
           },
@@ -158,8 +158,8 @@ export class SpreadBoardEditor extends NodeEditor {
               }
             },
             "position": [
-              1460.5034758550414,
-              338.7766339203289
+              665.5034758550414,
+              41.77663392032889
             ],
             "name": "Addition"
           },
@@ -200,8 +200,8 @@ export class SpreadBoardEditor extends NodeEditor {
               }
             },
             "position": [
-              1131,
-              346.68333435058594
+              336,
+              49.68333435058594
             ],
             "name": "ProcessNode"
           }
@@ -560,494 +560,6 @@ export class SpreadBoardEditor extends NodeEditor {
         }
       },
       {
-        "id": "clean@0.1.0",
-        "nodes": {
-          "97": {
-            "id": 97,
-            "data": {
-              "key": "a"
-            },
-            "inputs": {},
-            "outputs": {
-              "val": {
-                "connections": [
-                  {
-                    "node": 146,
-                    "input": "num",
-                    "data": {}
-                  },
-                  {
-                    "node": 147,
-                    "input": "if",
-                    "data": {}
-                  },
-                  {
-                    "node": 148,
-                    "input": "else",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "position": [
-              -142.53334045410156,
-              156.68333435058594
-            ],
-            "name": "InputNumNode"
-          },
-          "98": {
-            "id": 98,
-            "data": {
-              "val": 1,
-              "key": "max"
-            },
-            "inputs": {
-              "val": {
-                "connections": [
-                  {
-                    "node": 150,
-                    "output": "res",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "outputs": {},
-            "position": [
-              1592.5778033368656,
-              81.90555393139121
-            ],
-            "name": "OutputNumNode"
-          },
-          "99": {
-            "id": 99,
-            "data": {
-              "key": "b"
-            },
-            "inputs": {},
-            "outputs": {
-              "val": {
-                "connections": [
-                  {
-                    "node": 146,
-                    "input": "num2",
-                    "data": {}
-                  },
-                  {
-                    "node": 147,
-                    "input": "else",
-                    "data": {}
-                  },
-                  {
-                    "node": 148,
-                    "input": "if",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "position": [
-              -138.53334045410156,
-              508.68333435058594
-            ],
-            "name": "InputNumNode"
-          },
-          "100": {
-            "id": 100,
-            "data": {
-              "val": 1,
-              "key": "min"
-            },
-            "inputs": {
-              "val": {
-                "connections": [
-                  {
-                    "node": 152,
-                    "output": "res",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "outputs": {},
-            "position": [
-              1587.5778027840108,
-              329.7944416531424
-            ],
-            "name": "OutputNumNode"
-          },
-          "101": {
-            "id": 101,
-            "data": {
-              "num": 1
-            },
-            "inputs": {},
-            "outputs": {
-              "num": {
-                "connections": [
-                  {
-                    "node": 149,
-                    "input": "num2",
-                    "data": {}
-                  },
-                  {
-                    "node": 150,
-                    "input": "else",
-                    "data": {}
-                  },
-                  {
-                    "node": 151,
-                    "input": "num2",
-                    "data": {}
-                  },
-                  {
-                    "node": 152,
-                    "input": "else",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "position": [
-              465.64445682347605,
-              668.6833537005007
-            ],
-            "name": "NumNode"
-          },
-          "146": {
-            "id": 146,
-            "data": {},
-            "inputs": {
-              "num": {
-                "connections": [
-                  {
-                    "node": 97,
-                    "output": "val",
-                    "data": {}
-                  }
-                ]
-              },
-              "num2": {
-                "connections": [
-                  {
-                    "node": 99,
-                    "output": "val",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "outputs": {
-              "bool": {
-                "connections": [
-                  {
-                    "node": 147,
-                    "input": "bool",
-                    "data": {}
-                  },
-                  {
-                    "node": 148,
-                    "input": "bool",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "position": [
-              144.6851997969293,
-              -103.53705815199035
-            ],
-            "name": "GreaterNode"
-          },
-          "147": {
-            "id": 147,
-            "data": {},
-            "inputs": {
-              "bool": {
-                "connections": [
-                  {
-                    "node": 146,
-                    "output": "bool",
-                    "data": {}
-                  }
-                ]
-              },
-              "if": {
-                "connections": [
-                  {
-                    "node": 97,
-                    "output": "val",
-                    "data": {}
-                  }
-                ]
-              },
-              "else": {
-                "connections": [
-                  {
-                    "node": 99,
-                    "output": "val",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "outputs": {
-              "res": {
-                "connections": [
-                  {
-                    "node": 149,
-                    "input": "num",
-                    "data": {}
-                  },
-                  {
-                    "node": 150,
-                    "input": "if",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "position": [
-              383.5740874163001,
-              158.68519683198986
-            ],
-            "name": "ConditionNode"
-          },
-          "148": {
-            "id": 148,
-            "data": {},
-            "inputs": {
-              "bool": {
-                "connections": [
-                  {
-                    "node": 146,
-                    "output": "bool",
-                    "data": {}
-                  }
-                ]
-              },
-              "if": {
-                "connections": [
-                  {
-                    "node": 99,
-                    "output": "val",
-                    "data": {}
-                  }
-                ]
-              },
-              "else": {
-                "connections": [
-                  {
-                    "node": 97,
-                    "output": "val",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "outputs": {
-              "res": {
-                "connections": [
-                  {
-                    "node": 151,
-                    "input": "num",
-                    "data": {}
-                  },
-                  {
-                    "node": 152,
-                    "input": "if",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "position": [
-              348.0185335397846,
-              432.01852045965256
-            ],
-            "name": "ConditionNode"
-          },
-          "149": {
-            "id": 149,
-            "data": {},
-            "inputs": {
-              "num": {
-                "connections": [
-                  {
-                    "node": 147,
-                    "output": "res",
-                    "data": {}
-                  }
-                ]
-              },
-              "num2": {
-                "connections": [
-                  {
-                    "node": 101,
-                    "output": "num",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "outputs": {
-              "bool": {
-                "connections": [
-                  {
-                    "node": 150,
-                    "input": "bool",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "position": [
-              868.0185068389524,
-              -105.7592799237384
-            ],
-            "name": "GreaterNode"
-          },
-          "150": {
-            "id": 150,
-            "data": {},
-            "inputs": {
-              "bool": {
-                "connections": [
-                  {
-                    "node": 149,
-                    "output": "bool",
-                    "data": {}
-                  }
-                ]
-              },
-              "if": {
-                "connections": [
-                  {
-                    "node": 147,
-                    "output": "res",
-                    "data": {}
-                  }
-                ]
-              },
-              "else": {
-                "connections": [
-                  {
-                    "node": 101,
-                    "output": "num",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "outputs": {
-              "res": {
-                "connections": [
-                  {
-                    "node": 98,
-                    "input": "val",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "position": [
-              1244.6851671580287,
-              102.01853262245498
-            ],
-            "name": "ConditionNode"
-          },
-          "151": {
-            "id": 151,
-            "data": {},
-            "inputs": {
-              "num": {
-                "connections": [
-                  {
-                    "node": 148,
-                    "output": "res",
-                    "data": {}
-                  }
-                ]
-              },
-              "num2": {
-                "connections": [
-                  {
-                    "node": 101,
-                    "output": "num",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "outputs": {
-              "bool": {
-                "connections": [
-                  {
-                    "node": 152,
-                    "input": "bool",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "position": [
-              801.3518429979872,
-              265.3518178779088
-            ],
-            "name": "GreaterNode"
-          },
-          "152": {
-            "id": 152,
-            "data": {},
-            "inputs": {
-              "bool": {
-                "connections": [
-                  {
-                    "node": 151,
-                    "output": "bool",
-                    "data": {}
-                  }
-                ]
-              },
-              "if": {
-                "connections": [
-                  {
-                    "node": 148,
-                    "output": "res",
-                    "data": {}
-                  }
-                ]
-              },
-              "else": {
-                "connections": [
-                  {
-                    "node": 101,
-                    "output": "num",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "outputs": {
-              "res": {
-                "connections": [
-                  {
-                    "node": 100,
-                    "input": "val",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "position": [
-              1233.5740568250094,
-              387.5740780218658
-            ],
-            "name": "ConditionNode"
-          }
-        }
-      },
-      {
         "id": "ggt@0.1.0",
         "nodes": {
           "16": {
@@ -1062,6 +574,11 @@ export class SpreadBoardEditor extends NodeEditor {
                 "connections": [
                   {
                     "node": 116,
+                    "input": "a",
+                    "data": {}
+                  },
+                  {
+                    "node": 161,
                     "input": "a",
                     "data": {}
                   }
@@ -1088,6 +605,11 @@ export class SpreadBoardEditor extends NodeEditor {
                     "node": 116,
                     "input": "b",
                     "data": {}
+                  },
+                  {
+                    "node": 161,
+                    "input": "b",
+                    "data": {}
                   }
                 ]
               }
@@ -1097,46 +619,6 @@ export class SpreadBoardEditor extends NodeEditor {
               497.977324582685
             ],
             "name": "InputNumNode"
-          },
-          "22": {
-            "id": 22,
-            "data": {},
-            "inputs": {
-              "num": {
-                "connections": [
-                  {
-                    "node": 116,
-                    "output": "max",
-                    "data": {}
-                  }
-                ]
-              },
-              "num2": {
-                "connections": [
-                  {
-                    "node": 116,
-                    "output": "min",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "outputs": {
-              "bool": {
-                "connections": [
-                  {
-                    "node": 25,
-                    "input": "bool",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "position": [
-              700.9958561333885,
-              -145.01406978909012
-            ],
-            "name": "GreaterNode"
           },
           "24": {
             "id": 24,
@@ -1148,7 +630,7 @@ export class SpreadBoardEditor extends NodeEditor {
               "val": {
                 "connections": [
                   {
-                    "node": 25,
+                    "node": 119,
                     "output": "res",
                     "data": {}
                   }
@@ -1162,105 +644,16 @@ export class SpreadBoardEditor extends NodeEditor {
             ],
             "name": "OutputNumNode"
           },
-          "25": {
-            "id": 25,
-            "data": {},
-            "inputs": {
-              "bool": {
-                "connections": [
-                  {
-                    "node": 22,
-                    "output": "bool",
-                    "data": {}
-                  }
-                ]
-              },
-              "if": {
-                "connections": [
-                  {
-                    "node": 114,
-                    "output": "res",
-                    "data": {}
-                  }
-                ]
-              },
-              "else": {
-                "connections": [
-                  {
-                    "node": 116,
-                    "output": "min",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "outputs": {
-              "res": {
-                "connections": [
-                  {
-                    "node": 24,
-                    "input": "val",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "position": [
-              1223.0240681258697,
-              380.76255023167386
-            ],
-            "name": "ConditionNode"
-          },
-          "26": {
-            "id": 26,
-            "data": {},
-            "inputs": {
-              "num": {
-                "connections": [
-                  {
-                    "node": 116,
-                    "output": "max",
-                    "data": {}
-                  }
-                ]
-              },
-              "num2": {
-                "connections": [
-                  {
-                    "node": 116,
-                    "output": "min",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "outputs": {
-              "num": {
-                "connections": [
-                  {
-                    "node": 114,
-                    "input": "a",
-                    "data": {}
-                  }
-                ]
-              }
-            },
-            "position": [
-              610.8466635051366,
-              163.7730701294534
-            ],
-            "name": "Difference"
-          },
           "114": {
             "id": 114,
             "data": {
-              "id": "ggt",
+              "id": "ggt"
             },
             "inputs": {
               "a": {
                 "connections": [
                   {
-                    "node": 26,
+                    "node": 117,
                     "output": "num",
                     "data": {}
                   }
@@ -1269,8 +662,8 @@ export class SpreadBoardEditor extends NodeEditor {
               "b": {
                 "connections": [
                   {
-                    "node": 116,
-                    "output": "min",
+                    "node": 161,
+                    "output": "res",
                     "data": {}
                   }
                 ]
@@ -1280,23 +673,23 @@ export class SpreadBoardEditor extends NodeEditor {
               "res": {
                 "connections": [
                   {
-                    "node": 25,
-                    "input": "if",
+                    "node": 119,
+                    "input": "else",
                     "data": {}
                   }
                 ]
               }
             },
             "position": [
-              852.7021365502437,
-              257.26161340507286
+              884.7021365502437,
+              219.26161340507292
             ],
             "name": "ProcessNode"
           },
           "116": {
             "id": 116,
             "data": {
-              "id": "clean",
+              "id": "max"
             },
             "inputs": {
               "a": {
@@ -1319,30 +712,181 @@ export class SpreadBoardEditor extends NodeEditor {
               }
             },
             "outputs": {
-              "max": {
+              "res": {
                 "connections": [
                   {
-                    "node": 26,
-                    "input": "num",
-                    "data": {}
-                  },
-                  {
-                    "node": 22,
+                    "node": 117,
                     "input": "num",
                     "data": {}
                   }
                 ]
-              },
-              "min": {
+              }
+            },
+            "position": [
+              275.7520925473664,
+              265.8619861884418
+            ],
+            "name": "ProcessNode"
+          },
+          "117": {
+            "id": 117,
+            "data": {},
+            "inputs": {
+              "num": {
                 "connections": [
                   {
-                    "node": 26,
-                    "input": "num2",
+                    "node": 116,
+                    "output": "res",
+                    "data": {}
+                  }
+                ]
+              },
+              "num2": {
+                "connections": [
+                  {
+                    "node": 161,
+                    "output": "res",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "outputs": {
+              "num": {
+                "connections": [
+                  {
+                    "node": 118,
+                    "input": "num",
                     "data": {}
                   },
                   {
-                    "node": 22,
-                    "input": "num2",
+                    "node": 114,
+                    "input": "a",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "position": [
+              592.6333312988281,
+              140.6999969482422
+            ],
+            "name": "Modulo"
+          },
+          "118": {
+            "id": 118,
+            "data": {},
+            "inputs": {
+              "num": {
+                "connections": [
+                  {
+                    "node": 117,
+                    "output": "num",
+                    "data": {}
+                  }
+                ]
+              },
+              "num2": {
+                "connections": []
+              }
+            },
+            "outputs": {
+              "bool": {
+                "connections": [
+                  {
+                    "node": 119,
+                    "input": "bool",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "position": [
+              840.6333312988281,
+              -37.30000305175781
+            ],
+            "name": "EqualNode"
+          },
+          "119": {
+            "id": 119,
+            "data": {},
+            "inputs": {
+              "bool": {
+                "connections": [
+                  {
+                    "node": 118,
+                    "output": "bool",
+                    "data": {}
+                  }
+                ]
+              },
+              "if": {
+                "connections": [
+                  {
+                    "node": 161,
+                    "output": "res",
+                    "data": {}
+                  }
+                ]
+              },
+              "else": {
+                "connections": [
+                  {
+                    "node": 114,
+                    "output": "res",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "outputs": {
+              "res": {
+                "connections": [
+                  {
+                    "node": 24,
+                    "input": "val",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "position": [
+              1199.0240681258697,
+              342.7625502316739
+            ],
+            "name": "ConditionNode"
+          },
+          "161": {
+            "id": 161,
+            "data": {
+              "id": "min"
+            },
+            "inputs": {
+              "a": {
+                "connections": [
+                  {
+                    "node": 16,
+                    "output": "val",
+                    "data": {}
+                  }
+                ]
+              },
+              "b": {
+                "connections": [
+                  {
+                    "node": 17,
+                    "output": "val",
+                    "data": {}
+                  }
+                ]
+              }
+            },
+            "outputs": {
+              "res": {
+                "connections": [
+                  {
+                    "node": 119,
+                    "input": "if",
                     "data": {}
                   },
                   {
@@ -1351,16 +895,16 @@ export class SpreadBoardEditor extends NodeEditor {
                     "data": {}
                   },
                   {
-                    "node": 25,
-                    "input": "else",
+                    "node": 117,
+                    "input": "num2",
                     "data": {}
                   }
                 ]
               }
             },
             "position": [
-              274.7520925473664,
-              285.8619861884418
+              275.7520925473664,
+              493.86198618844173
             ],
             "name": "ProcessNode"
           }
