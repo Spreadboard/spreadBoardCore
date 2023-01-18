@@ -6,6 +6,6 @@ import 'regenerator-runtime/runtime';
 
 import testCompile from './processor/test-compile'
 
-testCompile()
+//testCompile()
 
 createApp(App).mount('#app')

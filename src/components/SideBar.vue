@@ -132,7 +132,6 @@ button.selected{
 }
 
 #bar.visible{
-    min-width: 200px;
     width: fit-content;
     transition: ease-in-out all 500ms;
 }

@@ -4,7 +4,7 @@ import {SocketTypes} from "../../processor/connections/sockets";
 import { BoolControl } from "../controls/BoolControl";
 import {NumControl} from "../controls/NumControl";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
-import { Command, CompilerNode, CompilerOptions } from "../CompilerNode";
+import { ProcessCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
 import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
 
 export class GreaterNode extends CompilerNode {
@@ -54,18 +54,36 @@ export class GreaterNode extends CompilerNode {
             default:
                 return (inputs: ProcessIO)=>undefined;
     }};
+    compile(node: NodeData, worker_input_names: {[key:string]:Command}, worker_id: string): ProcessCommand {
 
-    compile(node: NodeData, worker_input_names: {[key:string]:string}, worker_id: string): Command {
 
-
-        let num = (worker_input_names.num)?worker_input_names.num:node.data.num??0;
-        let num2 = (worker_input_names.num2)?worker_input_names.num2:node.data.num2??0;
+        let num: Command = (worker_input_names.num)?worker_input_names.num:{node_id:node.id, commands: `${node.data.num??0}`};
+        let num2: Command = (worker_input_names.num2)?worker_input_names.num2:{node_id:node.id, commands: `${node.data.num2??0}`};
         
         return {
             node_id: node.id,
-            command_string: "",
+            commands: [],
             outputs: {
-                'bool': ` ( ${num} > ${num2} ) `
+                'bool': {
+                    commands:[
+                        {
+                            node_id:node.id, 
+                            commands:` ( `
+                        },
+                        num,
+                        {
+                            node_id:node.id, 
+                            commands:` > `
+                        },
+                        num2,
+                        {
+                            node_id:node.id, 
+                            commands:` ) `
+                        },
+
+                    ],
+                    node_id:node.id
+                }
             },
             processDependencys: []
         }

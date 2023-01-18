@@ -4,16 +4,22 @@ import {BoolControl} from "../controls/BoolControl";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import {i18n, SpreadBoardEditor} from "../../editor/editor";
 import {SocketTypes} from "../../processor/connections/sockets";
-import { Command, CompilerNode, CompilerOptions } from "../CompilerNode";
+import { ProcessCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
 import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
 
 export class BoolNode extends CompilerNode {
-    compile(node: NodeData, worker_input_names: {[key:string]:string}, worker_id: string): Command {
+    compile(node: NodeData, worker_input_names: {[key:string]:Command}, worker_id: string): ProcessCommand {
         return {
             node_id:node.id,
-            command_string: `const ${worker_id} = ${node.data.bool}`,
+            commands: [{
+                commands: `const ${worker_id} = ${node.data.bool}`,
+                node_id: node.id
+            }],
             outputs: {
-                'bool': `${worker_id}`
+                'bool': {
+                    node_id: node.id,
+                    commands:`${worker_id}`
+                }
             },
             processDependencys: []
         }

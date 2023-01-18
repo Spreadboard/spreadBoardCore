@@ -6,34 +6,40 @@ import { Evaluation, CompilerIO, ProcessIO } from "../processor/connections/pack
 export type CompilerOptions = {
     silent: boolean,
     compilerOutputs?: CompilerIO,
-    compilerCommands?:Command[],
+    compilerCommands?:ProcessCommand[],
     options?:{
         [key:string]:any
     }
 }
 
 export type Command = {
+    node_id: number,
+    commands:string|Command[]
+}
+
+
+export type ProcessCommand = {
     node_id:number,
-    outputs:{[key:string]:string},
+    outputs:{[key:string]:Command},
     processDependencys:string[],
-    command_string:string
+    commands:Command[]
 }
 
 export abstract class CompilerNode extends Component{
 
-    abstract compile(node: NodeData, worker_input_names:{[key:string]:string}, worker_id:string):Command;
+    abstract compile(node: NodeData, worker_input_names:{[key:string]:Command}, worker_id:string):ProcessCommand;
     
     abstract process:(node: NodeData,outkey:string, inputConnections:CompilerIO, compilerOptions:CompilerOptions)=>Evaluation<any>;
 
-    worker(node: NodeData, inputs: WorkerInputs, outputs: CompilerIO|{[key:string]:string}, compilerOptions:CompilerOptions) {
+    worker(node: NodeData, inputs: WorkerInputs, outputs: CompilerIO|{[key:string]:Command}, compilerOptions:CompilerOptions) {
 
 
         if(compilerOptions.compilerCommands) //Compile the whole Process
         {
 
-            let worker_input_names: {[key:string]:string} = {}
+            let worker_input_names: {[key:string]:Command} = {}
 
-            Object.keys(inputs).forEach( (key) =>worker_input_names[key]=(inputs[key][0] as string))
+            Object.keys(inputs).forEach( (key) =>worker_input_names[key]=(inputs[key][0] as Command))
 
             let worker_output_name = node.name.toLowerCase()+"_"+node.id;
 
@@ -46,10 +52,15 @@ export abstract class CompilerNode extends Component{
                 stitches = stitches + stitch;
             });
 
-            command.command_string =
-            (command.command_string.length>0?
-                (`\n//Process Node ${node.name}-${node.id}\n${command.command_string}`):""
-                )
+            command.commands =
+            (command.commands.length>0?
+                [
+                    {
+                        node_id: node.id,
+                        commands:`\n//Process Node ${node.name}-${node.id}\n`
+                    },
+                    ...command.commands
+                ]:[]);
             
 
             compilerOptions.compilerCommands.push(command);

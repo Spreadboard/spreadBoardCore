@@ -6,7 +6,7 @@ import {SocketTypes} from "../../processor/connections/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { NumControl } from "../controls/NumControl";
 import { SpreadBoardStack } from "../../processor/variable";
-import { Command, CompilerNode, CompilerOptions } from "../CompilerNode";
+import { ProcessCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
 import { CompilerIO, Evaluation, ProcessIO } from "../../processor/connections/packet";
 
 export class OutputNumNode extends CompilerNode {
@@ -53,10 +53,21 @@ export class OutputNumNode extends CompilerNode {
         }
     };
 
-    compile(node: NodeData, worker_input_names: {[key:string]:string}, worker_output_name: string): Command {
+    compile(node: NodeData, worker_input_names: {[key:string]:Command}, worker_output_name: string): ProcessCommand {
         return {
             node_id:node.id,
-            command_string: `output.${node.data.key as string} = ${worker_input_names.val}`,
+            commands: worker_input_names.val&&(node.data.key as string).length>0?[
+                {
+                    node_id:node.id,
+                    commands: [
+                        {
+                            node_id:node.id,
+                            commands: `output.${node.data.key as string} = `
+                        },
+                        worker_input_names.val
+                    ]
+                }
+            ]:[],
             outputs: {},
             processDependencys:[]
         }
