@@ -7,13 +7,13 @@ export class ProcessControl extends Control {
     private component: any;
     private props: Object;
 
-    private options = SpreadBoardEditor.getProcessIDs().map(({index,id})=>id.replace('@0.1.0',''));
-    
-    constructor(emitter: Function, key:string, readonly:boolean = false, title:string | null = null) {
+    private options = SpreadBoardEditor.getProcessIDs().map(({ index, id }) => id.replace('@0.1.0', ''));
+
+    constructor(emitter: Function, key: string, readonly: boolean = false, title: string | null = null) {
         super(key);
         this.component = VueSelectControl;
-        const emit:Function = (index:any)=>{emitter(index)};
-        this.props = { emitter:emit, ikey: key, readonly, title: title , options : this.options};
+        const emit: Function = (index: any) => { emitter(index) };
+        this.props = { emitter: emit, ikey: key, readonly, title: title, options: this.options };
     }
 
 }

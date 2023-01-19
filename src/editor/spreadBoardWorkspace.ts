@@ -1,5 +1,5 @@
 import { Data as ReteData } from "rete/types/core/data";
 
-export interface SpreadBoardWorkspace{
+export interface SpreadBoardWorkspace {
     processes: ReteData[];
 }

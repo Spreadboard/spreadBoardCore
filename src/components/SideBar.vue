@@ -1,12 +1,12 @@
 <template>
-<div class="sidebar">
-    <button v-for="item in map" @click="(_)=>select(item.key)" :class="selected==item.key?'selected':''" >
-        <Icon :icon="item.icon"></Icon>
-    </button>
-</div>
+    <div class="sidebar">
+        <button v-for="item in map" @click="(_) => select(item.key)" :class="selected == item.key ? 'selected' : ''">
+            <Icon :icon="item.icon"></Icon>
+        </button>
+    </div>
 
-<div id="bar" :class="selected!=''?'visible':'hidden'">
-</div>
+    <div id="bar" :class="selected != '' ? 'visible' : 'hidden'">
+    </div>
 
 </template>
 
@@ -17,66 +17,66 @@ import Info from './Info.vue';
 import CompiledPreview from './CompiledPreview.vue';
 import Icon from './VS-Icon.vue'
 
-export default{
-    components:{
+export default {
+    components: {
         ProcessSelector: ProcessSelector,
         Info: Info,
         Icon: Icon,
         CompiledPreview: CompiledPreview
     },
-    setup(){
+    setup() {
 
         const map = [
             {
                 key: "processes",
                 title: "Prozesse",
-                icon:'symbol-interface',
+                icon: 'symbol-interface',
                 componentName: ProcessSelector
             },
             {
                 key: "code",
                 title: "Code",
-                icon:'code',
+                icon: 'code',
                 componentName: CompiledPreview
             },
             {
                 key: "info",
                 title: "Info",
-                icon:'lightbulb',
+                icon: 'lightbulb',
                 componentName: Info
             }
         ]
 
         const getSelctedComp = () => {
             let key = selected.value;
-            if(key == "") return undefined;
-            return map.find((item)=>item.key==key)?.componentName;
+            if (key == "") return undefined;
+            return map.find((item) => item.key == key)?.componentName;
         }
 
         const selected = ref("");
 
-        const isSelected = (key: string) => {return key == selected.value ? "selected" : "notSelected"};
+        const isSelected = (key: string) => { return key == selected.value ? "selected" : "notSelected" };
 
-        let curComp: App|undefined;
+        let curComp: App | undefined;
 
         const select = (key: string) => {
-            if(selected.value != key)
+            if (selected.value != key)
                 selected.value = key;
             else
                 selected.value = "";
-            console.log("Select:",selected.value);
+            console.log("Select:", selected.value);
 
-            (async ()=>{
+            (async () => {
                 let barEl = document.getElementById("bar")!;
 
-                if(curComp)
-                        curComp.unmount();
-                if(getSelctedComp()!=undefined){
+                if (curComp)
+                    curComp.unmount();
+                if (getSelctedComp() != undefined) {
                     let bar = createApp(getSelctedComp()!);
                     curComp = bar;
                     bar.mount("#bar");
-            }
-            })();        
+                }
+            })();
         }
 
         return {
@@ -92,12 +92,11 @@ export default{
 </script>
 
 <style scoped>
-
-.sidebar:deep() .icon{
+.sidebar:deep() .icon {
     width: 100%;
 }
 
-.sidebar{
+.sidebar {
     padding: 5px;
     padding-right: 0;
     padding-top: 0;
@@ -107,7 +106,7 @@ export default{
     border-right: 1px solid #6f9aea;
 }
 
-button{
+button {
     display: flex;
     justify-content: center;
     max-width: 100%;
@@ -123,7 +122,7 @@ button{
 }
 
 
-button.selected{
+button.selected {
     border-color: bisque;
 }
 
@@ -131,9 +130,8 @@ button.selected{
     overflow-x: hidden;
 }
 
-#bar.visible{
+#bar.visible {
     width: fit-content;
     transition: ease-in-out all 500ms;
 }
-
 </style>
