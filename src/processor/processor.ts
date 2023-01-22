@@ -105,19 +105,20 @@ export class Processor {
             return str;
         }
 
-        let function_string = "";
+        let function_string = '';
         function_commands.map(commandToString).forEach(
             (st) => function_string = function_string + st
         )
 
 
         try {
-            let func = new Function('inputs', function_string);
-            return func;
+            let func = new Function('inputs', 'spreadBoard', function_string);
+            return (inputs: any) => func(inputs, SpreadBoardEditor.instance);
         } catch (e) {
-            console.log("Error while converting");
-            console.log(function_commands);
-            console.log(function_string)
+            SpreadBoardEditor.instance?.logger.log("Error while converting");
+            SpreadBoardEditor.instance?.logger.log(e)
+            SpreadBoardEditor.instance?.logger.log(function_commands);
+            SpreadBoardEditor.instance?.logger.log(function_string)
         }
     }
 
@@ -255,7 +256,7 @@ export class Processor {
         )
 
         this.compiledProcesses.set(id, function_command)
-        console.log(`Compiled ${id}`)
+        SpreadBoardEditor.instance?.logger.log(`Compiled ${id}`)
 
         SpreadBoardEditor.instance?.trigger("export");
         return function_command
@@ -269,7 +270,6 @@ export class Processor {
         }
         const processData = { ...data };
         processData.id = this.engine.id;
-        //console.log("Processor", data);
 
         return await this.engine.process(processData, null, compilerOptions);
     }

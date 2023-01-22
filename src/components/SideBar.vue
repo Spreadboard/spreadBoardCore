@@ -16,6 +16,8 @@ import ProcessSelector from './ProcessSelector.vue';
 import Info from './Info.vue';
 import CompiledPreview from './CompiledPreview.vue';
 import Icon from './VS-Icon.vue'
+import { SpreadBoardEditor } from '../editor/editor';
+import Logs from './Logs.vue';
 
 export default {
     components: {
@@ -38,6 +40,12 @@ export default {
                 title: "Code",
                 icon: 'code',
                 componentName: CompiledPreview
+            },
+            {
+                key: "logs",
+                title: "Logs",
+                icon: 'console',
+                componentName: Logs
             },
             {
                 key: "info",
@@ -64,7 +72,7 @@ export default {
                 selected.value = key;
             else
                 selected.value = "";
-            console.log("Select:", selected.value);
+            SpreadBoardEditor.instance?.logger.log("Select:", selected.value);
 
             (async () => {
                 let barEl = document.getElementById("bar")!;

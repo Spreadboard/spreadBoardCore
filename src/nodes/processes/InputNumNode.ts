@@ -38,7 +38,6 @@ export class InputNumNode extends CompilerNode {
                 return function inputNum(inputs: ProcessIO) {
                     let key = node.data.key as string;
                     let val = (compilerOptions.silent) ? inputs[key] : node.data.val ?? 0;
-                    //console.log(inputs," -> ",val);
                     return val;
                 };
             default:

@@ -59,7 +59,7 @@ export default defineComponent({
             else SpreadBoardEditor.instance?.unselectNode()
         }
 
-        console.log(code)
+        SpreadBoardEditor.instance?.logger.log("Compiled" as Object, code)
 
         return {
             code,
