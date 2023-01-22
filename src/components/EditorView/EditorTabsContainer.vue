@@ -1,6 +1,6 @@
 <template>
     <div style="max-height: 100%; max-width: 100%; height: 100%; width: 100%;">
-        <div style="text-align: start; display: flex;">
+        <div style="text-align: start; display: flex;" v-if="openTabs.length>0">
             <button v-for="tab of openTabs" :class="(openTab == tab) ? 'selected' : ''" style="display: inline-block;"
                 @click="(_) => open(tab)"
                 @mousedown="(e) => { if (e.button == 0) open(tab); if (e.button == 1) close(tab) }">
@@ -8,7 +8,12 @@
             </button>
             <div class="spacer"></div>
         </div>
-        <ReteEditor></ReteEditor>
+        <div :style="`height: ${(openTabs.length == 0) ? '0' : '100%'};`">
+            <ReteEditor></ReteEditor>
+        </div>
+        <div v-if="openTabs.length==0" class="blank">
+            No Tab Open
+        </div>
     </div>
 </template>
 
@@ -55,10 +60,20 @@ button.selected {
 }
 
 .spacer {
+    height: 40px;
     flex-grow: 1;
     border-color: #646cff;
     border-width: 0;
     border-bottom-width: 1px;
     border-style: solid;
+}
+
+.blank{
+    height: 100%;
+    width: 100%;
+    margin: auto;
+    border-color: #646cff;
+    border-left-width: 1px;
+    border-left-style: solid;
 }
 </style>

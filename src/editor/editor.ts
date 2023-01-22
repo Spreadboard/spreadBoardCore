@@ -1029,7 +1029,9 @@ export class SpreadBoardEditor extends NodeEditor {
         EditorTabHandler.openTab(SpreadBoardEditor.processes[this.curProcess].id.replace('@0.1.0', ''));
 
         EditorTabHandler.onChange(() => {
-            this.loadProcess(EditorTabHandler.getOpenTab());
+            let tab = EditorTabHandler.getOpenTab();
+            console.log("Open Tab", tab)
+            this.loadProcess(tab);
         });
 
         await this.loadProcess("main");
@@ -1151,19 +1153,25 @@ export class SpreadBoardEditor extends NodeEditor {
     }
 
     async loadProcess(name?: string) {
-        if (!name) {
-            return;
+
+        if (name) {
+            let index = SpreadBoardEditor.getProcessIndex(name);
+            await this.saveCurProcess();
+            SpreadBoardEditor.importing = true;
+            this.curProcess = index;
+            this.clear();
+            let process = this.toJSON();
+            process.nodes = SpreadBoardEditor.processes[index].nodes;
+            await this.fromJSON(process);
+            this.logger.log("Start initial process");
+            this.trigger('process');
+        }else{
+            await this.saveCurProcess();
+            this.curProcess = -1;
+            this.clear();
         }
-        let index = SpreadBoardEditor.getProcessIndex(name);
-        await this.saveCurProcess();
-        SpreadBoardEditor.importing = true;
-        this.curProcess = index;
-        this.clear();
-        let process = this.toJSON();
-        process.nodes = SpreadBoardEditor.processes[index].nodes;
-        await this.fromJSON(process);
-        this.logger.log("Start initial process");
-        this.trigger('process');
+
+
         SpreadBoardEditor.importing = false;
     }
 }

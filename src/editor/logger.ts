@@ -1,4 +1,4 @@
-import { stringify } from "uuid";
+
 import { toHandlers } from "vue";
 import InfoVue from "../components/Info.vue";
 import { Item } from "../context-menu";
@@ -27,7 +27,7 @@ export class Logger {
     }
 
     private static stringify(item: LogItem<any>, json?: boolean): any[] {
-        return ((item.stringify) ? item.content.map(stringify) : (json ? item.content.map((c) => JSON.stringify(c)) : item.content));
+        return ((item.stringify) ? item.content.map(item.stringify) : (json ? item.content.map((c) => JSON.stringify(c)) : item.content));
     }
 
     private static introString(item: LogItem<any>) {

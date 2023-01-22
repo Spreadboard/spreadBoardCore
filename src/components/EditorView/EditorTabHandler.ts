@@ -13,6 +13,7 @@ export abstract class EditorTabHandler {
     }
 
     private static currTab: string | undefined = undefined;
+
     public static getOpenTab() { return this.currTab };
     private static openTabs: string[] = [];
     public static getOpenTabs() { return [...this.openTabs] }
@@ -25,8 +26,11 @@ export abstract class EditorTabHandler {
         this.update();
     }
     public static closeTab(id: string) {
+        let oldIndex = this.openTabs.findIndex((t)=>t==id);
         this.openTabs = this.openTabs.filter((t) => t != id)
-        if (this.currTab == id) this.currTab = this.openTabs[this.openTabs.length - 1];
+        if (this.currTab == id) this.currTab = this.openTabs[
+            Math.min(oldIndex, this.openTabs.length-1)
+        ];
         this.update();
 
     }
