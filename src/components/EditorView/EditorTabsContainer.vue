@@ -1,17 +1,32 @@
 <template>
     <div style="max-height: 100%; max-width: 100%; height: 100%; width: 100%;">
-        <div style="text-align: start; display: flex;" v-if="openTabs.length>0">
-            <button v-for="tab of openTabs" :class="(openTab == tab) ? 'selected' : ''" style="display: inline-block;"
-                @click="(_) => open(tab)"
+
+
+        <div style="text-align: start; display: flex;" v-if="openTabs.length > 0">
+            <button v-for="tab of openTabs" :class="'tab ' + ((openTab == tab) ? 'selected' : '')"
+                style="display: inline-block;" @click="(_) => open(tab)"
                 @mousedown="(e) => { if (e.button == 0) open(tab); if (e.button == 1) close(tab) }">
                 {{ tab }}
             </button>
             <div class="spacer"></div>
         </div>
         <div :style="`height: ${(openTabs.length == 0) ? '0' : '100%'};`">
-            <ReteEditor></ReteEditor>
+
+            <button class="float" @click="codeOpen = !codeOpen" v-if="openTabs.length != 0">
+                <Icon icon="code"></Icon>
+            </button>
+
+
+            <splitpanes style="height: 100%;width: 100%;">
+                <pane>
+                    <ReteEditor></ReteEditor>
+                </pane>
+                <pane min-size="10" :size="30" v-if="codeOpen">
+                    <CompiledPreview></CompiledPreview>
+                </pane>
+            </splitpanes>
         </div>
-        <div v-if="openTabs.length==0" class="blank">
+        <div v-if="openTabs.length == 0" class="blank">
             No Tab Open
         </div>
     </div>
@@ -21,6 +36,9 @@
 import { defineComponent, ref } from 'vue';
 import ReteEditor from '../ReteEditor.vue';
 import { EditorTabHandler } from './EditorTabHandler'
+import { Splitpanes, Pane } from 'splitpanes';
+import CompiledPreview from '../CompiledPreview.vue';
+import Icon from "../VS-Icon.vue";
 
 export default defineComponent({
     setup() {
@@ -35,27 +53,53 @@ export default defineComponent({
         const close = (tab: string) => {
             EditorTabHandler.closeTab(tab);
         }
+
+
+        let codeOpen = ref(false)
+
         return {
             openTabs,
             openTab,
             open,
-            close
+            close,
+            codeOpen
         }
     },
-    components: { ReteEditor }
+    components: {
+        ReteEditor,
+        Splitpanes,
+        Pane,
+        CompiledPreview,
+        Icon
+    }
 });
 
 </script>
 
 <style scoped>
-button {
+button.float {
+    width: 30px;
+    height: 30px;
+    padding: 3px;
+    position: absolute;
+    margin-top: 5px;
+    right: 5px;
+    box-shadow: 1px 1px 3px #000000;
+}
+
+button.float:deep() .icon {
+    min-height: 20% !important;
+    height: 100%;
+}
+
+button.tab {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
     border-color: #646cff;
     border-bottom-width: 1px;
 }
 
-button.selected {
+button.tab.selected {
     border-bottom-width: 0;
 }
 
@@ -68,7 +112,7 @@ button.selected {
     border-style: solid;
 }
 
-.blank{
+.blank {
     height: 100%;
     width: 100%;
     margin: auto;
