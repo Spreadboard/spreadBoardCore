@@ -34,50 +34,6 @@ interface i18nMap {
 
 type Locale = "de";
 
-let simpleDetector = {
-    //@ts-ignore
-    get(target, prop, reciever) {
-        //@ts-ignore
-        //console.log("Get ", target);
-        //@ts-ignore
-        let t = target[prop];
-        return t;
-    },
-    //@ts-ignore
-    set(target, prop, newVal, reciever) {
-        //@ts-ignore
-        let t = target[prop];
-        target[prop] = newVal;
-        console.log("Set ", prop, 'from', t, "to", newVal)
-        console.trace()
-        return true;
-    }
-}
-
-let detector = {
-    //@ts-ignore
-    get(target, prop, reciever) {
-        //@ts-ignore
-        //@ts-ignore
-        let t = target[prop];
-        if (typeof t == "object") {
-            if (t.nodes) {
-                return new Proxy(t, simpleDetector);
-            } else
-                return new Proxy(t, detector);
-        }
-        else
-            return t;
-    },
-    //@ts-ignore
-    set(target, prop, newVal, reciever) {
-        //@ts-ignore
-        target[prop as number] = newVal;
-        //console.log("Set ", prop, "to", newVal)
-        return true;
-    }
-};
-
 
 export class SpreadBoardEditor extends NodeEditor {
     readonly eventEmitter: EventEmitter = new EventEmitter;
@@ -139,10 +95,8 @@ export class SpreadBoardEditor extends NodeEditor {
 
     static getOrCreate(container: HTMLElement, id = "main@0.1.0", saveObj?: SpreadBoardWorkspace, silent = false) {
         if (!this.instance) {
-            console.log("Test");
             this.instance = new SpreadBoardEditor(container, id, saveObj, silent);
         } else {
-            console.log("test", this.processes)
             let processes = [... this.processes];
             this.instance.destroy();
             this.processes = [];
@@ -1013,11 +967,9 @@ export class SpreadBoardEditor extends NodeEditor {
             new Engine(id)
         );
 
-        console.log(id, saveObj)
         if (!saveObj.processes.find((process) => process.id == id))
             SpreadBoardEditor.processes = [{ id: id, nodes: {} }];
         SpreadBoardEditor.processes.push(...saveObj.processes);
-        console.log(SpreadBoardEditor.processes);
 
         SpreadBoardEditor.importing = true;
         this.init();
@@ -1064,7 +1016,6 @@ export class SpreadBoardEditor extends NodeEditor {
         for (let process of SpreadBoardEditor.processes) {
             await this.editorProcessor.compileProcess(process.id, process);
         }
-        console.log(SpreadBoardEditor.processes);
 
         this.on(
             ["connectioncreated", 'connectionremoved', "nodecreated", 'noderemoved'],
@@ -1079,7 +1030,6 @@ export class SpreadBoardEditor extends NodeEditor {
             if (!this.silent && !SpreadBoardEditor.importing) {
                 await this.saveCurProcess();
                 await this.processEditor();
-                console.log(SpreadBoardEditor.processes);
             }
         }
         );
@@ -1096,16 +1046,12 @@ export class SpreadBoardEditor extends NodeEditor {
                 if (tabs.length == 0 || !tab) {
                     EditorTabHandler.removeListener(this.tabListener);
                 } else {
-                    console.log("Open Tab", tab)
                     this.loadProcess(tab);
                 }
             });
 
         if (!this.silent)
             await this.loadProcess("main");
-
-        console.log(SpreadBoardEditor)
-
 
     }
 
@@ -1145,7 +1091,6 @@ export class SpreadBoardEditor extends NodeEditor {
             try {
                 let json = this.toJSON();
                 SpreadBoardEditor.processes[this.curProcess].nodes = json.nodes;
-                console.log(SpreadBoardEditor.processes);
                 await this.editorProcessor.compileProcess(SpreadBoardEditor.processes[this.curProcess].id, this.toJSON());
                 this.logger.log((SpreadBoardEditor.processes[this.curProcess] as Object));
             } catch (error) {
@@ -1236,7 +1181,6 @@ export class SpreadBoardEditor extends NodeEditor {
             await this.fromJSON(process);
             this.logger.log("Start initial process");
             this.trigger('process');
-            console.log(SpreadBoardEditor.processes);
         } else {
             await this.saveCurProcess();
             this.curProcess = -1;

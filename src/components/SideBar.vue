@@ -6,7 +6,7 @@
     </div>
 
     <splitpanes style="height: 100%;width: 100%;" @resize="changeSize($event[0].size)" @pane-maximize="select('')">
-        <pane min-size="10" :size="curSize" v-if="selected!=''">
+        <pane min-size="10" max-size="20" :size="curSize" v-if="selected!=''">
             <div id="bar">
             </div>
         </pane>

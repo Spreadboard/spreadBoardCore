@@ -12,16 +12,22 @@
         </div>
         <div v-if="openTabs.length > 0" style="height: 100%;">
 
-            <button class="float" @click="codeOpen = !codeOpen" v-if="openTabs.length != 0">
-                <Icon icon="code"></Icon>
-            </button>
+            <div class="float" v-if="openTabs.length != 0">
+
+                <button class="float" @click="codeOpen = !codeOpen">
+                    <Icon icon="code"></Icon>
+                </button>
+                <button v-if="codeOpen" @click="onlyCode = !onlyCode">
+                    <Icon :icon="onlyCode?'split-horizontal':'screen-full'"></Icon>
+                </button>
+            </div>
 
 
-            <splitpanes style="height: 100%;width: 100%;">
-                <pane>
+            <splitpanes style="height: 100%;width: 100%;" @pane-maximize="onlyCode = true">
+                <pane min-size="20" v-if="!onlyCode || !codeOpen">
                     <ReteEditor></ReteEditor>
                 </pane>
-                <pane min-size="10" :size="30" v-if="codeOpen">
+                <pane min-size="20" :size="40" v-if="codeOpen">
                     <CompiledPreview></CompiledPreview>
                 </pane>
             </splitpanes>
@@ -33,8 +39,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, computed} from 'vue';
 import ReteEditor from '../ReteEditor.vue';
+import {SpreadBoardEditor} from '../../editor/editor';
 import { EditorTabHandler } from './EditorTabHandler'
 //@ts-ignore
 import { Splitpanes, Pane } from 'splitpanes';
@@ -57,13 +64,20 @@ export default defineComponent({
 
 
         let codeOpen = ref(false)
+        let onlyCode = ref(false)
+
+        let loading = computed(()=>{
+            return SpreadBoardEditor.importing;
+        });
 
         return {
             openTabs,
             openTab,
             open,
             close,
-            codeOpen
+            codeOpen,
+            onlyCode,
+            loading
         }
     },
     components: {
@@ -78,17 +92,22 @@ export default defineComponent({
 </script>
 
 <style scoped>
-button.float {
+div.float {
+    position: absolute;
+    margin-top: 5px;
+    width: min-content;
+    right: 5px;
+}
+
+.float>button {
     width: 30px;
     height: 30px;
     padding: 3px;
-    position: absolute;
-    margin-top: 5px;
-    right: 5px;
+    margin-bottom: 5px;
     box-shadow: 1px 1px 3px #000000;
 }
 
-button.float:deep() .icon {
+.float>button:deep() .icon {
     min-height: 20% !important;
     height: 100%;
 }
