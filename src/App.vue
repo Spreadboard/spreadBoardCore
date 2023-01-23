@@ -52,7 +52,7 @@ html,
 }
 
 .splitpanes__splitter {
-    background-color: #ccc;
+    background-color: #6f9aea;
     position: relative;
 }
 
@@ -61,10 +61,13 @@ html,
     position: absolute;
     left: 0;
     top: 0;
-    transition: opacity 0.1s;
     background-color: #646cff;
     opacity: 0;
     z-index: 1;
+}
+
+.splitpanes--vertical .splitpanes__pane{
+    transition: none;
 }
 
 .splitpanes__splitter:hover:before {

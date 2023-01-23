@@ -5,8 +5,8 @@
         </button>
     </div>
 
-    <splitpanes style="height: 100%;width: 100%;">
-        <pane min-size="10" :size="curSize" @resize="changeSize" v-if="selected!=''">
+    <splitpanes style="height: 100%;width: 100%;" @resize="changeSize($event[0].size)" @pane-maximize="select('')">
+        <pane min-size="10" :size="curSize" v-if="selected!=''">
             <div id="bar">
             </div>
         </pane>
@@ -27,6 +27,7 @@ import Icon from './VS-Icon.vue'
 import { SpreadBoardEditor } from '../editor/editor';
 import Logs from './Logs.vue';
 import { Splitpanes, Pane } from 'splitpanes';
+import { cursorTo } from 'readline';
 
 export default {
     components: {
@@ -91,13 +92,16 @@ export default {
                     curComp = bar;
                     setTimeout(()=>{
                         bar.mount("#bar");
-                    },50);
+                    },10);
                 }
             })();
         }
         
-        const changeSize = (e:any)=>{
-            console.log("resize",e)
+        const changeSize = (size:number)=>{
+            console.log("resize",size)
+            if(size <10)
+                size = 10;
+            curSize.value = size;
         }
 
         return {
@@ -107,7 +111,7 @@ export default {
             isSelected,
             getSelctedComp,
             curSize,
-            changeSize
+            changeSize,
         }
     }
 }
@@ -142,7 +146,6 @@ button {
     border-bottom-left-radius: 5px;
     border-width: 2px;
     border-right-width: 0;
-    border-color: #6f9aea;
 }
 
 
