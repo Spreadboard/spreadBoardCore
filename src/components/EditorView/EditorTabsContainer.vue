@@ -10,7 +10,7 @@
             </button>
             <div class="spacer"></div>
         </div>
-        <div :style="`height: ${(openTabs.length == 0) ? '0' : '100%'};`">
+        <div v-if="openTabs.length > 0" style="height: 100%;">
 
             <button class="float" @click="codeOpen = !codeOpen" v-if="openTabs.length != 0">
                 <Icon icon="code"></Icon>
@@ -36,6 +36,7 @@
 import { defineComponent, ref } from 'vue';
 import ReteEditor from '../ReteEditor.vue';
 import { EditorTabHandler } from './EditorTabHandler'
+//@ts-ignore
 import { Splitpanes, Pane } from 'splitpanes';
 import CompiledPreview from '../CompiledPreview.vue';
 import Icon from "../VS-Icon.vue";
@@ -44,10 +45,10 @@ export default defineComponent({
     setup() {
         const openTabs = ref([] as string[]);
         const openTab = ref(undefined as undefined | string);
-        EditorTabHandler.onChange(() => {
-            openTabs.value = EditorTabHandler.getOpenTabs();
-            openTab.value = EditorTabHandler.getOpenTab();
-            console.log("Test", EditorTabHandler.getOpenTabs())
+        EditorTabHandler.onChange((tab, tabs) => {
+            openTabs.value = tabs;
+            openTab.value = tab;
+            console.log("Test", tabs)
         });
         const open = (tab: string) => EditorTabHandler.openTab(tab);
         const close = (tab: string) => {

@@ -9,7 +9,7 @@ import 'splitpanes/dist/splitpanes.css';
 
         <SideBar></SideBar>
     </div>
-
+    <div id="editor-blank" style="display: none;"></div>
 </template>
 
 <style>
@@ -51,19 +51,35 @@ html,
     }
 }
 
-.splitpanes__splitter {background-color: #ccc;position: relative;}
-.splitpanes__splitter:before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  transition: opacity 0.1s;
-  background-color: #646cff;
-  opacity: 0;
-  z-index: 1;
+.splitpanes__splitter {
+    background-color: #ccc;
+    position: relative;
 }
-.splitpanes__splitter:hover:before {opacity: 1;}
-.splitpanes--vertical > .splitpanes__splitter:before {left: -1px;right: -1px;height: 100%;}
-.splitpanes--horizontal > .splitpanes__splitter:before {top: -30px;bottom: -30px;width: 100%;}
 
+.splitpanes__splitter:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    transition: opacity 0.1s;
+    background-color: #646cff;
+    opacity: 0;
+    z-index: 1;
+}
+
+.splitpanes__splitter:hover:before {
+    opacity: 1;
+}
+
+.splitpanes--vertical>.splitpanes__splitter:before {
+    left: -1px;
+    right: -1px;
+    height: 100%;
+}
+
+.splitpanes--horizontal>.splitpanes__splitter:before {
+    top: -30px;
+    bottom: -30px;
+    width: 100%;
+}
 </style>
