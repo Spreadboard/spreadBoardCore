@@ -5,7 +5,7 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
     plugins: [vue()],
 
-    base: (process.env.TAURI_DEBUG == undefined || process.env.TAURI_DEBUG) ? "/spreadBoardCore/dist/" : undefined,
+    base: (Object.keys(process.env).find((k) => k.startsWith('TAURI'))) ? '' : "/spreadBoardCore/dist/",
 
     // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
     // prevent vite from obscuring rust errors
