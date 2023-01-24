@@ -27,14 +27,18 @@ export default {
     setup() {
         let curProcess = ref(SpreadBoardEditor.getCurProcess());
 
+        EditorTabHandler.onChange((tab, tabs) => {
+            setTimeout(
+                () => {
+                    curProcess.value = SpreadBoardEditor.getCurProcess();
+                },
+                20
+            );
+        })
+
         const select = (id: string) => {
             curProcess.value = processes().find((proc) => proc.id == id)?.index;
             EditorTabHandler.openTab(id);
-            SpreadBoardEditor.instance?.loadProcess(id).then(
-                () => {
-                    curProcess.value = SpreadBoardEditor.getCurProcess();
-                }
-            );
         };
         let processes = () => {
             return SpreadBoardEditor.getProcessIDs()?.map((process) => { return { id: process.id, index: process.index, className: selected(process.index) } });

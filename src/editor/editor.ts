@@ -1027,7 +1027,7 @@ export class SpreadBoardEditor extends NodeEditor {
         );
 
         this.on('process', async () => {
-            if (!this.silent && !SpreadBoardEditor.importing) {
+            if (!SpreadBoardEditor.importing) {
                 await this.saveCurProcess();
                 await this.processEditor();
             }
@@ -1035,23 +1035,18 @@ export class SpreadBoardEditor extends NodeEditor {
         );
 
 
-        this.view.resize();
-        if (!this.silent)
-            this.trigger('process');
-        this.logger.log("Started editor");
-
         //EditorTabHandler.openTab(SpreadBoardEditor.processes[this.curProcess].id.replace('@0.1.0', ''));
         if (!this.silent)
             this.tabListener = EditorTabHandler.onChange((tab, tabs) => {
-                if (tabs.length == 0 || !tab) {
-                    EditorTabHandler.removeListener(this.tabListener);
-                } else {
-                    this.loadProcess(tab);
-                }
+                this.loadProcess(tab);
             });
 
-        if (!this.silent)
-            await this.loadProcess("main");
+        await this.loadProcess(EditorTabHandler.getOpenTab());
+
+        this.view.resize();
+        this.trigger('process');
+        this.logger.log("Started editor");
+
 
     }
 
@@ -1172,6 +1167,8 @@ export class SpreadBoardEditor extends NodeEditor {
     async loadProcess(name?: string) {
         if (name) {
             let index = SpreadBoardEditor.getProcessIndex(name);
+            if (index == this.curProcess)
+                return;
             await this.saveCurProcess();
             SpreadBoardEditor.importing = true;
             this.curProcess = index;
@@ -1180,7 +1177,11 @@ export class SpreadBoardEditor extends NodeEditor {
             process.nodes = SpreadBoardEditor.processes[index].nodes;
             await this.fromJSON(process);
             this.logger.log("Start initial process");
+            SpreadBoardEditor.importing = false;
             this.trigger('process');
+            setTimeout(() => {
+            }, 20)
+            //this.trigger('process');
         } else {
             await this.saveCurProcess();
             this.curProcess = -1;
@@ -1188,7 +1189,6 @@ export class SpreadBoardEditor extends NodeEditor {
         }
 
 
-        SpreadBoardEditor.importing = false;
     }
 }
 
