@@ -1,16 +1,29 @@
 <template>
-    <div class="selector-bar">
-        <div><input type="text" :on-submit="addProcess" :value="newProcessName" @input="change($event)" /></div>
-        <div style="display: inline-flex; width: 100%; padding-bottom: 5px;" v-for='process in processes()'>
+    <div class="selector-bar" @mousedown="(e) => { if (e.button != 2) showMenu(-1); }">
+        <div class="searchBar">
+            <input type="search" placeholder="Search..." :on-submit="addProcess" :value="searchProcessName"
+                @input="change($event)" />
+        </div>
+
+        <div style="display: inline-flex; margin-right: 10px; margin-left: 10px; padding-bottom: 5px;"
+            v-for='process of processes().filter((p) => p.id.includes(searchProcessName))'
+            @mousedown="(e) => { if (e.button == 2) { e.stopPropagation(); showMenu(process.index); } }">
             <button style="flex-grow: 1; margin-right: 5px; padding-right: 5px;"
-                @mousedown="(e) => { if (e.button == 2) showMenu(process.index) }"
                 :class="curProcess == process.index ? 'selected' : ''" @click="(_) => select(process.id)">
                 {{ process.id }}
             </button>
+            <div :class="'menu ' + ((true || (menuId != process.index)) ? 'hidden' : '')">
+                Hallo Welt
+            </div>
         </div>
-        <button v-if="newProcessName != ''" class="addProcess" @click="addProcess"><b>+</b><i>{{
-            newProcessName
-        }}</i></button>
+        <div style="margin-right: 10px; margin-left: 10px;">
+            <button v-if="searchProcessName != ''" class="addProcess" @click="addProcess">
+                <b>+</b>
+                <i>{{
+                    searchProcessName
+                }}</i>
+            </button>
+        </div>
     </div>
 </template>
 
@@ -19,49 +32,59 @@ import { ref } from 'vue';
 import { SpreadBoardEditor } from '../editor/editor';
 import { EditorTabHandler } from './EditorView/EditorTabHandler';
 import Icon from './VS-Icon.vue';
-
 export default {
     components: {
-        Icon: Icon
+        Icon
     },
     setup() {
         let curProcess = ref(SpreadBoardEditor.getCurProcess());
 
+        EditorTabHandler.onChange((tab, tabs) => {
+            setTimeout(
+                () => {
+                    curProcess.value = SpreadBoardEditor.getCurProcess();
+                },
+                20
+            );
+        })
+
         const select = (id: string) => {
             curProcess.value = processes().find((proc) => proc.id == id)?.index;
             EditorTabHandler.openTab(id);
-            SpreadBoardEditor.instance?.loadProcess(id).then(
-                () => {
-                    curProcess.value = SpreadBoardEditor.getCurProcess();
-                }
-            );
         };
         let processes = () => {
             return SpreadBoardEditor.getProcessIDs()?.map((process) => { return { id: process.id, index: process.index, className: selected(process.index) } });
         };
 
         const addProcess = (_: any) => {
-            SpreadBoardEditor.instance?.addProcess(newProcessName.value.toString());
-            newProcessName.value = "";
+            SpreadBoardEditor.instance?.addProcess(searchProcessName.value.toString());
+            searchProcessName.value = "";
         }
 
         let selected = (index: number) => { curProcess.value == index ? "selected" : "" };
 
-        let newProcessName = ref("");
-        const change = (event: any) => { newProcessName.value = event.target.value };
+        let searchProcessName = ref("");
+        const change = (event: any) => {
+            searchProcessName.value = event.target.value
+        };
+
+        let menuId = ref(-1);
+
         const showMenu = (id: number) => {
-            console.log("Test");
+            console.log(id);
+            menuId.value = id;
         }
 
         return {
             select,
             processes,
-            newProcessName,
+            searchProcessName,
             change,
             addProcess,
             selected,
             curProcess,
-            showMenu
+            showMenu,
+            menuId
         }
     }
 }
@@ -69,16 +92,35 @@ export default {
 </script>
 
 <style scoped>
+.hidden {
+    display: none;
+}
+
+.menu {
+    position: absolute;
+    z-index: 20;
+}
+
+.selector-bar:deep().node {
+    max-width: 100%;
+}
+
+.selector-bar:deep()ul {
+    padding: 0;
+}
+
 .selector-bar {
-    width: 190px;
+    max-width: 100%;
+    width: 100%;
     display: flex;
     flex-flow: column;
     max-height: 100%;
+    height: 100%;
     overflow-y: scroll;
-    padding: 5px;
 }
 
 button {
+    max-width: 90%;
     padding: 5px;
 }
 
@@ -100,11 +142,33 @@ button.selected {
 }
 
 .addProcess {
+    width: 100%;
+    margin-left: 2px;
     display: flex;
     flex-flow: row;
 }
 
 .addProcess>i {
     flex-grow: 1;
+}
+
+
+.searchBar {
+    width: 100%;
+}
+
+.searchBar>input {
+    max-width: 75%;
+}
+
+.searchCancel {
+    width: 2em;
+    height: 2em;
+    border-radius: 50%;
+    margin-right: 5px
+}
+
+.searchBar>input {
+    max-width: 80% !important
 }
 </style>
