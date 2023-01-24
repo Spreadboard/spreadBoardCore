@@ -1,12 +1,16 @@
 <template>
-    <div v-if="!timeOut" id="compiledPreview" style="padding: 5px; margin-left: 0; justify-content: start; text-align: start; overflow-x: auto;">
-        <p v-for="command of code" :class="selected?.find((n)=>n.id==command.node_id)?'selectedCommand':''">
-            <CommandVue :command="command" :top-level="true" :parentSelected="selected?.find((n)=>n.id==command.node_id)!=undefined"></CommandVue>
+    <div v-if="!timeOut" id="compiledPreview"
+        style="padding: 5px; margin-left: 0; justify-content: start; text-align: start; overflow-x: auto;">
+        <p v-for="command of code" :class="selected?.find((n) => n.id == command.node_id) ? 'selectedCommand' : ''">
+            <CommandVue :command="command" :top-level="true"
+                :parentSelected="selected?.find((n) => n.id == command.node_id) != undefined"></CommandVue>
         </p>
     </div>
-    <div v-if="timeOut" id="compiledPreview" style="padding: 5px; margin-left: 0; justify-content: start; text-align: start; overflow-x: auto;">
-        <p v-for="command of pCode" :class="selected?.find((n)=>n.id==command.node_id)?'selectedCommand':''">
-            <CommandVue :command="command" :top-level="true" :parentSelected="selected?.find((n)=>n.id==command.node_id)!=undefined"></CommandVue>
+    <div v-if="timeOut" id="compiledPreview"
+        style="padding: 5px; margin-left: 0; justify-content: start; text-align: start; overflow-x: auto;">
+        <p v-for="command of pCode" :class="selected?.find((n) => n.id == command.node_id) ? 'selectedCommand' : ''">
+            <CommandVue :command="command" :top-level="true"
+                :parentSelected="selected?.find((n) => n.id == command.node_id) != undefined"></CommandVue>
         </p>
     </div>
 </template>
@@ -21,18 +25,18 @@ export default defineComponent({
     components: {
         CommandVue: Command
     },
-    setup(){
+    setup() {
         let code = ref(SpreadBoardEditor.instance?.getCurProcessCode())
         let pCode = ref(SpreadBoardEditor.instance?.getCurProcessCode())
 
         let timeOut = ref(false);
 
-        SpreadBoardEditor.instance?.on('export', ()=>{
-            if(!timeOut.value){
+        SpreadBoardEditor.instance?.on('export', () => {
+            if (!timeOut.value) {
                 timeOut.value = true;
                 pCode.value = code.value;
                 code.value = [];
-                new Promise((resolve)=>setTimeout(resolve,100)).then(()=>{
+                new Promise((resolve) => setTimeout(resolve, 100)).then(() => {
                     let co = SpreadBoardEditor.instance?.getCurProcessCode()
                     code.value = co;
                     timeOut.value = false;
@@ -43,19 +47,19 @@ export default defineComponent({
 
         let selected = ref(SpreadBoardEditor.instance?.selected.list)
 
-        SpreadBoardEditor.instance?.on('nodeselected', (opt)=>{
+        SpreadBoardEditor.instance?.on('nodeselected', (opt) => {
             selected.value = [];
             selected.value = SpreadBoardEditor.instance?.selected.list;
         });
 
-        const select = (id: number)=>{
-            let node = SpreadBoardEditor.instance?.nodes.find((n)=>n.id==id);
-            if(node)
-                SpreadBoardEditor.instance?.trigger("selectnode", {node:node})
+        const select = (id: number) => {
+            let node = SpreadBoardEditor.instance?.nodes.find((n) => n.id == id);
+            if (node)
+                SpreadBoardEditor.instance?.trigger("selectnode", { node: node })
             else SpreadBoardEditor.instance?.unselectNode()
         }
 
-        console.log(code)
+        SpreadBoardEditor.instance?.logger.log("Compiled" as Object, code)
 
         return {
             code,
@@ -70,20 +74,21 @@ export default defineComponent({
 </script>
 
 <style>
-p{
+p {
     z-index: 0;
     padding: 5px;
     transition: box-shadow 250ms ease-in-out;
     box-shadow: 0px 0px 0px coral, 0px 0px 0px, coral;
 }
-.selectedCommand{
+
+.selectedCommand {
     border-style: hidden;
     border-width: 2px;
     border-radius: 5px;
     box-shadow: 1px 1px 3px coral, -1px -1px 3px coral;
 }
 
-.selectedCommand .selectedCommand{
+.selectedCommand .selectedCommand {
     box-shadow: 0px 0px 0px coral, 0px 0px 0px, coral;
 }
 </style>

@@ -6,10 +6,10 @@ export class SelectControl extends Control {
     private component: any;
     private props: Object;
 
-    constructor(emitter: Function, key:string, readonly:boolean = false, options: string[] = ["test"], title:string | null = null) {
+    constructor(emitter: Function, key: string, readonly: boolean = false, options: string[] = ["test"], title: string | null = null) {
         super(key);
         this.component = VueSelectControl;
-        this.props = { emitter, ikey: key, readonly, title: title , options : options};
+        this.props = { emitter, ikey: key, readonly, title: title, options: options };
     }
 
     setValue(val: number) {

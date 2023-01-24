@@ -1,4 +1,4 @@
-import Rete, {Socket as RSocket} from "rete";
+import Rete, { Socket as RSocket } from "rete";
 
 
 class SocketType {
@@ -22,11 +22,11 @@ class SocketTypeMap {
 
     private types: Map<string, SocketType>;
 
-    typeList(){
-        let types = Array.from(this.types.entries()).map(([name, socketType])=>socketType);
-        let valtypes = types.map((socketType)=>socketType.valSocket);
-        let reftypes = types.map((socketType)=>socketType.refSocket);
-        return [this.anySocket,this.typeSocket, ...valtypes, ...reftypes].sort();
+    typeList() {
+        let types = Array.from(this.types.entries()).map(([name, socketType]) => socketType);
+        let valtypes = types.map((socketType) => socketType.valSocket);
+        let reftypes = types.map((socketType) => socketType.refSocket);
+        return [this.anySocket, this.typeSocket, ...valtypes, ...reftypes].sort();
     }
 
     constructor() {
@@ -36,13 +36,13 @@ class SocketTypeMap {
 
         this.anyTypeSocket.valSocket.combineWith(this.anySocket);
         this.anyTypeSocket.refSocket.combineWith(this.anySocket);
-        this.types.set('any',this.anyTypeSocket);
+        this.types.set('any', this.anyTypeSocket);
     }
 
-    add(typeName:string) {
+    add(typeName: string) {
         if (!(typeName in this.types.keys())) {
             const socket = new SocketType(typeName)
-            this.types.set(typeName,socket);
+            this.types.set(typeName, socket);
             socket.refSocket.combineWith(this.anyTypeSocket.refSocket);
             socket.valSocket.combineWith(this.anyTypeSocket.valSocket);
 
@@ -57,31 +57,31 @@ class SocketTypeMap {
         }
     }
 
-    getRefByVal(socket: RSocket):RSocket{
-        if(socket.name=="type"||socket.name=="*")
+    getRefByVal(socket: RSocket): RSocket {
+        if (socket.name == "type" || socket.name == "*")
             return socket;
-        return this.get(socket.name.replace(" val",""))!.refSocket;
+        return this.get(socket.name.replace(" val", ""))!.refSocket;
     }
-    getValByRef(socket: RSocket):RSocket{
-        if(socket.name=="type"||socket.name=="*")
+    getValByRef(socket: RSocket): RSocket {
+        if (socket.name == "type" || socket.name == "*")
             return socket;
-        return this.get(socket.name.replace(" ref",""))!.valSocket;
+        return this.get(socket.name.replace(" ref", ""))!.valSocket;
     }
 
-    getSocket(socketName:string): RSocket|undefined{
-        return this.typeList().find((s)=>s.name==socketName);
+    getSocket(socketName: string): RSocket | undefined {
+        return this.typeList().find((s) => s.name == socketName);
     }
 
-    get(typeName:string) {
+    get(typeName: string) {
         return this.types.get(typeName);
     }
 
-    actSocket = ()=> this.get("act")!.valSocket;
-    eventSocket = ()=> this.get("act")!.refSocket;
-    numSocket = ()=> this.get("number")!;
-    textSocket = ()=> this.get("text")!;
-    boolSocket = ()=> this.get("boolean")!;
-    processSocket = ()=> this.get('process')!.refSocket;
+    actSocket = () => this.get("act")!.valSocket;
+    eventSocket = () => this.get("act")!.refSocket;
+    numSocket = () => this.get("number")!;
+    textSocket = () => this.get("text")!;
+    boolSocket = () => this.get("boolean")!;
+    processSocket = () => this.get('process')!.refSocket;
 }
 const types = new SocketTypeMap();
 
@@ -93,4 +93,4 @@ types.add("process");
 
 types.numSocket().valSocket.combineWith(types.textSocket().valSocket);
 
-export {SocketType, types as SocketTypes};
+export { SocketType, types as SocketTypes };

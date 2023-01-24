@@ -1,36 +1,36 @@
 class SpreadBoardVariable<Type>{
-    private declare initVal:Type;
-    private declare curValue:Type;
-    private declare edited:boolean;
+    private declare initVal: Type;
+    private declare curValue: Type;
+    private declare edited: boolean;
     private readonly onChange: Function;
 
     constructor(onChange: Function) {
         this.onChange = onChange;
     }
 
-    getEdited = ()=>this.edited;
+    getEdited = () => this.edited;
 
-    set(newVal:Type){
+    set(newVal: Type) {
         const oldVal = this.curValue;
         this.curValue = newVal;
-        if(oldVal!= this.curValue) {
-            this.edited=true;
+        if (oldVal != this.curValue) {
+            this.edited = true;
             this.onChange(newVal);
         }
     }
 
-    setInitial(val:Type){
+    setInitial(val: Type) {
         const oldVal = this.curValue;
-        this.initVal=val;
-        if(!this.edited) {
+        this.initVal = val;
+        if (!this.edited) {
             this.curValue = val;
-            if(oldVal!=this.curValue){
+            if (oldVal != this.curValue) {
                 this.onChange(val);
             }
         }
     }
 
-    reset(){
+    reset() {
         const oldVal = this.curValue;
         this.curValue = this.initVal;
         this.edited = false;
@@ -43,7 +43,7 @@ class SpreadBoardVariable<Type>{
 
 }
 
-export type SpreadBoardStack = {variables: Map<string, SpreadBoardVariable<any>>, subStacks: Map<number,SpreadBoardStack>};
+export type SpreadBoardStack = { variables: Map<string, SpreadBoardVariable<any>>, subStacks: Map<number, SpreadBoardStack> };
 
 
-export {SpreadBoardVariable};
+export { SpreadBoardVariable };

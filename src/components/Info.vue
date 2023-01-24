@@ -18,9 +18,7 @@
 
         <p></p>
 
-        <a
-            style="display: inline;" 
-            title="Coming Soon">
+        <a style="display: inline;" title="Coming Soon">
             <Icon icon="book"></Icon>
             Documentation
         </a>
@@ -47,7 +45,7 @@ import Icon from './VS-Icon.vue';
 
 export default defineComponent({
     name: "Infor",
-    components:{
+    components: {
         Icon: Icon
     }
 });

@@ -1,11 +1,15 @@
 <template>
-<b v-if="!hasChildren()" @click="select(command.node_id)" :class="(selected?.find((n)=>n.id==command.node_id)&&!parentSelected)?'selectedCommand':''">
-    {{ command.commands }}
-</b>
-<b v-if="hasChildren()" v-for="single_command of command.commands" :class="(selected?.find((n)=>n.id==(single_command as Command).node_id)&&!parentSelected)?'selectedCommand':''">
-    <CommandVue :command="single_command" :parentSelected="selected?.find((n)=>n.id==(single_command as Command).node_id)!=undefined || parentSelected"></CommandVue>
-    <br v-if="topLevel">
-</b>
+    <b v-if="!hasChildren()" @click="select(command.node_id)"
+        :class="(selected?.find((n) => n.id == command.node_id) && !parentSelected) ? 'selectedCommand' : ''">
+        {{ command.commands }}
+    </b>
+    <b v-if="hasChildren()" v-for="single_command of command.commands"
+        :class="(selected?.find((n) => n.id == (single_command as Command).node_id) && !parentSelected) ? 'selectedCommand' : ''">
+        <CommandVue :command="single_command"
+            :parentSelected="selected?.find((n) => n.id == (single_command as Command).node_id) != undefined || parentSelected">
+        </CommandVue>
+        <br v-if="topLevel">
+    </b>
 </template>
 
 <script lang="ts">
@@ -29,29 +33,29 @@ export default defineComponent({
             required: false
         },
     },
-    setup(props){
+    setup(props) {
 
         let command: Command = props.command as Command
-        
+
         let selected = ref(SpreadBoardEditor.instance?.selected.list)
 
-        SpreadBoardEditor.instance?.on('nodeselected', (opt)=>{
+        SpreadBoardEditor.instance?.on('nodeselected', (opt) => {
             selected.value = [];
             selected.value = SpreadBoardEditor.instance?.selected.list;
         });
 
-        const isSelected = ()=>{
+        const isSelected = () => {
 
         }
 
-        const select = (id: number)=>{
-            let node = SpreadBoardEditor.instance?.nodes.find((n)=>n.id==id);
-            if(node)
-                SpreadBoardEditor.instance?.trigger("selectnode", {node:node})
+        const select = (id: number) => {
+            let node = SpreadBoardEditor.instance?.nodes.find((n) => n.id == id);
+            if (node)
+                SpreadBoardEditor.instance?.trigger("selectnode", { node: node })
             else SpreadBoardEditor.instance?.unselectNode()
         }
 
-        const hasChildren = ()=>{
+        const hasChildren = () => {
             return typeof (command.commands) != 'string'
         }
 
@@ -69,7 +73,7 @@ export default defineComponent({
 
 
 <style scoped>
-b{  
+b {
     z-index: 1;
     padding: 0px;
     transition: box-shadow 250ms ease-in-out;

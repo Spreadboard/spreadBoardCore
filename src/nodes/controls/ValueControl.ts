@@ -3,7 +3,7 @@ import { Control } from "rete";
 export abstract class ValueControl<T> extends Control {
     default: T;
 
-    constructor(default_val: T, key:string, ){
+    constructor(default_val: T, key: string,) {
         super(key);
         this.default = default_val;
     }
@@ -11,7 +11,7 @@ export abstract class ValueControl<T> extends Control {
 
     setValue(val?: T) {
         //@ts-ignore
-        this.vueContext.value = val??this.default;
+        this.vueContext.value = val ?? this.default;
     }
 
     getValue() {
