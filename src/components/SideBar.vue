@@ -6,7 +6,7 @@
     </div>
 
     <splitpanes style="height: 100%;width: 100%;" @resize="changeSize($event[0].size)" @pane-maximize="select('')">
-        <pane min-size="10" max-size="20" :size="curSize" v-if="selected!=''">
+        <pane min-size="10" max-size="20" :size="curSize" v-if="selected != ''">
             <div id="bar">
             </div>
         </pane>
@@ -35,12 +35,12 @@ export default {
         Info: Info,
         Icon: Icon,
         CompiledPreview: CompiledPreview,
-        EditorTabsContainer:EditorTabsContainer,
+        EditorTabsContainer: EditorTabsContainer,
         Splitpanes: Splitpanes,
-        Pane:Pane
+        Pane: Pane
     },
     setup() {
-        
+
         let curSize = ref(10);
 
         const map = [
@@ -90,16 +90,16 @@ export default {
                 if (getSelctedComp() != undefined) {
                     let bar = createApp(getSelctedComp()!);
                     curComp = bar;
-                    setTimeout(()=>{
+                    setTimeout(() => {
                         bar.mount("#bar");
-                    },10);
+                    }, 10);
                 }
             })();
         }
-        
-        const changeSize = (size:number)=>{
-            console.log("resize",size)
-            if(size <10)
+
+        const changeSize = (size: number) => {
+            console.log("resize", size)
+            if (size < 10)
                 size = 10;
             curSize.value = size;
         }
@@ -156,6 +156,7 @@ button.selected {
 #bar {
     overflow-x: hidden;
     max-height: 100%;
+    height: 100%;
 }
 
 #bar.visible {
