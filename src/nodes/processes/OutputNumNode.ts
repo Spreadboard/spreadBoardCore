@@ -36,8 +36,6 @@ export class OutputNumNode extends CompilerNode {
             case 'res':
                 return (inputs: ProcessIO) => {
                     let val = inputConnection['val'](inputs);
-                    //console.log("Outputting->",val);
-                    //console.log("Out silent:",compilerOptions.silent);
 
 
                     if (!compilerOptions.silent) {
@@ -83,11 +81,9 @@ export class OutputNumNode extends CompilerNode {
 
 
         if (compilerOptions.compilerOutputs) {
-            //console.log("Outputs:",key,"->",inputEval);
             compilerOptions.compilerOutputs[key] = proc;
         }
         if (!compilerOptions.silent) {
-            //console.log("Output-Not-Silent",proc);
             proc({});
         }
     }

@@ -3,15 +3,9 @@
         <div><input type="text" :on-submit="addProcess" :value="newProcessName" @input="change($event)" /></div>
         <div style="display: inline-flex; width: 100%; padding-bottom: 5px;" v-for='process in processes()'>
             <button style="flex-grow: 1; margin-right: 5px; padding-right: 5px;"
+                @mousedown="(e) => { if (e.button == 2) showMenu(process.index) }"
                 :class="curProcess == process.index ? 'selected' : ''" @click="(_) => select(process.id)">
                 {{ process.id }}
-            </button>
-            <button>
-                <img class="icon light"
-                    src="https://raw.githubusercontent.com/microsoft/vscode-icons/master/icons/light/chrome-close.svg">
-
-                <img class="icon dark"
-                    src="https://raw.githubusercontent.com/microsoft/vscode-icons/master/icons/dark/chrome-close.svg">
             </button>
         </div>
         <button v-if="newProcessName != ''" class="addProcess" @click="addProcess"><b>+</b><i>{{
@@ -23,13 +17,19 @@
 <script lang="ts">
 import { ref } from 'vue';
 import { SpreadBoardEditor } from '../editor/editor';
+import { EditorTabHandler } from './EditorView/EditorTabHandler';
+import Icon from './VS-Icon.vue';
 
 export default {
+    components: {
+        Icon: Icon
+    },
     setup() {
         let curProcess = ref(SpreadBoardEditor.getCurProcess());
 
         const select = (id: string) => {
             curProcess.value = processes().find((proc) => proc.id == id)?.index;
+            EditorTabHandler.openTab(id);
             SpreadBoardEditor.instance?.loadProcess(id).then(
                 () => {
                     curProcess.value = SpreadBoardEditor.getCurProcess();
@@ -49,6 +49,9 @@ export default {
 
         let newProcessName = ref("");
         const change = (event: any) => { newProcessName.value = event.target.value };
+        const showMenu = (id: number) => {
+            console.log("Test");
+        }
 
         return {
             select,
@@ -57,7 +60,8 @@ export default {
             change,
             addProcess,
             selected,
-            curProcess
+            curProcess,
+            showMenu
         }
     }
 }

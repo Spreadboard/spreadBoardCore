@@ -90,16 +90,13 @@ export abstract class CompilerNode extends Component {
                 }
             );
 
-            //console.log(node.outputs);
             if (!compilerOptions.silent) {
-                //console.log("Non-Silent",node.name);
                 if ((Object.keys(node.outputs).find((outKey) => node.outputs[outKey].connections.length == 0) || Object.keys(node.outputs).length == 0)) {
                     for (let outKey of Object.keys(node.outputs)) {
                         this.process(node, outKey, evaluateInputs, compilerOptions)({});
                     }
                 }
             } else {
-                //console.log("Silent",node.name);
             }
         }
 

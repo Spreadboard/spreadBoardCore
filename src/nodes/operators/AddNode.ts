@@ -79,7 +79,6 @@ export class AddNode extends CompilerNode {
                         const preview = this.editor?.nodes?.find((n: RNode) => n.id == node.id)?.controls.get('preview') as NumControl | undefined;
                         preview?.setValue(res);
                     } else {
-                        console.log(n1, "+", n2, "=", res);
                         console.trace();
                     }
 
