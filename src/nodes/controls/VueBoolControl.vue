@@ -11,6 +11,8 @@
 </template>
 
 <script lang="ts">
+import { SpreadBoardEditor } from '../../editor/editor';
+
 
 export default {
     props: ['readonly', 'emitter', 'ikey', 'getData', 'putData', 'title'],
@@ -22,13 +24,11 @@ export default {
     },
     methods: {
         change(e: any) {
-            console.log(e.target.checked)
             if (!this.readonly)
                 this.value = !this.value;
             this.update();
         },
         update() {
-            //console.log("Bool-Control-Update:",this.value);
             if (this.ikey)
                 this.putData(this.ikey, this.value)
             this.emitter(this.value);

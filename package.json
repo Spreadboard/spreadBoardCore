@@ -18,11 +18,12 @@
     "rete-context-menu-plugin": "^1.0.0-alpha9",
     "rete-vue-render-plugin": "^1.0.0-rc2",
     "sass": "^1.57.0",
-    "uuid": "^9.0.0",
+    "splitpanes": "^3.1.5",
     "vue": "^3.2.45"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^1.2.2",
+    "@types/splitpanes": "^2.2.1",
     "@types/uuid": "^9.0.0",
     "@vitejs/plugin-vue": "^4.0.0",
     "regenerator-runtime": "^0.13.11",

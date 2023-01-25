@@ -5,6 +5,7 @@ import VueMenu from './menu/Menu.vue';
 import VueSearch from './menu/Search.vue';
 import { Component, NodeEditor } from 'rete';
 import menu from './menu';
+import { SpreadBoardEditor } from '../editor/editor';
 
 
 interface Plugin {
@@ -28,7 +29,7 @@ function install(editor: NodeEditor, {
             title: "Clone"
         }
     },
-    allocate = (comp: Component) => {return [] as string[]},
+    allocate = (comp: Component) => { return [] as string[] },
     rename = (component: Component) => component.name,
     vueComponent = null
 }) {
@@ -59,7 +60,7 @@ function install(editor: NodeEditor, {
         const [x, y] = [e.clientX, e.clientY];
         let args;
 
-        if(node) {
+        if (node) {
             currentMenu = new NodeMenu(editor, { searchBar: false, delay }, vueComponent, nodeItems);
             args = { node };
         } else {

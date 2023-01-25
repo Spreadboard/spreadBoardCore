@@ -77,7 +77,6 @@ export class ConditionNode extends CompilerNode {
                         let res = (inputConnection['bool'](inputs)
                             ? (inputConnection['if'])
                             : (inputConnection['else']))
-                        //console.log("Condition",res,res(inputs));
                         return res(inputs);
                     };
                 default:

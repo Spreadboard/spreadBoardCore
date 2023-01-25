@@ -9,6 +9,7 @@ import ConnectionPlugin from "rete-connection-plugin";
 import { Data, Data as ReteData, NodeData, NodesData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { SpreadBoardWorkspace } from './spreadBoardWorkspace';
 import { ComponentPlugin } from './componentPlugin';
+import { Logger } from './logger'
 
 import StandardNodes from "../nodes";
 
@@ -21,6 +22,7 @@ import ContextMenuPlugin from "../context-menu";
 //@ts-ignore
 import NodeVue from '../render/Node.vue';
 import { Processor } from '../processor/processor';
+import { EditorTabHandler } from '../components/EditorView/EditorTabHandler';
 
 interface i18nObj {
     [index: string]: i18nObj | string;
@@ -66,9 +68,16 @@ export class SpreadBoardEditor extends NodeEditor {
             "controlflow": "Kontroll-Fluss"
         }
     };
+
+    public logger: Logger = new Logger("Editor");
+    public processLogger: Logger = new Logger("Process");
     private static processes: ReteData[] = [];
 
-    private curProcess: number = 0;
+    public static getProcesses() {
+        return [...this.processes];
+    }
+
+    private curProcess: number = -1;
 
 
     public static getCurProcess() { return this.instance?.curProcess };
@@ -84,7 +93,47 @@ export class SpreadBoardEditor extends NodeEditor {
         this.trigger("nodeselected");
     }
 
-    static getOrCreate(container: HTMLElement, id = "main@0.1.0", saveObj: SpreadBoardWorkspace = {
+    static getOrCreate(container: HTMLElement, id = "main@0.1.0", saveObj?: SpreadBoardWorkspace, silent = false) {
+        if (!this.instance) {
+            this.instance = new SpreadBoardEditor(container, id, saveObj, silent);
+        } else {
+            let processes = [... this.processes];
+            this.instance.destroy();
+            this.processes = [];
+            this.instance = new SpreadBoardEditor(container, id, saveObj ?? { processes: processes }, silent);
+        }
+        return this.instance;
+    }
+
+
+    public static getIOS(processId: string) {
+        let processIndex = this.getProcessIndex(processId);
+        let process = SpreadBoardEditor.processes[processIndex];
+        if (!process) return { inputs: [], outputs: [] };
+        let inputs: { key: string, name: string, socket: Socket }[] = [];
+        let outputs: { key: string, name: string, socket: Socket }[] = [];
+        for (let nodeKey in process.nodes) {
+            let node = process.nodes[nodeKey];
+            let data: any = SpreadBoardEditor.instance?.getComponent(node.name)?.data;
+            if (data.process) {
+                let processData = data.process as any;
+                if (processData.type == "input") {
+                    let name: string = node.data.key as string;
+                    inputs.push({ key: name, name: name, socket: processData.socket })
+                }
+                if (processData.type == "output") {
+                    let name: string = node.data.key as string;
+                    outputs.push({ key: name, name: name, socket: processData.socket })
+                }
+            }
+        }
+        return {
+            inputs: inputs,
+            outputs: outputs
+        };
+    }
+
+    private constructor(container: HTMLElement, id = "main@0.1.0", saveObj: SpreadBoardWorkspace = {
         processes: [
             {
                 "id": "main@0.1.0",
@@ -911,55 +960,23 @@ export class SpreadBoardEditor extends NodeEditor {
                 }
             }
         ]
-    }) {
-        if (!this.instance)
-            this.instance = new SpreadBoardEditor(container, id, saveObj);
-        SpreadBoardEditor.importing = true;
-        return this.instance;
-    }
-
-
-    public static getIOS(processId: string) {
-        let processIndex = this.getProcessIndex(processId);
-        let process = SpreadBoardEditor.processes[processIndex];
-        if (!process) return { inputs: [], outputs: [] };
-        let inputs: { key: string, name: string, socket: Socket }[] = [];
-        let outputs: { key: string, name: string, socket: Socket }[] = [];
-        for (let nodeKey in process.nodes) {
-            let node = process.nodes[nodeKey];
-            let data: any = SpreadBoardEditor.instance?.getComponent(node.name)?.data;
-            if (data.process) {
-                let processData = data.process as any;
-                if (processData.type == "input") {
-                    let name: string = node.data.key as string;
-                    inputs.push({ key: name, name: name, socket: processData.socket })
-                }
-                if (processData.type == "output") {
-                    let name: string = node.data.key as string;
-                    outputs.push({ key: name, name: name, socket: processData.socket })
-                }
-            }
-        }
-        return {
-            inputs: inputs,
-            outputs: outputs
-        };
-    }
-
-    private constructor(container: HTMLElement, id = "main@0.1.0", saveObj: SpreadBoardWorkspace = { processes: [{ id: "main@0.1.0", nodes: {} }] }) {
+    }, silent = false) {
         super(id, container);
-
+        this.silent = silent;
         this.editorProcessor = new Processor(
             new Engine(id)
         );
 
         if (!saveObj.processes.find((process) => process.id == id))
-            SpreadBoardEditor.processes = [{ id: "main@0.1.0", nodes: {} }];
+            SpreadBoardEditor.processes = [{ id: id, nodes: {} }];
         SpreadBoardEditor.processes.push(...saveObj.processes);
 
+        SpreadBoardEditor.importing = true;
         this.init();
 
     }
+
+    private tabListener: number = -1;
 
     async init() {
         this.use(VueRenderPlugin,
@@ -1003,26 +1020,33 @@ export class SpreadBoardEditor extends NodeEditor {
         this.on(
             ["connectioncreated", 'connectionremoved', "nodecreated", 'noderemoved'],
             (data: any) => {
-                if (!SpreadBoardEditor.importing) {
-                    //console.log(SpreadBoardEditor.importing,data);
+                if (!SpreadBoardEditor.importing && !this.silent) {
                     this.trigger("process");
                 }
             }
         );
 
         this.on('process', async () => {
-            //console.log('Start Processing');
-            this.saveCurProcess();
-            await this.processEditor();
+            if (!SpreadBoardEditor.importing) {
+                await this.saveCurProcess();
+                await this.processEditor();
+            }
         }
         );
 
 
+        //EditorTabHandler.openTab(SpreadBoardEditor.processes[this.curProcess].id.replace('@0.1.0', ''));
+        if (!this.silent)
+            this.tabListener = EditorTabHandler.onChange((tab, tabs) => {
+                this.loadProcess(tab);
+            });
+
+        await this.loadProcess(EditorTabHandler.getOpenTab());
+
         this.view.resize();
         this.trigger('process');
-        console.log("Started editor");
+        this.logger.log("Started editor");
 
-        await this.loadProcess("main");
 
     }
 
@@ -1042,7 +1066,7 @@ export class SpreadBoardEditor extends NodeEditor {
     }
 
     register(component: Component): void {
-        console.log("Register: ", component.name);
+        this.logger.log("Register: ", component.name);
         super.register(component);
         this.editorProcessor.register(component);
     }
@@ -1058,12 +1082,12 @@ export class SpreadBoardEditor extends NodeEditor {
     }
 
     async saveCurProcess() {
-        if (!SpreadBoardEditor.importing) {
+        if (!SpreadBoardEditor.importing && !this.silent) {
             try {
                 let json = this.toJSON();
                 SpreadBoardEditor.processes[this.curProcess].nodes = json.nodes;
                 await this.editorProcessor.compileProcess(SpreadBoardEditor.processes[this.curProcess].id, this.toJSON());
-                console.log((SpreadBoardEditor.processes[this.curProcess] as Object));
+                this.logger.log((SpreadBoardEditor.processes[this.curProcess] as Object));
             } catch (error) {
                 this.nodes.forEach(node => {
                     node.inputs.forEach(input => {
@@ -1107,9 +1131,7 @@ export class SpreadBoardEditor extends NodeEditor {
     public static importing: boolean = false;
 
     async fromJSON(json: Data) {
-        //console.log("Importing json", SpreadBoardEditor.importing);
         let res = await super.fromJSON(json);
-        //console.log("Imported json",SpreadBoardEditor.importing);
         return res;
     }
 
@@ -1122,7 +1144,6 @@ export class SpreadBoardEditor extends NodeEditor {
         let id = name + "@0.1.0";
         if (SpreadBoardEditor.processes.find((value: Data) => value.id == id))
             return;
-        //console.log("Adding new Process:",id);
         SpreadBoardEditor.processes.push({
             id: id,
             nodes: {}
@@ -1134,7 +1155,6 @@ export class SpreadBoardEditor extends NodeEditor {
     }
 
     async processEditor() {
-        //console.log("Process Editor")
         await this.editorProcessor.process(this.toJSON());
     }
 
@@ -1144,21 +1164,31 @@ export class SpreadBoardEditor extends NodeEditor {
         })
     }
 
-    async loadProcess(name: string) {
-        let index = SpreadBoardEditor.getProcessIndex(name);
-        //console.log("Saving Process")
-        await this.saveCurProcess();
-        SpreadBoardEditor.importing = true;
-        this.curProcess = index;
-        //console.log("Clear editor");
-        this.clear();
-        //console.log("Loading Process");
-        let process = this.toJSON();
-        process.nodes = SpreadBoardEditor.processes[index].nodes;
-        await this.fromJSON(process);
-        console.log("Start initial process");
-        this.trigger('process');
-        SpreadBoardEditor.importing = false;
+    async loadProcess(name?: string) {
+        if (name) {
+            let index = SpreadBoardEditor.getProcessIndex(name);
+            if (index == this.curProcess)
+                return;
+            await this.saveCurProcess();
+            SpreadBoardEditor.importing = true;
+            this.curProcess = index;
+            this.clear();
+            let process = this.toJSON();
+            process.nodes = SpreadBoardEditor.processes[index].nodes;
+            await this.fromJSON(process);
+            this.logger.log("Start initial process");
+            SpreadBoardEditor.importing = false;
+            this.trigger('process');
+            setTimeout(() => {
+            }, 20)
+            //this.trigger('process');
+        } else {
+            await this.saveCurProcess();
+            this.curProcess = -1;
+            this.clear();
+        }
+
+
     }
 }
 

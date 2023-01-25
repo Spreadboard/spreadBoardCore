@@ -21,7 +21,7 @@ export class ProcessNode extends CompilerNode {
 
     async builder(node: RNode) {
         //let inpId = new Input('id', i18n(['id'])??'ID', SocketTypes.processSocket())
-        node.addControl(new ProcessControl((process: string) => { console.log('UpdateIO', process); this.updateIos(process, node) }, 'id', false));
+        node.addControl(new ProcessControl((process: string) => { this.updateIos(process, node) }, 'id', false));
         //node.addInput(inpId);
         //node.addInput(new Input("eval", i18n(["eval"])??"Evaluate", SocketTypes.anySocket));
         this.updateIos(node.data.id as string, node);
@@ -31,9 +31,7 @@ export class ProcessNode extends CompilerNode {
         let inputs: { key: string, name: string, socket: Socket }[] = [];
         let outputs: { key: string, name: string, socket: Socket }[] = [];
 
-        //console.log("Updating IO");
         let ios = SpreadBoardEditor.getIOS(processId);
-        //console.log("new IO:", ios);
 
         inputs = ios.inputs;
         outputs = ios.outputs;
@@ -79,7 +77,7 @@ export class ProcessNode extends CompilerNode {
 
         if (nodeComp)
             this.updateIos(node.data.id as string, nodeComp);
-        //console.log("now passing on");
+
         super.worker(node, inputs, outputs, compilerOptions);
     }
 
@@ -96,20 +94,18 @@ export class ProcessNode extends CompilerNode {
                 }
             );
 
-            //console.log("Process",node.data.id, inputConnections, Object.keys(processI0));
             if (!func) {
                 func = SpreadBoardEditor.instance!.processProcess(node.data.id as string);
-                console.log("Fetching the Compiled Process");
+                SpreadBoardEditor.instance?.logger.log("Fetching the Compiled Process");
             }
             if (func) {
                 let result;
                 try {
                     result = func(externalInput);
                 } catch (e) {
-                    console.log("Error During:", func.toString())
+                    SpreadBoardEditor.instance?.logger.log("Error During:", func.toString())
                 }
                 if (result && result[outKey]) {
-                    //console.log(evaluate);
                     return result[outKey];
                 } else {
                     console.trace();
@@ -130,8 +126,8 @@ export class ProcessNode extends CompilerNode {
         let outputs: { [key: string]: Command } = {}
 
 
-
-        console.log(node.data.id as string, node.id, worker_input_names);
+        type logC = number | string | { [key: string]: Command }
+        SpreadBoardEditor.instance?.logger.log(node.data.id as logC, node.id as logC, worker_input_names as logC);
 
         let temp: Command[] = [{
             node_id: node.id,

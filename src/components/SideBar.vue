@@ -5,26 +5,43 @@
         </button>
     </div>
 
-    <div id="bar" :class="selected != '' ? 'visible' : 'hidden'">
-    </div>
+    <splitpanes style="height: 100%;width: 100%;" @resize="changeSize($event[0].size)" @pane-maximize="select('')">
+        <pane min-size="10" max-size="20" :size="curSize" v-if="selected != ''">
+            <div id="bar">
+            </div>
+        </pane>
+        <pane>
+            <EditorTabsContainer></EditorTabsContainer>
+        </pane>
+    </splitpanes>
 
 </template>
 
 <script lang="ts">
+import EditorTabsContainer from './EditorView/EditorTabsContainer.vue';
 import { App, createApp, ref } from 'vue';
 import ProcessSelector from './ProcessSelector.vue';
 import Info from './Info.vue';
 import CompiledPreview from './CompiledPreview.vue';
 import Icon from './VS-Icon.vue'
+import { SpreadBoardEditor } from '../editor/editor';
+import Logs from './Logs.vue';
+import { Splitpanes, Pane } from 'splitpanes';
+import { cursorTo } from 'readline';
 
 export default {
     components: {
         ProcessSelector: ProcessSelector,
         Info: Info,
         Icon: Icon,
-        CompiledPreview: CompiledPreview
+        CompiledPreview: CompiledPreview,
+        EditorTabsContainer: EditorTabsContainer,
+        Splitpanes: Splitpanes,
+        Pane: Pane
     },
     setup() {
+
+        let curSize = ref(10);
 
         const map = [
             {
@@ -34,10 +51,10 @@ export default {
                 componentName: ProcessSelector
             },
             {
-                key: "code",
-                title: "Code",
-                icon: 'code',
-                componentName: CompiledPreview
+                key: "logs",
+                title: "Logs",
+                icon: 'console',
+                componentName: Logs
             },
             {
                 key: "info",
@@ -64,19 +81,27 @@ export default {
                 selected.value = key;
             else
                 selected.value = "";
-            console.log("Select:", selected.value);
+            SpreadBoardEditor.instance?.logger.log("Select:", selected.value);
 
             (async () => {
-                let barEl = document.getElementById("bar")!;
 
                 if (curComp)
                     curComp.unmount();
                 if (getSelctedComp() != undefined) {
                     let bar = createApp(getSelctedComp()!);
                     curComp = bar;
-                    bar.mount("#bar");
+                    setTimeout(() => {
+                        bar.mount("#bar");
+                    }, 10);
                 }
             })();
+        }
+
+        const changeSize = (size: number) => {
+            console.log("resize", size)
+            if (size < 10)
+                size = 10;
+            curSize.value = size;
         }
 
         return {
@@ -84,7 +109,9 @@ export default {
             selected,
             select,
             isSelected,
-            getSelctedComp
+            getSelctedComp,
+            curSize,
+            changeSize,
         }
     }
 }
@@ -102,6 +129,7 @@ export default {
     padding-top: 0;
     width: 30px;
     min-width: 30px;
+    height: 100%;
     overflow-x: hidden;
     border-right: 1px solid #6f9aea;
 }
@@ -118,7 +146,6 @@ button {
     border-bottom-left-radius: 5px;
     border-width: 2px;
     border-right-width: 0;
-    border-color: #6f9aea;
 }
 
 
@@ -128,6 +155,8 @@ button.selected {
 
 #bar {
     overflow-x: hidden;
+    max-height: 100%;
+    height: 100%;
 }
 
 #bar.visible {
