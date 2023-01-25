@@ -4,12 +4,12 @@ import { NumControl } from "../controls/NumControl";
 
 import { SpreadBoardEditor, i18n } from "../../editor/editor";
 import { SocketTypes } from "../../processor/connections/sockets";
-import { ProcessCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
+import { NodeCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
 import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
 
 export class AddNode extends CompilerNode {
 
-    compile(node: NodeData, worker_input_names: { [key: string]: Command }, worker_id: string): ProcessCommand {
+    compile(node: NodeData, worker_input_names: { [key: string]: Command }, worker_id: string): NodeCommand {
 
 
         let num: Command = (worker_input_names.num) ? worker_input_names.num : { node_id: node.id, commands: `${node.data.num ?? 0}` };

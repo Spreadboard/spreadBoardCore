@@ -1,17 +1,18 @@
 <template>
-    <div v-if="!timeOut" id="compiledPreview"
-        style="padding: 5px; margin-left: 0; justify-content: start; text-align: start; overflow-x: auto;">
-        <p v-for="command of code" :class="selected?.find((n) => n.id == command.node_id) ? 'selectedCommand' : ''">
-            <CommandVue :command="command" :top-level="true"
-                :parentSelected="selected?.find((n) => n.id == command.node_id) != undefined"></CommandVue>
-        </p>
-    </div>
-    <div v-if="timeOut" id="compiledPreview"
-        style="padding: 5px; margin-left: 0; justify-content: start; text-align: start; overflow-x: auto;">
-        <p v-for="command of pCode" :class="selected?.find((n) => n.id == command.node_id) ? 'selectedCommand' : ''">
-            <CommandVue :command="command" :top-level="true"
-                :parentSelected="selected?.find((n) => n.id == command.node_id) != undefined"></CommandVue>
-        </p>
+    <div style="max-height: 100%; overflow-y: auto; padding: 20px; padding-top: 3px; padding-bottom: 0px;">
+        <div v-if="!timeOut" id="compiledPreview" style="justify-content: start; text-align: start; overflow-x: auto;">
+            <p v-for="command of code" :class="selected?.find((n) => n.id == command.node_id) ? 'selectedCommand' : ''">
+                <CommandVue :command="command" :top-level="true"
+                    :parentSelected="selected?.find((n) => n.id == command.node_id) != undefined"></CommandVue>
+            </p>
+        </div>
+        <div v-if="timeOut" id="compiledPreview" style="justify-content: start; text-align: start; overflow-x: auto;">
+            <p v-for="command of pCode"
+                :class="selected?.find((n) => n.id == command.node_id) ? 'selectedCommand' : ''">
+                <CommandVue :command="command" :top-level="true"
+                    :parentSelected="selected?.find((n) => n.id == command.node_id) != undefined"></CommandVue>
+            </p>
+        </div>
     </div>
 </template>
 
@@ -76,9 +77,10 @@ export default defineComponent({
 <style>
 p {
     z-index: 0;
-    padding: 5px;
+    padding: 0px;
     transition: box-shadow 250ms ease-in-out;
     box-shadow: 0px 0px 0px coral, 0px 0px 0px, coral;
+    margin: 5px;
 }
 
 .selectedCommand {

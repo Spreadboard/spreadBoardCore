@@ -5,7 +5,7 @@ import { SocketTypes } from "../../processor/connections/sockets";
 import { BoolControl } from "../controls/BoolControl";
 import { NumControl } from "../controls/NumControl";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
-import { ProcessCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
+import { NodeCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
 import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
 
 export class EqualNode extends CompilerNode {
@@ -57,7 +57,7 @@ export class EqualNode extends CompilerNode {
         }
     };
 
-    compile(node: NodeData, worker_input_names: { [key: string]: Command }, worker_id: string): ProcessCommand {
+    compile(node: NodeData, worker_input_names: { [key: string]: Command }, worker_id: string): NodeCommand {
 
 
         let num: Command = (worker_input_names.num) ? worker_input_names.num : { node_id: node.id, commands: `${node.data.num ?? 0}` };

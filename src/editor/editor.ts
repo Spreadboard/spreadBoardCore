@@ -1014,7 +1014,7 @@ export class SpreadBoardEditor extends NodeEditor {
         this.use(StandardNodes);
 
         for (let process of SpreadBoardEditor.processes) {
-            await this.editorProcessor.compileProcess(process.id, process);
+            await this.editorProcessor.compileProcess(process);
         }
 
         this.on(
@@ -1078,7 +1078,7 @@ export class SpreadBoardEditor extends NodeEditor {
     }
 
     getCurProcessCode() {
-        return this.editorProcessor.commandList(SpreadBoardEditor.processes[this.curProcess].id.replace("@0.1.0", ""));
+        return this.editorProcessor.getProcessPreview(SpreadBoardEditor.processes[this.curProcess].id.replace("@0.1.0", ""));
     }
 
     async saveCurProcess() {
@@ -1086,7 +1086,7 @@ export class SpreadBoardEditor extends NodeEditor {
             try {
                 let json = this.toJSON();
                 SpreadBoardEditor.processes[this.curProcess].nodes = json.nodes;
-                await this.editorProcessor.compileProcess(SpreadBoardEditor.processes[this.curProcess].id, this.toJSON());
+                await this.editorProcessor.compileProcess(SpreadBoardEditor.processes[this.curProcess]);
                 this.logger.log((SpreadBoardEditor.processes[this.curProcess] as Object));
             } catch (error) {
                 this.nodes.forEach(node => {

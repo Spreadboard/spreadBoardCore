@@ -5,7 +5,7 @@ import { SocketTypes } from "../../processor/connections/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { ProcessControl } from "../controls/ProcessControl";
 import { CompilerIO, Evaluation, ProcessIO } from "../../processor/connections/packet";
-import { ProcessCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
+import { NodeCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
 
 export class ProcessNode extends CompilerNode {
 
@@ -115,7 +115,7 @@ export class ProcessNode extends CompilerNode {
     };
 
 
-    compile(node: NodeData, worker_input_names: { [key: string]: Command }, worker_id: string): ProcessCommand {
+    compile(node: NodeData, worker_input_names: { [key: string]: Command }, worker_id: string): NodeCommand {
 
         let function_id = node.data.id as string;
 
@@ -166,22 +166,24 @@ export class ProcessNode extends CompilerNode {
             commands: [
                 {
                     node_id: node.id,
-                    commands: `\nlet ${worker_id}_result;
-                    \nconst ${worker_id}_get = ()=> ${worker_id}_result||=${function_id}(
-                    `
-                },
-                {
-                    node_id: node.id,
-                    commands: temp
-                },
-                {
-                    node_id: node.id,
-                    commands: ` );
-                    `
-                },
+                    commands: [
+                        {
+                            node_id: node.id,
+                            commands: `\nlet ${worker_id}_result;\nconst ${worker_id}_get = ()=> ${worker_id}_result||=${function_id}(`
+                        },
+                        {
+                            node_id: node.id,
+                            commands: temp
+                        },
+                        {
+                            node_id: node.id,
+                            commands: ` );`
+                        }
+                    ]
+                }
             ],
             outputs: outputs,
-            processDependencys: [function_id]
+            processDependencys: [`./${function_id}`]
         }
     }
 }

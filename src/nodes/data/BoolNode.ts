@@ -4,11 +4,11 @@ import { BoolControl } from "../controls/BoolControl";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { i18n, SpreadBoardEditor } from "../../editor/editor";
 import { SocketTypes } from "../../processor/connections/sockets";
-import { ProcessCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
+import { NodeCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
 import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
 
 export class BoolNode extends CompilerNode {
-    compile(node: NodeData, worker_input_names: { [key: string]: Command }, worker_id: string): ProcessCommand {
+    compile(node: NodeData, worker_input_names: { [key: string]: Command }, worker_id: string): NodeCommand {
         return {
             node_id: node.id,
             commands: [{

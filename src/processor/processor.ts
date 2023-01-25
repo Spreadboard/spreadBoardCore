@@ -1,8 +1,7 @@
 import { Component, Engine } from "rete";
 import { Data, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { SpreadBoardEditor } from "../editor/editor";
-import { ProcessCommand, CompilerOptions, Command } from "../nodes/CompilerNode";
-import { CompilerIO, Evaluation, ProcessIO } from "./connections/packet";
+import { NodeCommand, CompilerOptions, Command, ProcessCommand } from "../nodes/CompilerNode";
 import { SpreadBoardStack, SpreadBoardVariable } from "./variable";
 
 
@@ -12,87 +11,36 @@ export interface ProcessInc {
     path: string[],
 }
 
+
+
 export class Processor {
-    private static max_stack_height: number = 2000;
     private engine: Engine;
-    private stack: SpreadBoardStack;
 
-    private compiledProcesses: Map<string, ProcessCommand> = new Map();
-    private compiledCommandList: Map<string, ProcessCommand[]> = new Map();
-
-    private collectDependencys(id: string, dependencys: string[] = []): string[] | undefined {
-
-        let proc = this.compiledProcesses.get(id);
-        if (proc) {
-            proc.processDependencys.forEach(
-                (dependency) => {
-                    if (!dependencys.find((d) => d == dependency)) {
-                        dependencys.push(dependency)
-                        this.collectDependencys(dependency, dependencys);
-                    }
-                }
-            )
-        }
-        else {
-            return undefined;
-        }
-
-        let clean_dependencys: string[] = []
-
-        dependencys.forEach(
-            (dependency) => {
-                if (!clean_dependencys.find((d) => d == dependency))
-                    clean_dependencys.push(dependency)
-            }
-        )
-
-        return dependencys;
-    }
+    private collectedProcesses: Map<string, ProcessCommand> = new Map();
+    private collectedCommandList: Map<string, NodeCommand[]> = new Map();
 
     private commandToFunction(id: string): Function | undefined {
-        let command: ProcessCommand = this.compiledProcesses.get(id)!;
-        let dependencys = this.collectDependencys(id);
+        let process: ProcessCommand = this.collectedProcesses.get(id)!;
+        let dependencys = process.dependencys.filter((d) => d != `./${id}`);
         if (!dependencys) return undefined;
         let function_commands: Command[] = [];
 
-        dependencys.forEach(
-            (dependency) => {
-                if (dependency != id) {
-                    let commands = this.compiledProcesses.get(dependency);
-                    if (commands)
-                        function_commands = function_commands.concat(
-                            [
-                                {
-                                    node_id: commands.node_id,
-                                    commands: `\nconst ${dependency} = function ${dependency}(inputs){\nlet output = {}\n`
-                                },
-                                ...commands.commands,
-                                {
-                                    node_id: commands.node_id,
-                                    commands: `\n}`
-                                },
+        dependencys.forEach((dependency) => {
+            function_commands.push({
+                node_id: -1,
+                commands: `const ${dependency.replace('./', '')} = require("${dependency}")\n`
+            });
+        })
 
-                            ]
-                        );
-                }
+
+        function_commands = function_commands.concat(this.collectProcessPreview(process));
+
+        function_commands.push(
+            {
+                node_id: -1,
+                commands: `\nreturn ${process.id}`
             }
         )
-
-
-        function_commands = function_commands.concat(
-            [
-                {
-                    node_id: command.node_id,
-                    commands: `\nconst ${id} = function ${id}(inputs){\nlet output = {}\n`
-                },
-                ...command.commands,
-                {
-                    node_id: command.node_id,
-                    commands: `\n}\nreturn ${id}(inputs)`
-                },
-
-            ]
-        );
 
         const commandToString = (command: Command) => {
             if (!command)
@@ -112,8 +60,8 @@ export class Processor {
 
 
         try {
-            let func = new Function('inputs', 'spreadBoard', function_string);
-            return (inputs: any) => func(inputs, SpreadBoardEditor.instance);
+            let func = new Function('require', function_string);
+            return func((dependency: string) => { return (dependency.startsWith('./') ? this.commandToFunction(dependency.slice(2)) : require(dependency)) });
         } catch (e) {
             SpreadBoardEditor.instance?.logger.log("Error while converting");
             SpreadBoardEditor.instance?.logger.log(e)
@@ -122,73 +70,33 @@ export class Processor {
         }
     }
 
-    public commandList(id: string) {
-        let command: ProcessCommand = this.compiledProcesses.get(id)!;
-        let dependencys = this.collectDependencys(id);
-        if (!dependencys) return undefined;
-        let function_string: string[] = [];
+    private collectProcessPreview(process: ProcessCommand) {
 
-        dependencys.forEach(
-            (dependency) => {
-                if (dependency != id) {
-                    function_string.push(`import { ${dependency} } from "./${dependency}.js"\n`)
-                }
-            }
-        )
+        let commands = process.commands?.filter((c) => c.commands.length > 0)!;
 
-        let commands = this.compiledCommandList.get(id)?.filter((c) => c.commands.length > 0)!;
-
-        let list = [
-            ...(function_string.map(
-                (str) => {
-                    return {
-                        node_id: -1,
-                        commands: str
-                    }
-                }
-            )),
+        return [
             {
                 node_id: -1,
-                commands: `function ${id}(inputs){`
+                commands: `const ${process.id} = (inputs) => {\n`
             },
             {
                 node_id: -1,
-                commands: `let output = {};`
+                commands: `let output = {};\n`
             },
             ...commands,
             {
-                node_id: -1,
-                commands: "return output"
+                node_id: -2,
+                commands: "\nreturn output\n"
             },
             {
                 node_id: -1,
-                commands: "}"
+                commands: "}\n"
             }
-        ] as ProcessCommand[]
-        return list;
+        ] as NodeCommand[];
     }
 
-    public commandToCode(id: string) {
-        let command: ProcessCommand = this.compiledProcesses.get(id)!;
-        let dependencys = command.processDependencys;
-        if (!dependencys) return undefined;
-        let function_string = "";
-
-        dependencys.forEach(
-            (dependency) => {
-                if (dependency != id) {
-                    function_string = function_string +
-                        `import { ${dependency} } from './${dependency}.js'\n`
-                }
-            }
-        )
-
-
-        function_string = function_string +
-            `\n\n export function ${id}(inputs){\nlet output = {}\n${command.commands}\n}\n`;
-
-        return function_string;
-
+    public getProcessPreview(id: string) {
+        return this.collectedCommandList.get(id);
     }
 
     processProcess(processId: string): Function | undefined {
@@ -199,7 +107,6 @@ export class Processor {
 
     constructor(engine: Engine, stack: SpreadBoardStack = { variables: new Map<string, SpreadBoardVariable<any>>(), subStacks: new Map<number, SpreadBoardStack>() }) {
         this.engine = engine;
-        this.stack = stack;
     }
 
     register(component: Component) {
@@ -207,15 +114,15 @@ export class Processor {
     }
 
     clear() {
-        this.stack = { variables: new Map<string, SpreadBoardVariable<any>>(), subStacks: new Map<number, SpreadBoardStack>() };
+        this.engine.abort();
     }
 
     abort() {
         this.engine.abort();
     }
 
-    async compileProcess(id: string, data: Data): Promise<ProcessCommand> {
-        id = id.replace("@0.1.0", "");
+    async compileProcess(data: Data): Promise<NodeCommand> {
+        let id = data.id.replace("@0.1.0", "");
         let compilerOptions: CompilerOptions = { silent: true, compilerCommands: [] }
         const compiler = this.engine.clone();
         const compilerData = { ...data };
@@ -227,7 +134,7 @@ export class Processor {
             compilerOptions
         );
 
-        let function_command: ProcessCommand = {
+        let function_command: NodeCommand = {
             node_id: -1,
             commands: [],
             outputs: {},
@@ -245,17 +152,12 @@ export class Processor {
                 )
             }
         )
-        if (compilerOptions.compilerCommands)
-            this.compiledCommandList.set(id, compilerOptions.compilerCommands)
 
-        function_command.commands = function_command.commands.concat(
-            {
-                node_id: -1,
-                commands: `\nreturn output`
-            }
-        )
+        let processCommand = { id: id, commands: function_command.commands, dependencys: function_command.processDependencys };
 
-        this.compiledProcesses.set(id, function_command)
+
+        this.collectedProcesses.set(id, processCommand)
+        this.collectedCommandList.set(id, this.collectProcessPreview(processCommand));
         SpreadBoardEditor.instance?.logger.log(`Compiled ${id}`)
 
         SpreadBoardEditor.instance?.trigger("export");

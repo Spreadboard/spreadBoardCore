@@ -6,7 +6,7 @@ import { Evaluation, CompilerIO, ProcessIO } from "../processor/connections/pack
 export type CompilerOptions = {
     silent: boolean,
     compilerOutputs?: CompilerIO,
-    compilerCommands?: ProcessCommand[],
+    compilerCommands?: NodeCommand[],
     options?: {
         [key: string]: any
     }
@@ -17,8 +17,14 @@ export type Command = {
     commands: string | Command[]
 }
 
-
 export type ProcessCommand = {
+    id: string,
+    commands: Command[],
+    dependencys: string[]
+}
+
+
+export type NodeCommand = {
     node_id: number,
     outputs: { [key: string]: Command },
     processDependencys: string[],
@@ -27,7 +33,7 @@ export type ProcessCommand = {
 
 export abstract class CompilerNode extends Component {
 
-    abstract compile(node: NodeData, worker_input_names: { [key: string]: Command }, worker_id: string): ProcessCommand;
+    abstract compile(node: NodeData, worker_input_names: { [key: string]: Command }, worker_id: string): NodeCommand;
 
     abstract process: (node: NodeData, outkey: string, inputConnections: CompilerIO, compilerOptions: CompilerOptions) => Evaluation<any>;
 

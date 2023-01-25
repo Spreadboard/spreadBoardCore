@@ -1,15 +1,16 @@
 <template>
-    <b v-if="!hasChildren()" @click="select(command.node_id)"
-        :class="(selected?.find((n) => n.id == command.node_id) && !parentSelected) ? 'selectedCommand' : ''">
-        {{ command.commands }}
-    </b>
-    <b v-if="hasChildren()" v-for="single_command of command.commands"
+    <div v-if="!hasChildren()" @click="select(command.node_id)"
+        :class="(selected?.find((n) => n.id == command.node_id) && !parentSelected) ? 'selectedCommand' : ''"
+        v-for="line of (command.commands as string).split('\n')">
+        {{ line }}
+        <br v-if="line.length > 0 && !(command.commands as string).startsWith(line)">
+    </div>
+    <div v-if="hasChildren()" v-for="single_command of command.commands"
         :class="(selected?.find((n) => n.id == (single_command as Command).node_id) && !parentSelected) ? 'selectedCommand' : ''">
         <CommandVue :command="single_command"
             :parentSelected="selected?.find((n) => n.id == (single_command as Command).node_id) != undefined || parentSelected">
         </CommandVue>
-        <br v-if="topLevel">
-    </b>
+    </div>
 </template>
 
 <script lang="ts">
@@ -73,7 +74,8 @@ export default defineComponent({
 
 
 <style scoped>
-b {
+div {
+    display: inline;
     z-index: 1;
     padding: 0px;
     transition: box-shadow 250ms ease-in-out;

@@ -2,11 +2,11 @@ import Rete, { Connection, Input, Node as RNode, Output, Socket, Component } fro
 import { i18n } from "../../editor/editor";
 import { SocketTypes } from "../../processor/connections/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
-import { ProcessCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
+import { NodeCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
 import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
 
 export class ConditionNode extends CompilerNode {
-    compile(node: NodeData, worker_input_name: { [key: string]: Command }, worker_id: string): ProcessCommand {
+    compile(node: NodeData, worker_input_name: { [key: string]: Command }, worker_id: string): NodeCommand {
         return {
             node_id: node.id,
             commands: [],
