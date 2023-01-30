@@ -11,15 +11,15 @@
             <div class="spacer"></div>
         </div>
         <div v-if="openTabs.length > 0" style="height: 100%;">
-
-            <div class="float" v-if="openTabs.length != 0">
-
-                <button class="float" @click="codeOpen = !codeOpen">
-                    <Icon icon="code"></Icon>
-                </button>
-                <button v-if="codeOpen" @click="onlyCode = !onlyCode">
-                    <Icon :icon="onlyCode?'split-horizontal':'screen-full'"></Icon>
-                </button>
+            <div v-if="false">
+                <div class="float" v-if="openTabs.length != 0">
+                    <button class="float" @click="codeOpen = !codeOpen">
+                        <Icon icon="code"></Icon>
+                    </button>
+                    <button v-if="codeOpen" @click="onlyCode = !onlyCode">
+                        <Icon :icon="onlyCode ? 'split-horizontal' : 'screen-full'"></Icon>
+                    </button>
+                </div>
             </div>
 
 
@@ -39,9 +39,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed} from 'vue';
+import { defineComponent, ref, computed } from 'vue';
 import ReteEditor from '../ReteEditor.vue';
-import {SpreadBoardEditor} from '../../editor/editor';
+import { SpreadBoardEditor } from '../../editor/editor';
 import { EditorTabHandler } from './EditorTabHandler'
 //@ts-ignore
 import { Splitpanes, Pane } from 'splitpanes';
@@ -66,7 +66,7 @@ export default defineComponent({
         let codeOpen = ref(false)
         let onlyCode = ref(false)
 
-        let loading = computed(()=>{
+        let loading = computed(() => {
             return SpreadBoardEditor.importing;
         });
 

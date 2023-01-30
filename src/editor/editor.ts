@@ -1,6 +1,5 @@
 
 import { Component, Engine, Node, NodeEditor, Socket } from 'rete';
-import { EventEmitter } from '../processor/eventEmitter';
 
 // @ts-ignore
 import VueRenderPlugin from "rete-vue-render-plugin";
@@ -36,7 +35,6 @@ type Locale = "de";
 
 
 export class SpreadBoardEditor extends NodeEditor {
-    readonly eventEmitter: EventEmitter = new EventEmitter;
     private editorProcessor: Processor;
 
     private curLocale: Locale = "de";
@@ -1119,7 +1117,6 @@ export class SpreadBoardEditor extends NodeEditor {
             this.removeNode(node);
         }
         super.clear();
-        this.eventEmitter.clear();
         this.editorProcessor.clear();
         Node.latestId = latestId;
     }
