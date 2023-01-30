@@ -183,7 +183,7 @@ export class ProcessNode extends CompilerNode {
                 }
             ],
             outputs: outputs,
-            processDependencys: [`./${function_id}`]
+            processDependencys: [`@/${function_id}`]
         }
     }
 }
