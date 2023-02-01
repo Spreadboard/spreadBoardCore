@@ -4,35 +4,47 @@ import { BoolControl } from "../controls/BoolControl";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { i18n, SpreadBoardEditor } from "../../editor/editor";
 import { SocketTypes } from "../../processor/connections/sockets";
-import { NodeCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
-import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
+import { ObservableVariable } from "../../processor/variable";
+import { combineLatest, Observable, OperatorFunction } from "rxjs";
+import { ReactiveNode } from "../ReactiveNode";
 
-export class BoolNode extends CompilerNode {
-    compile(node: NodeData, worker_input_names: { [key: string]: Command }, worker_id: string): NodeCommand {
+export class BoolNode extends ReactiveNode<{}, { bool: boolean }> {
+    defaultOutputs = { bool: false };
+
+    liveValues = new Map<number, ObservableVariable<boolean>>()
+
+    process(node: NodeData, silent?: boolean) {
+        let operator: OperatorFunction<{}, { bool: boolean }> = (obs: Observable<{}>): Observable<{ bool: boolean }> => {
+
+            let res = new ObservableVariable<{ bool: boolean }>({ bool: false });
+
+            if (!silent)
+                this.liveValues.get(node.id)?.subscribe(
+                    (val) => {
+                        res.set({
+                            bool: val
+                        })
+                    });
+            else {
+                res.set({ bool: node.data.bool as boolean })
+            }
+
+            return res;
+        };
+
+
         return {
-            node_id: node.id,
-            commands: [{
-                commands: `const ${worker_id} = ${node.data.bool}`,
-                node_id: node.id
-            }],
-            outputs: {
-                'bool': {
-                    node_id: node.id,
-                    commands: `${worker_id}`
-                }
-            },
-            processDependencys: []
-        }
+            operator: operator,
+            id: 'node' + node.id,
+            inputs: Object.keys(node.inputs),
+            outputs: Object.keys(node.outputs)
+        };
     }
 
-    process = (node: NodeData, outKey: string, inputConnection: CompilerIO, compilerOptions: CompilerOptions) => {
-        switch (outKey) {
-            case 'bool':
-                return (inputs: ProcessIO) => node.data.bool;
-            default:
-                return (inputs: ProcessIO) => undefined;
-        }
-    };
+    dependencys(node: NodeData) {
+        return {};
+    }
+
 
     data = {
         i18nKeys: ["bool"],
@@ -47,7 +59,7 @@ export class BoolNode extends CompilerNode {
         const out1 = new Rete.Output('bool', i18n(["bool"]) || "Boolean", SocketTypes.boolSocket().valSocket);
 
         node
-            .addControl(new BoolControl((val: boolean) => this.editor?.trigger("process"), 'bool', false))
+            .addControl(new BoolControl((val: boolean) => this.liveValues.get(node.id)?.set(val), 'bool', false))
             .addOutput(out1);
     }
 }

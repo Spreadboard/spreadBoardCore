@@ -2,88 +2,42 @@ import Rete, { Connection, Input, Node as RNode, Output, Socket, Component } fro
 import { i18n } from "../../editor/editor";
 import { SocketTypes } from "../../processor/connections/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
-import { NodeCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
-import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
+import { ReactiveIO, ReactiveNode } from "../ReactiveNode";
+import { combineLatest, Observable, OperatorFunction } from "rxjs";
+import { ObservableVariable } from "../../processor/variable";
+import { Transformer } from "../../processor/processor";
 
-export class ConditionNode extends CompilerNode {
-    compile(node: NodeData, worker_input_name: { [key: string]: Command }, worker_id: string): NodeCommand {
-        return {
-            node_id: node.id,
-            commands: [],
-            outputs: {
-                res: {
-                    node_id: node.id,
-                    commands: [
-                        {
-                            node_id: node.id,
-                            commands: ` ( ( `
-                        },
-                        worker_input_name.bool,
-                        {
-                            node_id: node.id,
-                            commands: ` )?`
-                        },
-                        worker_input_name.if,
-                        {
-                            node_id: node.id,
-                            commands: `:`
-                        },
-                        worker_input_name.else,
-                        {
-                            node_id: node.id,
-                            commands: ` ) `
-                        },
+export class ConditionNode extends ReactiveNode<{ bool: boolean, if: any, else: any }, { res: any }> {
+    defaultOutputs = { res: null };
 
-                    ]
+    process(node: NodeData) {
+        let operator: OperatorFunction<{ bool: boolean, if: any, else: any }, { res: any }> = (obs: Observable<{ bool: boolean, if: any, else: any }>): Observable<{ res: any }> => {
+            let res = new ObservableVariable<{ res: any }>({ res: undefined });
+            obs.subscribe(
+                (val) => {
+
+                    res.set({
+                        res:
+                            val.bool ? val.if : val.else
+                    })
                 }
-            },
-            processDependencys: [],
-        }
+            )
+
+
+            return res;
+        };
+
+        return {
+            operator: operator,
+            id: 'node' + node.id,
+            inputs: Object.keys(node.inputs),
+            outputs: Object.keys(node.outputs)
+        } as Transformer<{ bool: boolean, if: any, else: any }, { res: any }>;
     }
-    process =
-        (node: NodeData, outKey: string, inputConnection: CompilerIO, compilerOptions: CompilerOptions) => {
-            switch (outKey) {
-                case 'res':
-                    return (inputs: ProcessIO) => {
 
-                        if (!compilerOptions.silent) {
-                            const nodeComp: RNode | undefined = this.editor!.nodes!.find(n => n.id == node.id);
-                            if (nodeComp) {
-                                const ifConn = nodeComp.getConnections().find((value, index) => (value.input.key == 'if'));
-
-                                const elseConn = nodeComp.getConnections().find((value, index) => (value.input.key == 'else'));
-
-                                const resConn = nodeComp.getConnections().find((value, index) => (value.input.key == 'res'));
-
-
-                                let socketType = SocketTypes.anySocket;
-
-
-                                if (ifConn && ifConn.output.socket) {
-                                    socketType = ifConn.output.socket;
-                                } else if (elseConn && elseConn.output.socket) {
-                                    socketType = elseConn.output.socket;
-                                } else if (resConn && resConn.output.socket) {
-                                    socketType = resConn.output.socket;
-                                }
-
-
-                                this.reconnectInput(nodeComp.inputs.get('if'), ifConn, socketType);
-                                this.reconnectInput(nodeComp.inputs.get('else'), elseConn, socketType);
-                                this.reconnectOutput(nodeComp.outputs.get('res'), resConn, socketType);
-                            }
-                        }
-
-                        let res = (inputConnection['bool'](inputs)
-                            ? (inputConnection['if'])
-                            : (inputConnection['else']))
-                        return res(inputs);
-                    };
-                default:
-                    return (_: ProcessIO) => undefined;
-            }
-        }
-        ;
+    dependencys(node: NodeData) {
+        return {};
+    }
 
     data = {
         i18nKeys: ["cond"],

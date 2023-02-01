@@ -1,89 +1,91 @@
-import Rete, { Component, Node as RNode } from "rete";
-import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
+import Rete, { Node as RNode } from "rete";
+import { NodeData } from "rete/types/core/data";
 import { NumControl } from "../controls/NumControl";
 
-import { SpreadBoardEditor, i18n } from "../../editor/editor";
 import { SocketTypes } from "../../processor/connections/sockets";
-import { NodeCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
-import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
+import { ReactiveNode } from "../ReactiveNode";
+import { fromObservable, ObservableVariable, seperate } from "../../processor/variable";
+import { combineLatest, Observable, OperatorFunction } from "rxjs";
+import { i18n } from "../../editor/editor";
 
-export class DivNode extends CompilerNode {
+export class DivNode extends ReactiveNode<{ num: number, num2: number }, { num: number }> {
+    defaultOutputs = { num: 0 };
+
+
+    liveValues = new Map<number, ObservableVariable<number>>()
+    liveValues2 = new Map<number, ObservableVariable<number>>()
+
+    process(node: NodeData, silent?: boolean) {
+        let operator: OperatorFunction<{ num: number, num2: number }, { num: number }> = (obs: Observable<{ num: number, num2: number }>): Observable<{ num: number }> => {
+
+            let res = new ObservableVariable<{ num: number }>({ num: 0 });
+
+            let { num, num2 } = seperate(fromObservable(obs, { num: 0, num2: 0 }));
+
+            if (!silent) {
+                if (node.inputs.num.connections.length == 0 && this.liveValues.has(node.id)) {
+                    num = this.liveValues.get(node.id)!;
+                }
+                if (node.inputs.num2.connections.length == 0 && this.liveValues2.has(node.id))
+                    num2 = this.liveValues2.get(node.id)!;
+                obs = combineLatest({ num, num2 });
+            }
+
+            obs.subscribe(
+                (val) => {
+                    res.set({
+                        num: val.num / val.num2
+                    })
+                }
+            )
+
+            if (!silent) {
+                res.subscribe(
+                    (val: { num: number }) =>
+                        (this.editor?.nodes.find(n => n.id == node.id)?.controls.get('preview') as NumControl)?.setValue(val.num)
+                )
+            }
+            return res;
+        };
+
+        return {
+            operator: operator,
+            id: 'node' + node.id,
+            inputs: Object.keys(node.inputs),
+            outputs: Object.keys(node.outputs)
+        };
+    }
+
+    dependencys(node: NodeData) {
+        return {};
+    }
 
     data = {
         i18nKeys: ["div"],
         category: [["operators"]]
     }
     constructor() {
-        super("Divide");
+        super("DivNode");
     }
 
     async builder(node: RNode): Promise<void> {
-        const inp1 = new Rete.Input('num', i18n(["divIn"]) || "Zähler", SocketTypes.numSocket().valSocket);
-        const inp2 = new Rete.Input('num2', i18n(["divIn2"]) || "Nenner", SocketTypes.numSocket().valSocket);
+        const inp1 = new Rete.Input('num', i18n(["divIn"]) || "Dividend", SocketTypes.numSocket().valSocket);
+        const inp2 = new Rete.Input('num2', i18n(["divIn"]) || "Divisor", SocketTypes.numSocket().valSocket);
         const out = new Rete.Output('num', i18n(["res"]) || "Result", SocketTypes.numSocket().valSocket);
 
-        inp1.addControl(new NumControl((val: number) => this.editor?.trigger("process"), 'num', false, i18n(["divIn"]) || "Zähler"))
-        inp2.addControl(new NumControl((val: number) => this.editor?.trigger("process"), 'num2', false, i18n(["divIn2"]) || "Nenner"))
+        if (this.editor) {
+            this.liveValues.set(node.id, new ObservableVariable<number>(0));
+            this.liveValues2.set(node.id, new ObservableVariable<number>(0));
+        }
+
+        inp1.addControl(new NumControl((val: number) => this.liveValues.get(node.id)?.set(val), 'num', false, i18n(["divIn"]) || "Dividend"))
+        inp2.addControl(new NumControl((val: number) => this.liveValues2.get(node.id)?.set(val), 'num2', false, i18n(["divIn"]) || "Divisor"))
 
         node
             .addInput(inp1)
             .addInput(inp2)
-            .addControl(new NumControl((event: string, val: number) => { }, 'preview', true, i18n(["res"]) || "Result"))
+            .addControl(new NumControl((val: number) => { }, 'preview', true, i18n(["res"]) || "Result"))
             .addOutput(out);
     }
 
-    process = (node: NodeData, outKey: string, inputConnection: CompilerIO, compilerOptions: CompilerOptions) => {
-        switch (outKey) {
-            case 'num':
-                return (inputs: ProcessIO) => {
-                    const n1: number = inputConnection['num'](inputs) as number ?? node.data.num as number ?? 0;
-                    const n2: number = inputConnection['num2'](inputs) as number ?? node.data.num2 as number ?? 0;
-                    const res: number = n1 / n2;
-
-                    if (!compilerOptions.silent) {
-                        const preview = this.editor?.nodes?.find((n: RNode) => n.id == node.id)?.controls.get('preview') as NumControl | undefined;
-                        preview?.setValue(res);
-                    }
-
-                    return res;
-                }
-            default:
-                return (inputs: ProcessIO) => undefined;
-        }
-    };
-
-    compile(node: NodeData, worker_input_names: { [key: string]: Command }, worker_id: string): NodeCommand {
-
-
-        let num: Command = (worker_input_names.num) ? worker_input_names.num : { node_id: node.id, commands: `${node.data.num ?? 0}` };
-        let num2: Command = (worker_input_names.num2) ? worker_input_names.num2 : { node_id: node.id, commands: `${node.data.num2 ?? 0}` };
-
-        return {
-            node_id: node.id,
-            commands: [],
-            outputs: {
-                'num': {
-                    commands: [
-                        {
-                            node_id: node.id,
-                            commands: ` ( `
-                        },
-                        num,
-                        {
-                            node_id: node.id,
-                            commands: ` / `
-                        },
-                        num2,
-                        {
-                            node_id: node.id,
-                            commands: ` ) `
-                        },
-
-                    ],
-                    node_id: node.id
-                }
-            },
-            processDependencys: []
-        }
-    }
 }

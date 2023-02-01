@@ -1,146 +1,91 @@
 import { Component, Engine } from "rete";
 import { Data, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
+import { combineLatest, Observable, OperatorFunction, UnaryFunction } from "rxjs";
 import { SpreadBoardEditor } from "../editor/editor";
-import { NodeCommand, CompilerOptions, Command, ProcessCommand } from "../nodes/CompilerNode";
-import { SpreadBoardStack, SpreadBoardVariable } from "./variable";
+import { ObservableVariable } from "./variable";
 
 
+export type OperatorVarFunction<T, R> = UnaryFunction<ObservableVariable<T>, ObservableVariable<R>>
+export type OperatorToVarFunction<T, R> = UnaryFunction<Observable<T>, ObservableVariable<R>>
 
-export interface ProcessInc {
-    processInputs?: WorkerInputs,
-    path: string[],
-}
-
-export type ModuleData = {
+export interface Transformer<T extends { [key: string]: any }, R extends { [key: string]: any }> {
     id: string,
-    processes: Data[]
+    operator: OperatorFunction<T, R>
+    outputs: string[]
+    inputs: string[]
 }
 
-export type ModuleCommands = {
-    id: string,
-    processes: ProcessCommand[]
+export interface CompiledTransformer<T extends { [key: string]: any }, R extends { [key: string]: any }> extends Transformer<T, R> {
+    compilerInputs: { [key: string]: [string, string] }
 }
 
+export interface CompilerResult {
+    dependencys: { [key: string]: string[] | string },
+    tranformers: CompiledTransformer<any, any>[]
+    outputs: { [key: string]: [string, string] }
+    inputs: string[]
+}
+
+export interface CompilerOptions {
+    silent?: boolean,
+    options?: { [key: string]: any }
+    result?: CompilerResult
+}
 
 export class Processor {
     private engine: Engine;
 
-    private collectedProcesses: Map<string, ProcessCommand> = new Map();
-    private collectedCommandList: Map<string, NodeCommand[]> = new Map();
+    private compiledProcesses: Map<string, Transformer<any, any>> = new Map();
 
-    private async collectModule(data: ModuleData) {
-        let moduleCommands: ModuleCommands = { id: data.id, processes: [] }
-        for (let process of data.processes) {
-            moduleCommands.processes.push(await this.collectProcess(process));
-        }
-        return moduleCommands;
-    }
+    compilerResultToTransformer(id: string, compileResult: CompilerResult): Transformer<any, any> {
+        const transformerToCommand = (t: CompiledTransformer<any, any>) => {
+            let inputs_mapping = Object.keys(t.compilerInputs).map(
+                (key) => `${key} : ${t.compilerInputs[key][0]}.${t.compilerInputs[key][1]}`
+            ).join(', ');
 
-    private async compileModule(data: ModuleData) {
-        let module = await this.collectModule(data);
-
-        let moduleString = '';
-
-        const commandToString = (commands: Command): string => {
-            if (typeof commands.commands == 'string')
-                return commands.commands
-            return commands.commands.map(commandToString).reduce((str1, str2) => str1 + str2);
+            return
+            `
+const ${t.id} = ${t.operator.toString()}( combineLatest( { ${inputs_mapping}} ) );
+`
         }
 
-        for (let process of module.processes) {
-            moduleString += '\n' + this.collectProcessPreview(process).map(commandToString).reduce((str1, str2) => str1 + str2);
-        }
+        let outputs_mapping = Object.keys(compileResult.outputs).map(
+            (key) => `${key} : ${compileResult.outputs[key][0]}.${compileResult.outputs[key][1]}`
+        ).join(', ');
 
-        return (new Function('require', moduleString))((s: string) => (s.startsWith('./') ? {} : require(s)))
-    }
+        let commands = compileResult.tranformers.map(transformerToCommand)
+            .join('\n');
 
-    private commandToFunction(id: string): Function | undefined {
-        let process: ProcessCommand = this.collectedProcesses.get('@/' + id)!;
-        let dependencys = process.dependencys.filter((d) => d != `@/${id}`);
-        if (!dependencys) return undefined;
-        let function_commands: Command[] = [];
-
-        dependencys.forEach((dependency) => {
-            function_commands.push({
-                node_id: -1,
-                commands: `const ${dependency.replace('@/', '')} = require("${dependency}")\n`
-            });
-        })
-
-
-        function_commands = function_commands.concat(this.collectProcessPreview(process));
-
-        function_commands.push(
-            {
-                node_id: -1,
-                commands: `\nreturn ${process.id}`
+        let depList = Object.keys(compileResult.dependencys).map(
+            (key) => { return { key: key, value: compileResult.dependencys[key] } }
+        );
+        let dependencys = depList.concat(
+            depList.find(({ key, value }) => key == 'rxjs') ? [{ key: 'rxjs', value: [] }] : []
+        ).map(
+            ({ key, value }) => {
+                if (key == 'rxjs' && !('combineLatest' in (value as string[])))
+                    return {
+                        key: key,
+                        value: value.concat('combineLatest')
+                    }
+                else return { key, value };
             }
+        ).map(
+            ({ key, value }) => `const ${(typeof value == 'string') ? value : `{ ${value.concat(', ')} }`} = require('${key}')`
         )
 
-        const commandToString = (command: Command) => {
-            if (!command)
-                return ""
-            if (typeof (command.commands) == 'string')
-                return command.commands
-
-            let str = "";
-            command.commands.map(commandToString).forEach((st) => str = str + st);
-            return str;
+        let functionString = `${dependencys}\n${commands}\n return { ${outputs_mapping}}`
+        let newOperator = ((inputs: Observable<any>) => Function("require", "inputs", functionString)((source: string) => source.startsWith('@/') ? this.compiledProcesses.get(source.replace('@/', ''))?.operator : require(source), inputs) as ObservableVariable<any>);
+        let newTransform: Transformer<any, any> = {
+            inputs: compileResult.inputs,
+            outputs: Object.keys(compileResult.outputs),
+            operator: newOperator,
+            id: id
         }
-
-        let function_string = '';
-        function_commands.map(commandToString).forEach(
-            (st) => function_string = function_string + st
-        )
-
-
-        try {
-            let func = new Function('require', function_string);
-            return func((dependency: string) => { return (dependency.startsWith('@/') ? this.commandToFunction(dependency.slice(2)) : require(dependency)) });
-        } catch (e) {
-            SpreadBoardEditor.instance?.logger.log("Error while converting");
-            SpreadBoardEditor.instance?.logger.log(e)
-            SpreadBoardEditor.instance?.logger.log(function_commands);
-            SpreadBoardEditor.instance?.logger.log(function_string)
-        }
+        return newTransform;
     }
 
-    private collectProcessPreview(process: ProcessCommand) {
-
-        let commands = process.commands?.filter((c) => c.commands.length > 0)!;
-
-        return [
-            {
-                node_id: -1,
-                commands: `const ${process.id} = (inputs) => {\n`
-            },
-            {
-                node_id: -1,
-                commands: `let output = {};\n`
-            },
-            ...commands,
-            {
-                node_id: -2,
-                commands: "\nreturn output\n"
-            },
-            {
-                node_id: -1,
-                commands: "}\n"
-            }
-        ] as NodeCommand[];
-    }
-
-    public getProcessPreview(id: string) {
-        return this.collectedCommandList.get('@/' + id);
-    }
-
-    processProcess(processId: string): Function | undefined {
-        processId = processId.replace('@0.1.0', '');
-        let func = this.commandToFunction(processId);
-        return func;
-    }
-
-    constructor(engine: Engine, stack: SpreadBoardStack = { variables: new Map<string, SpreadBoardVariable<any>>(), subStacks: new Map<number, SpreadBoardStack>() }) {
+    constructor(engine: Engine) {
         this.engine = engine;
     }
 
@@ -156,54 +101,31 @@ export class Processor {
         this.engine.abort();
     }
 
+    async compileProcess(data: Data, options?: { [key: string]: any }) {
+        let compileEngine = this.engine.clone();
 
-    async compileProcess(data: Data): Promise<ProcessCommand> {
-        let processCommand = await this.collectProcess(data);
-
-
-        this.collectedProcesses.set('@/' + data.id.replace('@0.1.0', ''), processCommand)
-        this.collectedCommandList.set('@/' + data.id.replace('@0.1.0', ''), this.collectProcessPreview(processCommand));
-        return processCommand;
-    }
-
-    private async collectProcess(data: Data) {
-        let id = data.id.replace("@0.1.0", "");
-        let compilerOptions: CompilerOptions = { silent: true, compilerCommands: [] }
-        const compiler = this.engine.clone();
-        const compilerData = { ...data };
-        compilerData.id = compiler.id = "compiler@0.1.0";
-
-        await compiler.process(
-            compilerData,
-            null,
-            compilerOptions
-        );
-
-        let function_command: NodeCommand = {
-            node_id: -1,
-            commands: [],
-            outputs: {},
-            processDependencys: []
-        }
-
-        compilerOptions.compilerCommands?.forEach(
-            (command) => {
-                function_command.commands = function_command.commands.concat(command.commands);
-                command.processDependencys.forEach(
-                    (dependency) => {
-                        if (!function_command.processDependencys.find((d) => d == dependency))
-                            function_command.processDependencys.push(dependency)
-                    }
-                )
+        let compilerOptions: CompilerOptions = {
+            silent: false,
+            options: options,
+            result: {
+                dependencys: {},
+                inputs: [],
+                tranformers: [],
+                outputs: {}
             }
-        )
+        }
+        const processData = { id: this.engine.id, nodes: data.nodes };
 
-        let processCommand = { id: id, commands: function_command.commands, dependencys: function_command.processDependencys };
+        await compileEngine.process(processData, null, compilerOptions);
 
-        SpreadBoardEditor.instance?.logger.log(`Compiled ${id}`)
+        let result = compilerOptions.result as CompilerResult;
 
-        SpreadBoardEditor.instance?.trigger("export");
-        return processCommand;
+        let newTransform = this.compilerResultToTransformer(data.id, result);
+
+        this.compiledProcesses.set(
+            data.id,
+            newTransform
+        );
     }
 
     async process(data: Data, options?: { [key: string]: any }): Promise<"success" | "aborted"> {
