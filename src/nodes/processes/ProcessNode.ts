@@ -4,10 +4,31 @@ import { i18n, SpreadBoardEditor } from "../../editor/editor";
 import { SocketTypes } from "../../processor/connections/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { ProcessControl } from "../controls/ProcessControl";
-import { CompilerIO, Evaluation, ProcessIO } from "../../processor/connections/packet";
-import { NodeCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
+import { ReactiveInputs, ReactiveIO, ReactiveNode } from "../ReactiveNode";
+import { CompilerOptions, Transformer } from "../../processor/processor";
 
-export class ProcessNode extends CompilerNode {
+export class ProcessNode extends ReactiveNode<any, any> {
+
+    process(node: NodeData, silent?: boolean | undefined): Transformer<any, any> {
+        return !silent ? (SpreadBoardEditor.instance!.processTransform(node.data.id as string) ?? {
+            id: 'node' + node.id,
+            inputs: [],
+            outputs: [],
+            operator: `${node.data.id as string}`
+        }) : {
+            id: 'node' + node.id,
+            inputs: [],
+            outputs: [],
+            operator: `${node.data.id as string}`
+        };
+    }
+
+    dependencys(node: NodeData): { [key: string]: string | string[]; } {
+        let id = node.data.id as string;
+        let key: string = `@/${id}`;
+        return { key: id };
+    }
+    defaultOutputs: any;
 
     data = {
         i18nKeys: ["process"],
@@ -20,11 +41,14 @@ export class ProcessNode extends CompilerNode {
 
 
     async builder(node: RNode) {
-        //let inpId = new Input('id', i18n(['id'])??'ID', SocketTypes.processSocket())
         node.addControl(new ProcessControl((process: string) => { this.updateIos(process, node) }, 'id', false));
-        //node.addInput(inpId);
-        //node.addInput(new Input("eval", i18n(["eval"])??"Evaluate", SocketTypes.anySocket));
         this.updateIos(node.data.id as string, node);
+    }
+
+    override worker(node: NodeData, inputs: ReactiveInputs<any>, outputs: ReactiveIO<any> | { [key: string]: any; }, compilerOptions: CompilerOptions): void {
+        if (this.editor != undefined && !compilerOptions.silent)
+            this.updateIos(node.data.id as string, this.editor.nodes.find(n => n.id = node.id)!);
+        super.worker(node, inputs, outputs, compilerOptions);
     }
 
     updateIos(processId: string, node: Node) {
@@ -71,120 +95,5 @@ export class ProcessNode extends CompilerNode {
         node.update();
     }
 
-    worker(node: NodeData, inputs: WorkerInputs, outputs: CompilerIO, compilerOptions: CompilerOptions) {
-
-        let nodeComp = this.editor?.nodes.find((n) => n.id == node.id);
-
-        if (nodeComp)
-            this.updateIos(node.data.id as string, nodeComp);
-
-        super.worker(node, inputs, outputs, compilerOptions);
-    }
-
-
-    process = (node: NodeData, outKey: string, inputConnections: CompilerIO, compilerOptions: CompilerOptions) => {
-
-        let func = SpreadBoardEditor.instance!.processProcess(node.data.id as string);
-
-        return (processI0: ProcessIO) => {
-            let externalInput: ProcessIO = {};
-            Object.keys(inputConnections).forEach(
-                (inputKey) => {
-                    externalInput[inputKey] = inputConnections[inputKey](processI0);
-                }
-            );
-
-            if (!func) {
-                func = SpreadBoardEditor.instance!.processProcess(node.data.id as string);
-                SpreadBoardEditor.instance?.logger.log("Fetching the Compiled Process");
-            }
-            if (func) {
-                let result;
-                try {
-                    result = func(externalInput);
-                } catch (e) {
-                    SpreadBoardEditor.instance?.logger.log("Error During:", func.toString())
-                }
-                if (result && result[outKey]) {
-                    return result[outKey];
-                } else {
-                    console.trace();
-                }
-            }
-        }
-    };
-
-
-    compile(node: NodeData, worker_input_names: { [key: string]: Command }, worker_id: string): NodeCommand {
-
-        let function_id = node.data.id as string;
-
-        worker_id = function_id + "_" + node.id
-
-        let out = SpreadBoardEditor.getIOS(function_id).outputs;
-
-        let outputs: { [key: string]: Command } = {}
-
-
-        type logC = number | string | { [key: string]: Command }
-        SpreadBoardEditor.instance?.logger.log(node.data.id as logC, node.id as logC, worker_input_names as logC);
-
-        let temp: Command[] = [{
-            node_id: node.id,
-            commands: "{"
-        }];
-        Object.keys(worker_input_names).forEach((key) => {
-            if (temp.length > 1)
-                temp.push({
-                    node_id: node.id,
-                    commands: `, `
-                })
-
-
-            temp.push({
-                node_id: node.id,
-                commands: `${key}: `
-            })
-            temp.push(worker_input_names[key])
-        })
-        temp.push({
-            node_id: node.id,
-            commands: "} "
-        })
-
-
-
-        out.forEach(({ key }) => {
-            outputs[key] = {
-                node_id: node.id,
-                commands: `( ${worker_id}_get().${key} )`
-            } as Command;
-        });
-
-        return {
-            node_id: node.id,
-            commands: [
-                {
-                    node_id: node.id,
-                    commands: [
-                        {
-                            node_id: node.id,
-                            commands: `\nlet ${worker_id}_result;\nconst ${worker_id}_get = ()=> ${worker_id}_result||=${function_id}(`
-                        },
-                        {
-                            node_id: node.id,
-                            commands: temp
-                        },
-                        {
-                            node_id: node.id,
-                            commands: ` );`
-                        }
-                    ]
-                }
-            ],
-            outputs: outputs,
-            processDependencys: [`@/${function_id}`]
-        }
-    }
 }
 

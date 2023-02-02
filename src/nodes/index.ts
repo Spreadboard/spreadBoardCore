@@ -26,9 +26,9 @@ const StandardNodes = new ComponentPlugin(
         new GreaterNode(),
         new EqualNode(),
         new SubNode(),
-        //new InputNumNode(),
-        //new OutputNumNode(),
-        //new ProcessNode(),
+        new InputNumNode(),
+        new OutputNumNode(),
+        new ProcessNode(),
         new ConditionNode(),
         new ModuloNode(),
         new DivNode()

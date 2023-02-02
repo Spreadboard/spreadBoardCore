@@ -1,7 +1,7 @@
 import { Component } from "rete";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 
-import { combineLatest, merge, mergeAll, Observable } from 'rxjs';
+import { combineLatest, merge, mergeAll, Observable, OperatorFunction } from 'rxjs';
 import { CompiledTransformer, CompilerOptions, Transformer } from "../processor/processor";
 import { fromObservable, ObservableVariable, seperate } from "../processor/variable";
 
@@ -103,15 +103,22 @@ export abstract class ReactiveNode<T extends { [key: string]: any }, R extends {
                     }
                 )
 
-            let outs = seperate(fromObservable(this.process(node).operator(combineLatest(reactiveIO) as Observable<T>), this.defaultOutputs));
+
+            let trans = this.process(node);
+            if (typeof trans.operator != 'string') {
+                let op = trans.operator as OperatorFunction<T, R>;
+                let outs = seperate(fromObservable(op(combineLatest(reactiveIO) as Observable<T>), this.defaultOutputs));
 
 
-            this.previousOutputs.set(node.id, outs);
+                this.previousOutputs.set(node.id, outs);
 
-            Object.keys(outs).forEach(key => {
-                outputs[key] = outs[key];
-                console.log(`Node ${node.id} outputs.${key} -> ${outputs[key]}`)
-            })
+                Object.keys(outs).forEach(key => {
+                    outputs[key] = outs[key];
+                    console.log(`Node ${node.id} outputs.${key} -> ${outputs[key]}`)
+                })
+            } else {
+                this.previousOutputs.set(node.id, {});
+            }
         }
 
 
