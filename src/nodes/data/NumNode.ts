@@ -4,47 +4,35 @@ import { NumControl } from "../controls/NumControl";
 import { i18n, SpreadBoardEditor } from "../../editor/editor";
 import { SocketTypes } from "../../processor/connections/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
-import { ReactiveNode } from "../ReactiveNode";
-import { ObservableVariable } from "../../processor/variable";
-import { Observable, OperatorFunction } from "rxjs";
-import { resolveComponent } from "vue";
+import { NodeCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
+import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
 
-export class NumNode extends ReactiveNode<{}, { num: number }> {
-    defaultOutputs = { num: 0 };
-
-    liveValues = new Map<number, ObservableVariable<number>>()
-
-    process(node: NodeData, silent?: boolean) {
-        let operator: OperatorFunction<{}, { num: number }> = (obs: Observable<{}>): Observable<{ num: number }> => {
-
-            let res = new ObservableVariable<{ num: number }>({ num: 0 });
-
-            if (!silent)
-                this.liveValues.get(node.id)?.subscribe(
-                    (val) => {
-                        res.set({
-                            num: val
-                        })
-                    });
-            else {
-                res.set({ num: node.data.num as number })
-            }
-
-            return res;
-        };
-
+export class NumNode extends CompilerNode {
+    compile(node: NodeData, worker_input_names: { [key: string]: Command }, worker_id: string): NodeCommand {
         return {
-            operator: operator,
-            id: 'node' + node.id,
-            inputs: Object.keys(node.inputs),
-            outputs: Object.keys(node.outputs)
-        };
+            node_id: node.id,
+            commands: [{
+                commands: `const ${worker_id} = ${node.data.num}`,
+                node_id: node.id
+            }],
+            outputs: {
+                'num': {
+                    node_id: node.id,
+                    commands: `${worker_id}`
+                }
+            },
+            processDependencys: []
+        }
     }
 
-    dependencys(node: NodeData) {
-        return {};
-    }
-
+    process = (node: NodeData, outKey: string, inputConnection: CompilerIO, compilerOptions: CompilerOptions) => {
+        switch (outKey) {
+            case 'num':
+                return (inputs: ProcessIO) => node.data.num;
+            default:
+                return (inputs: ProcessIO) => undefined;
+        }
+    };
 
     data = {
         i18nKeys: ["num"],
@@ -58,10 +46,7 @@ export class NumNode extends ReactiveNode<{}, { num: number }> {
     async builder(node: RNode) {
         const out1 = new Rete.Output('num', i18n(["num"]) || "Number", SocketTypes.numSocket().valSocket);
 
-        if (this.editor)
-            this.liveValues.set(node.id, new ObservableVariable<number>(0));
-        node
-            .addControl(new NumControl((val: number) => this.liveValues.get(node.id)?.set(val), 'num', false))
-            .addOutput(out1);
+        node.addControl(new NumControl((val: number) => SpreadBoardEditor.instance?.trigger("process"), 'num', false)).addOutput(out1);
     }
 }
+

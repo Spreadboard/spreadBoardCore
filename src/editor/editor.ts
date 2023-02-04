@@ -63,9 +63,7 @@ export class SpreadBoardEditor extends NodeEditor {
             "else": "Sonst",
             "numIn": "Eingabe - Zahl",
             "numOut": "Ausgabe - Zahl",
-            "controlflow": "Kontroll-Fluss",
-            "modIn": "A",
-            "modIn2": "B",
+            "controlflow": "Kontroll-Fluss"
         }
     };
 
@@ -95,15 +93,7 @@ export class SpreadBoardEditor extends NodeEditor {
 
     static getOrCreate(container: HTMLElement, id = "main@0.1.0", saveObj?: SpreadBoardWorkspace, silent = false) {
         if (!this.instance) {
-            this.instance = new SpreadBoardEditor(container, id, {
-                processes: [
-                    {
-                        id: 'main@0.1.0',
-                        nodes: {} as NodesData
-                    }
-                ]
-            } as SpreadBoardWorkspace
-                , silent);
+            this.instance = new SpreadBoardEditor(container, id, saveObj, silent);
         } else {
             let processes = [... this.processes];
             this.instance.destroy();
@@ -1085,6 +1075,9 @@ export class SpreadBoardEditor extends NodeEditor {
         });
     }
 
+    getCurProcessCode() {
+        return this.editorProcessor.getProcessPreview(SpreadBoardEditor.processes[this.curProcess].id.replace("@0.1.0", ""));
+    }
 
     async saveCurProcess() {
         if (!SpreadBoardEditor.importing && !this.silent) {
@@ -1152,6 +1145,10 @@ export class SpreadBoardEditor extends NodeEditor {
             id: id,
             nodes: {}
         })
+    }
+
+    processProcess(id: string) {
+        return this.editorProcessor.processProcess(id);
     }
 
     async processEditor() {
