@@ -3,7 +3,6 @@ import './style.css'
 import App from './App.vue'
 import 'regenerator-runtime/runtime';
 import { SpreadBoardEditor } from './editor/editor';
-import { Observable } from 'rxjs';
 
 //testCompile()
 
