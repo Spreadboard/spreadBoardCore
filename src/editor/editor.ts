@@ -93,14 +93,16 @@ export class SpreadBoardEditor extends NodeEditor {
         this.trigger("nodeselected");
     }
 
-    processTransform(id: string) {
-        return this.editorProcessor.processTransform(id);
-    }
-
     static getOrCreate(container: HTMLElement, id = "main@0.1.0", saveObj?: SpreadBoardWorkspace, silent = false) {
         if (!this.instance) {
-            this.instance = new SpreadBoardEditor(container, id,
-                saveObj
+            this.instance = new SpreadBoardEditor(container, id, {
+                processes: [
+                    {
+                        id: 'main@0.1.0',
+                        nodes: {} as NodesData
+                    }
+                ]
+            } as SpreadBoardWorkspace
                 , silent);
         } else {
             let processes = [... this.processes];
@@ -826,7 +828,7 @@ export class SpreadBoardEditor extends NodeEditor {
                             592.6333312988281,
                             140.6999969482422
                         ],
-                        "name": "ModuloNode"
+                        "name": "Modulo"
                     },
                     "118": {
                         "id": 118,
@@ -1022,17 +1024,6 @@ export class SpreadBoardEditor extends NodeEditor {
         for (let process of SpreadBoardEditor.processes) {
             await this.editorProcessor.compileProcess(process);
         }
-
-        let highestId = 0;
-
-        for (let process of SpreadBoardEditor.processes) {
-            Object.keys(process.nodes).forEach(key => {
-                if (process.nodes[key].id > highestId)
-                    highestId = process.nodes[key].id;
-            })
-        }
-
-        Node.latestId = highestId + 1;
 
         this.on(
             ["connectioncreated", 'connectionremoved', "nodecreated", 'noderemoved'],

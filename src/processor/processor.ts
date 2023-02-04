@@ -10,7 +10,7 @@ export type OperatorToVarFunction<T, R> = UnaryFunction<Observable<T>, Observabl
 
 export interface Transformer<T extends { [key: string]: any }, R extends { [key: string]: any }> {
     id: string,
-    operator: OperatorFunction<T, R> | string
+    operator: OperatorFunction<T, R>
     outputs: string[]
     inputs: string[]
 }
@@ -37,19 +37,16 @@ export class Processor {
 
     private compiledProcesses: Map<string, Transformer<any, any>> = new Map();
 
-    private compilerResultToTransformer(id: string, compileResult: CompilerResult): Transformer<any, any> {
+    compilerResultToTransformer(id: string, compileResult: CompilerResult): Transformer<any, any> {
         const transformerToCommand = (t: CompiledTransformer<any, any>) => {
-
-            if (!t.operator)
-                console.log(t);
             let inputs_mapping = Object.keys(t.compilerInputs).map(
                 (key) => `${key} : ${t.compilerInputs[key][0]}.${t.compilerInputs[key][1]}`
             ).join(', ');
 
-
-            return `
+            return
+            `
 const ${t.id} = ${t.operator.toString()}( combineLatest( { ${inputs_mapping}} ) );
-`;
+`
         }
 
         let outputs_mapping = Object.keys(compileResult.outputs).map(
@@ -104,17 +101,11 @@ const ${t.id} = ${t.operator.toString()}( combineLatest( { ${inputs_mapping}} ) 
         this.engine.abort();
     }
 
-    processTransform(id: string) {
-        return this.compiledProcesses.get(id);
-    }
-
     async compileProcess(data: Data, options?: { [key: string]: any }) {
         let compileEngine = this.engine.clone();
-        data = { ...data };
-        data.id = data.id.replace('@0.1.0', '')
 
         let compilerOptions: CompilerOptions = {
-            silent: true,
+            silent: false,
             options: options,
             result: {
                 dependencys: {},
@@ -129,16 +120,12 @@ const ${t.id} = ${t.operator.toString()}( combineLatest( { ${inputs_mapping}} ) 
 
         let result = compilerOptions.result as CompilerResult;
 
-        console.log(result);
-
         let newTransform = this.compilerResultToTransformer(data.id, result);
 
         this.compiledProcesses.set(
             data.id,
             newTransform
         );
-
-        console.log(`Compiled ${data.id} -> `, newTransform);
     }
 
     async process(data: Data, options?: { [key: string]: any }): Promise<"success" | "aborted"> {
