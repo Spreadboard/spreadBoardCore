@@ -11,15 +11,6 @@ export interface ProcessInc {
     path: string[],
 }
 
-export type ModuleData = {
-    id: string,
-    processes: Data[]
-}
-
-export type ModuleCommands = {
-    id: string,
-    processes: ProcessCommand[]
-}
 
 
 export class Processor {
@@ -28,42 +19,16 @@ export class Processor {
     private collectedProcesses: Map<string, ProcessCommand> = new Map();
     private collectedCommandList: Map<string, NodeCommand[]> = new Map();
 
-    private async collectModule(data: ModuleData) {
-        let moduleCommands: ModuleCommands = { id: data.id, processes: [] }
-        for (let process of data.processes) {
-            moduleCommands.processes.push(await this.collectProcess(process));
-        }
-        return moduleCommands;
-    }
-
-    private async compileModule(data: ModuleData) {
-        let module = await this.collectModule(data);
-
-        let moduleString = '';
-
-        const commandToString = (commands: Command): string => {
-            if (typeof commands.commands == 'string')
-                return commands.commands
-            return commands.commands.map(commandToString).reduce((str1, str2) => str1 + str2);
-        }
-
-        for (let process of module.processes) {
-            moduleString += '\n' + this.collectProcessPreview(process).map(commandToString).reduce((str1, str2) => str1 + str2);
-        }
-
-        return (new Function('require', moduleString))((s: string) => (s.startsWith('./') ? {} : require(s)))
-    }
-
     private commandToFunction(id: string): Function | undefined {
-        let process: ProcessCommand = this.collectedProcesses.get('@/' + id)!;
-        let dependencys = process.dependencys.filter((d) => d != `@/${id}`);
+        let process: ProcessCommand = this.collectedProcesses.get(id)!;
+        let dependencys = process.dependencys.filter((d) => d != `./${id}`);
         if (!dependencys) return undefined;
         let function_commands: Command[] = [];
 
         dependencys.forEach((dependency) => {
             function_commands.push({
                 node_id: -1,
-                commands: `const ${dependency.replace('@/', '')} = require("${dependency}")\n`
+                commands: `const ${dependency.replace('./', '')} = require("${dependency}")\n`
             });
         })
 
@@ -96,7 +61,7 @@ export class Processor {
 
         try {
             let func = new Function('require', function_string);
-            return func((dependency: string) => { return (dependency.startsWith('@/') ? this.commandToFunction(dependency.slice(2)) : require(dependency)) });
+            return func((dependency: string) => { return (dependency.startsWith('./') ? this.commandToFunction(dependency.slice(2)) : require(dependency)) });
         } catch (e) {
             SpreadBoardEditor.instance?.logger.log("Error while converting");
             SpreadBoardEditor.instance?.logger.log(e)
@@ -131,7 +96,7 @@ export class Processor {
     }
 
     public getProcessPreview(id: string) {
-        return this.collectedCommandList.get('@/' + id);
+        return this.collectedCommandList.get(id);
     }
 
     processProcess(processId: string): Function | undefined {
@@ -156,17 +121,7 @@ export class Processor {
         this.engine.abort();
     }
 
-
-    async compileProcess(data: Data): Promise<ProcessCommand> {
-        let processCommand = await this.collectProcess(data);
-
-
-        this.collectedProcesses.set('@/' + data.id.replace('@0.1.0', ''), processCommand)
-        this.collectedCommandList.set('@/' + data.id.replace('@0.1.0', ''), this.collectProcessPreview(processCommand));
-        return processCommand;
-    }
-
-    private async collectProcess(data: Data) {
+    async compileProcess(data: Data): Promise<NodeCommand> {
         let id = data.id.replace("@0.1.0", "");
         let compilerOptions: CompilerOptions = { silent: true, compilerCommands: [] }
         const compiler = this.engine.clone();
@@ -200,10 +155,13 @@ export class Processor {
 
         let processCommand = { id: id, commands: function_command.commands, dependencys: function_command.processDependencys };
 
+
+        this.collectedProcesses.set(id, processCommand)
+        this.collectedCommandList.set(id, this.collectProcessPreview(processCommand));
         SpreadBoardEditor.instance?.logger.log(`Compiled ${id}`)
 
         SpreadBoardEditor.instance?.trigger("export");
-        return processCommand;
+        return function_command
     }
 
     async process(data: Data, options?: { [key: string]: any }): Promise<"success" | "aborted"> {

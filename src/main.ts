@@ -4,8 +4,8 @@ import App from './App.vue'
 import 'regenerator-runtime/runtime';
 import { SpreadBoardEditor } from './editor/editor';
 
-//testCompile()
 
+//testCompile()
 
 createApp(App).mount('#app')
 
