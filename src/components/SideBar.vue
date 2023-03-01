@@ -11,33 +11,29 @@
             </div>
         </pane>
         <pane>
-            <EditorTabsContainer></EditorTabsContainer>
+            <TabView></TabView>
         </pane>
     </splitpanes>
-
 </template>
 
 <script lang="ts">
-import EditorTabsContainer from './EditorView/EditorTabsContainer.vue';
 import { App, createApp, ref } from 'vue';
 import ProcessSelector from './ProcessSelector.vue';
+import TabView from './EditorView/TabView.vue';
 import Info from './Info.vue';
-import CompiledPreview from './CompiledPreview.vue';
 import Icon from './VS-Icon.vue'
-import { SpreadBoardEditor } from '../editor/editor';
 import Logs from './Logs.vue';
 import { Splitpanes, Pane } from 'splitpanes';
 import { cursorTo } from 'readline';
 
 export default {
     components: {
-        ProcessSelector: ProcessSelector,
-        Info: Info,
-        Icon: Icon,
-        CompiledPreview: CompiledPreview,
-        EditorTabsContainer: EditorTabsContainer,
-        Splitpanes: Splitpanes,
-        Pane: Pane
+        ProcessSelector,
+        Info,
+        Icon,
+        TabView,
+        Splitpanes,
+        Pane
     },
     setup() {
 
@@ -81,7 +77,6 @@ export default {
                 selected.value = key;
             else
                 selected.value = "";
-            SpreadBoardEditor.instance?.logger.log("Select:", selected.value);
 
             (async () => {
 

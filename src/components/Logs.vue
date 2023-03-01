@@ -1,5 +1,4 @@
 <template>
-
     <div class="logs" id="logs">
         <div class="log-item" v-for="line of logs?.split('\n')">
             {{ line }}
@@ -11,23 +10,11 @@
 <script lang="ts">
 
 import { defineComponent, ref } from 'vue';
-import { SpreadBoardEditor } from '../editor/editor';
 
 export default defineComponent({
     name: "Logs",
     setup(props) {
-        const logger = SpreadBoardEditor.instance?.logger;
-        let logs = ref(logger?.export());
-        logger?.onWrite(
-            (item) => {
-                logs.value = logger?.export();
-
-                new Promise((resolve) => setTimeout(resolve, 100)).then(() => {
-                    let logEl = document.getElementById('logs')
-                    logEl?.scrollBy({ top: logEl?.scrollTop * 10 })
-                })
-            }
-        )
+        let logs = ref('');
         return { logs };
     }
 })
