@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import ReteEditor from './components/ReteEditor.vue';
 import SideBar from './components/SideBar.vue';
 import 'splitpanes/dist/splitpanes.css';
 </script>

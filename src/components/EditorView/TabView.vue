@@ -67,6 +67,10 @@ export default {
 </script>
 
 <style>
+.tab-handles {
+    text-align: start;
+}
+
 .tabHandle {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
@@ -124,5 +128,28 @@ export default {
     height: 0;
     width: 0 !important;
     display: none;
+}
+
+@media (prefers-color-scheme: light) {
+
+
+    .tabHandle {
+        background-color: #0f0f0f20;
+    }
+
+    .tabHandle:hover {
+        background-color: #0f0f0f10;
+    }
+
+    .tabHandle.selected {
+        background-color: #ffffff70;
+        z-index: 5;
+    }
+
+    .visible {
+        z-index: 0;
+        background-color: #ffffff00;
+        box-shadow: 1px 1px 5px #00000040;
+    }
 }
 </style>
