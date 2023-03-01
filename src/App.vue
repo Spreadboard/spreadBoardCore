@@ -6,10 +6,8 @@ import 'splitpanes/dist/splitpanes.css';
 
 <template>
     <div class="editor">
-
         <SideBar></SideBar>
     </div>
-    <div id="editor-blank" style="display: none;"></div>
 </template>
 
 <style>
@@ -66,7 +64,7 @@ html,
     z-index: 1;
 }
 
-.splitpanes--vertical .splitpanes__pane{
+.splitpanes--vertical .splitpanes__pane {
     transition: none;
 }
 

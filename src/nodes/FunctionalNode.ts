@@ -22,28 +22,6 @@ export function createStatefullOperator<S extends object, T extends object, R ex
 
 export function isolateObs<T extends object>(key: keyof T, obs: Observable<T>) { return map((t: T) => t[key])(obs); }
 
-export function pipeStatefulData(...data: StatefulOperatorData<any, any, any>[]): StatefulOperatorData<any, any, any> {
-
-    function pipeOperators(operators: ((t: any, s: any) => any)[]) {
-        return (t: any, s: [any]) => {
-            let x: any = null;
-            if (operators.length > 0)
-                x = operators[0](t, s[0]);
-            operators.slice(1).forEach(
-                (op, index) => {
-                    x = op(x, s[index]);
-                }
-            )
-            return x;
-        }
-    }
-
-    return {
-        initialState: data.map(d => d.initialState),
-        operator: pipeOperators(data.map(d => d.operator))
-    };
-
-}
 
 export interface FunctionalProcessorOptions {
     operators?: StatefulOperatorData<any, any, any>[]
