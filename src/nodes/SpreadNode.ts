@@ -3,14 +3,10 @@ import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { combineLatest, distinctUntilChanged, map, merge, Observable, OperatorFunction } from "rxjs";
 import { SpreadNodeData, Cell, CellType, StatefulOperator, SpreadData } from "./SpreadOperators";
 
-export class SpreadNode<T extends { [key: string]: any }, S, R extends { [key: string]: any }> extends Component {
+export abstract class SpreadNode<T extends { [key: string]: any }, S, R extends { [key: string]: any }> extends Component {
 
-    data: SpreadData<T, S, R>;
+    declare data: SpreadData<T, S, R>;
 
-    constructor(name: string, data: SpreadData<T, S, R>) {
-        super(name);
-        this.data = data;
-    }
 
     operators: Map<number, [OperatorFunction<T, R>, CellType<S>]> = new Map();
 

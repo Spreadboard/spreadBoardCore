@@ -15,6 +15,10 @@ import AreaPlugin from "rete-area-plugin";
 import ContextMenuPlugin from "../context-menu";
 import EventEmitter from "events";
 
+import { compile as spreadCompile, StatefulOperatorData, SpreadNodesData } from '../nodes/SpreadOperators';
+import { Plugin } from "rete/types/core/plugin";
+import StandardNodes from "../nodes";
+
 type Store<T> = {
     [key: string]: T
 }
@@ -39,18 +43,22 @@ class EditorManager {
     private curProcess: string | undefined;
     private openTabs: string[] = [];
 
-    private processData: Store<NodesData> = {};
+    private processData: Map<string, SpreadNodesData> = new Map();
 
-    //TODO: Change Operator-Type
-    private operators: Store<() => void> = {};
+    private operators: Map<string, StatefulOperatorData<any, any, any>> = new Map();
 
     private editors: Map<string, NodeEditor> = new Map();
 
-    //TODO: Compile ProcessData to Operator
-    private compile(id: string) { };
+    private compile(id: string) {
+        if (this.processData.has(id))
+            this.operators.set(id,
+                spreadCompile(this.processData.get(id)!))
+    };
+
+    private plugins: [Plugin] = [StandardNodes];
 
     private setVisible(id: string, visible: boolean) {
-        if (!Object.keys(this.processData).find(key => key == id))
+        if (!this.processData.has(id))
             throw new Error("No such Process");
 
         let el = document.getElementById(id);
@@ -65,7 +73,7 @@ class EditorManager {
 
     private spawn(id: string, visible: boolean = false) {
 
-        if (!this.processData[id])
+        if (!this.processData.has(id))
             throw new Error("No such Process");
         if (this.editors.has(id))
             this.editors.get(id)!.destroy();
@@ -87,7 +95,7 @@ class EditorManager {
         let editor = new NodeEditor(id + '@0.1.0', element);
         let data = {
             id: id + '@0.1.0',
-            nodes: this.processData[id]!
+            nodes: this.processData.get(id)!
         };
 
         editor.use(
@@ -126,8 +134,9 @@ class EditorManager {
             }
         });
 
-        //this.use(StandardNodes);
-
+        this.plugins.forEach(
+            plugin => editor.use(plugin)
+        );
 
 
         editor.on(
@@ -138,12 +147,13 @@ class EditorManager {
         );
 
         editor.on('process', async () => {
-            //TODO
-
             //Save 
-            this.processData[id] = editor.toJSON().nodes;
+            this.processData.set(id, editor.toJSON().nodes as SpreadNodesData);
 
             //compile
+            this.compile(id);
+
+            //TODO
             //execute
         }
         );
@@ -164,21 +174,21 @@ class EditorManager {
     }
 
     public create(id: string) {
-        if (this.processData[id])
+        if (this.processData.has(id))
             return;
-        this.processData[id] = {}
+        this.processData.set(id, {});
     }
 
     public delete(id: string) {
         if (id in this.openTabs)
             this.close(id);
-        delete this.processData[id]
-        delete this.operators[id]
+        this.processData.delete(id);
+        this.operators.delete(id);
         this.editors.delete(id);
     }
 
     public select(id: string) {
-        if (!Object.keys(this.processData).find(key => key == id))
+        if (!this.processData.has(id))
             throw new Error("No such Process");
 
         if (this.curProcess) this.setVisible(this.curProcess, false);
@@ -195,7 +205,7 @@ class EditorManager {
 
     public getProcesses() {
         return Object.seal(
-            Object.keys(this.processData)
+            Array.from(this.processData.keys())
         )
     }
 

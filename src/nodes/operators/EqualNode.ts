@@ -1,94 +1,48 @@
 import Rete, { Component, Node as RNode } from "rete";
 
-import { i18n } from "../../editor/editor";
-import { SocketTypes } from "../../processor/connections/sockets";
 import { BoolControl } from "../controls/BoolControl";
 import { NumControl } from "../controls/NumControl";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
-import { NodeCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
-import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
+import { SpreadNode } from "../SpreadNode";
+import { map } from "rxjs";
+import { SocketTypes } from "../../manager/sockets";
+import EditorManager from "../../manager/EditorManager";
 
-export class EqualNode extends CompilerNode {
-    category: string[] = ["Mathe"];
+export class EqualNode extends SpreadNode<{ num: number, num2: number }, undefined, { res: boolean }> {
+
 
     data = {
-        i18nKeys: ["equal"],
-        category: [["operators"]]
+        i18n: ["equal"],
+        category: [["operators"]],
+        io: '' as '',
+        operator: {
+            projection: map(([{ num, num2 }, state]: [{ num: number, num2: number }, undefined]) => {
+                return { res: num == num2 };
+            }),
+            initialState: undefined
+        }
     }
-    compIn1 = () => i18n(["compIn1"]) || "A";
-    compIn2 = () => i18n(["compIn1"]) || "B";
-    res = () => i18n(["res"]) || "Result";
+
     constructor() {
         super("EqualNode");
     }
 
     async builder(node: RNode): Promise<void> {
-        const inp1 = new Rete.Input('num', this.compIn1(), SocketTypes.numSocket().valSocket);
-        const inp2 = new Rete.Input('num2', this.compIn2(), SocketTypes.numSocket().valSocket);
-        const out = new Rete.Output('bool', this.res(), SocketTypes.boolSocket().valSocket);
+        let manager = EditorManager.getInstance();
+        let i18n = manager!.i18n;
 
-        inp1.addControl(new NumControl((val: number) => this.editor?.trigger("process"), 'num', false, this.compIn1()))
-        inp2.addControl(new NumControl((val: number) => this.editor?.trigger("process"), 'num2', false, this.compIn2()))
+        const inp1 = new Rete.Input('num', i18n(["compIn1"]) ?? "A", SocketTypes.numSocket().valSocket);
+        const inp2 = new Rete.Input('num2', i18n(["compIn2"]) ?? "B", SocketTypes.numSocket().valSocket);
+        const out = new Rete.Output('bool', i18n(['res']) ?? 'Result', SocketTypes.boolSocket().valSocket);
+
+        inp1.addControl(new NumControl((val: number) => this.editor?.trigger("process"), 'num', false, i18n(["compIn1"]) ?? "A"))
+        inp2.addControl(new NumControl((val: number) => this.editor?.trigger("process"), 'num2', false, i18n(["compIn2"]) ?? "B"))
 
         node
             .addInput(inp1)
             .addInput(inp2)
-            .addControl(new BoolControl((val: boolean) => { }, 'preview', true, this.res()))
+            .addControl(new BoolControl((val: boolean) => { }, 'preview', true, i18n(['res']) ?? 'Result'))
             .addOutput(out);
     }
 
-    process = (node: NodeData, outKey: string, inputConnection: CompilerIO, compilerOptions: CompilerOptions) => {
-        switch (outKey) {
-            case 'bool':
-                return (inputs: ProcessIO) => {
-                    const n1: number = inputConnection['num'](inputs) as number ?? node.data.num as number ?? 0;
-                    const n2: number = inputConnection['num2'](inputs) as number ?? node.data.num2 as number ?? 0;
-                    const res: boolean = n1 == n2;
-
-                    if (!compilerOptions.silent) {
-                        const preview = this.editor?.nodes?.find((n: RNode) => n.id == node.id)?.controls.get('preview') as BoolControl | undefined;
-                        preview?.setValue(res);
-                    }
-
-                    return res;
-                }
-            default:
-                return (inputs: ProcessIO) => undefined;
-        }
-    };
-
-    compile(node: NodeData, worker_input_names: { [key: string]: Command }, worker_id: string): NodeCommand {
-
-
-        let num: Command = (worker_input_names.num) ? worker_input_names.num : { node_id: node.id, commands: `${node.data.num ?? 0}` };
-        let num2: Command = (worker_input_names.num2) ? worker_input_names.num2 : { node_id: node.id, commands: `${node.data.num2 ?? 0}` };
-
-        return {
-            node_id: node.id,
-            commands: [],
-            outputs: {
-                'bool': {
-                    commands: [
-                        {
-                            node_id: node.id,
-                            commands: ` ( `
-                        },
-                        num,
-                        {
-                            node_id: node.id,
-                            commands: ` == `
-                        },
-                        num2,
-                        {
-                            node_id: node.id,
-                            commands: ` ) `
-                        },
-
-                    ],
-                    node_id: node.id
-                }
-            },
-            processDependencys: []
-        }
-    }
 }

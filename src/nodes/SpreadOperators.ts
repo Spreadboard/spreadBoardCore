@@ -3,7 +3,7 @@ import { emit } from 'process';
 import { Component, Node } from 'rete';
 import { NodeData, WorkerInputs, WorkerOutputs, NodesData } from 'rete/types/core/data';
 import { Observable, map, OperatorFunction, merge, pipe, fromEvent, from, combineLatest, distinctUntilChanged } from 'rxjs';
-import { EventEmitter } from 'stream';
+import { EventEmitter } from 'events';
 
 
 

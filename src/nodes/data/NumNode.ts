@@ -1,42 +1,23 @@
 import Rete, { Component, Node as RNode } from "rete";
+import { map } from "rxjs";
+import EditorManager from "../../manager/EditorManager";
+import { SocketTypes } from "../../manager/sockets";
 
 import { NumControl } from "../controls/NumControl";
-import { i18n, SpreadBoardEditor } from "../../editor/editor";
-import { SocketTypes } from "../../processor/connections/sockets";
-import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
-import { NodeCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
-import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
+import { SpreadNode } from "../SpreadNode";
 
-export class NumNode extends CompilerNode {
-    compile(node: NodeData, worker_input_names: { [key: string]: Command }, worker_id: string): NodeCommand {
-        return {
-            node_id: node.id,
-            commands: [{
-                commands: `const ${worker_id} = ${node.data.num}`,
-                node_id: node.id
-            }],
-            outputs: {
-                'num': {
-                    node_id: node.id,
-                    commands: `${worker_id}`
-                }
-            },
-            processDependencys: []
-        }
-    }
-
-    process = (node: NodeData, outKey: string, inputConnection: CompilerIO, compilerOptions: CompilerOptions) => {
-        switch (outKey) {
-            case 'num':
-                return (inputs: ProcessIO) => node.data.num;
-            default:
-                return (inputs: ProcessIO) => undefined;
-        }
-    };
+export class NumNode extends SpreadNode<{}, number, { res: number }> {
 
     data = {
-        i18nKeys: ["num"],
-        category: [["values"]]
+        i18n: ["bool"],
+        category: [["values"]],
+        io: '' as '',
+        operator: {
+            projection: map(([{ }, state]: [{}, number]) => {
+                return { res: state }
+            }),
+            initialState: 0
+        }
     }
 
     constructor() {
@@ -44,9 +25,13 @@ export class NumNode extends CompilerNode {
     }
 
     async builder(node: RNode) {
+
+        let manager = EditorManager.getInstance();
+        let i18n = manager!.i18n;
+
         const out1 = new Rete.Output('num', i18n(["num"]) || "Number", SocketTypes.numSocket().valSocket);
 
-        node.addControl(new NumControl((val: number) => SpreadBoardEditor.instance?.trigger("process"), 'num', false)).addOutput(out1);
+        node.addControl(new NumControl((val: number) => this.editor?.trigger("process"), 'num', false)).addOutput(out1);
     }
 }
 

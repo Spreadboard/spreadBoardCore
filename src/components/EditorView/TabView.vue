@@ -41,8 +41,8 @@ export default {
         setTimeout(() => {
             manager.create("test");
             manager.create("test2");
-            manager.select("test2");
-            manager.select("test");
+            //manager.select("test2");
+            //manager.select("test");
         }, 200);
     },
     setup(props) {
