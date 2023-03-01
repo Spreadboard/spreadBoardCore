@@ -1,11 +1,8 @@
 {
 	"folders": [
-		{
-			"path": "../spreadboard"
-		},
-		{
-			"path": "."
-		}
-	],
+        {
+            "path": "."
+        }
+    ],
 	"settings": {}
 }

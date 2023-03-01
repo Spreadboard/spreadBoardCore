@@ -1,17 +1,16 @@
 <template>
     <div @click="onClick" @mouseover="showSubitems" @mouseleave="timeoutHide" class="item" :class="{ hasSubitems }">
-        {{ item.title }}
+        {{ item!.title }}
         <div v-if="hasSubitems && visibleSubitems" class="subitems">
-            <Item v-for="subitem in item.subitems" :key="subitem.title" :item="subitem" :delay="delay"
+            <Item v-for="subitem in item!.subitems" :key="subitem.title" :item="subitem" :delay="delay"
                 @hide="$emit('hide')" @click="subitemClicked">
             </Item>
         </div>
     </div>
 </template>
 
-<script>
+<script lang="ts">
 import { computed, defineComponent, ref, onMounted } from "vue";
-import { SpreadBoardEditor } from "../../editor/editor";
 
 export default defineComponent({
     props: {
@@ -26,28 +25,33 @@ export default defineComponent({
         };
         const visibleSubitems = ref(false);
         const hasSubitems = computed(() => {
+            //@ts-ignore
             return props.item.subitems
         });
         const cancelHide = () => {
             const hide = timeoutHide;
+            //@ts-ignore
             if (hide && hide.cancel)
+                //@ts-ignore
                 timeoutHide.cancel();
         }
         const showSubitems = () => {
             visibleSubitems.value = true;
+
+            //@ts-ignore
             SpreadBoardEditor.instance?.logger.log("Show subitems", props.item.subitems);
             cancelHide();
         };
         const hideSubitems = () => {
             visibleSubitems.value = false;
         }
-        const onClick = (e) => {
+        const onClick = (e: any) => {
             e.stopPropagation();
             emit('click', props.item)
             emit('hide');
         }
 
-        const subitemClicked = (subitem) => {
+        const subitemClicked = (subitem: any) => {
             emit('click', subitem)
         }
 

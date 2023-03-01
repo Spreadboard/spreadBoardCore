@@ -1,18 +1,18 @@
 <template>
-    <div class="selector-bar" @mousedown="(e) => { if (e.button != 2) showMenu(-1); }">
+    <div class="selector-bar" @mousedown="(e) => { if (e.button != 2) showMenu(''); }">
         <div class="searchBar">
             <input type="search" placeholder="Search..." :on-submit="addProcess" :value="searchProcessName"
                 @input="change($event)" />
         </div>
 
         <div style="display: inline-flex; margin-right: 10px; margin-left: 10px; padding-bottom: 5px;"
-            v-for='process of processes().filter((p) => p.id.includes(searchProcessName))'
-            @mousedown="(e) => { if (e.button == 2) { e.stopPropagation(); showMenu(process.index); } }">
+            v-for='process of processes()?.filter((p) => p.id.includes(searchProcessName))'
+            @mousedown="(e) => { if (e.button == 2) { e.stopPropagation(); showMenu(process.id); } }">
             <button style="flex-grow: 1; margin-right: 5px; padding-right: 5px;"
-                :class="curProcess == process.index ? 'selected' : ''" @click="(_) => select(process.id)">
+                :class="curProcess == process.id ? 'selected' : ''" @click="(_) => select(process.id)">
                 {{ process.id }}
             </button>
-            <div :class="'menu ' + ((true || (menuId != process.index)) ? 'hidden' : '')">
+            <div :class="'menu ' + ((true || (menuId != process.id)) ? 'hidden' : '')">
                 Hallo Welt
             </div>
         </div>
@@ -29,49 +29,46 @@
 
 <script lang="ts">
 import { ref } from 'vue';
-import { SpreadBoardEditor } from '../editor/editor';
-import { EditorTabHandler } from './EditorView/EditorTabHandler';
+import EditorManager from '../manager/EditorManager';
 import Icon from './VS-Icon.vue';
 export default {
     components: {
         Icon
     },
     setup() {
-        let curProcess = ref(SpreadBoardEditor.getCurProcess());
+        let manager = EditorManager.getInstance();
+        let curProcess = ref(manager?.getSelected());
 
-        EditorTabHandler.onChange((tab, tabs) => {
-            setTimeout(
-                () => {
-                    curProcess.value = SpreadBoardEditor.getCurProcess();
-                },
-                20
-            );
-        })
+        manager?.onSelected(
+            (selected) => {
+                curProcess.value = selected;
+            }
+        );
 
         const select = (id: string) => {
-            curProcess.value = processes().find((proc) => proc.id == id)?.index;
-            EditorTabHandler.openTab(id);
+            manager?.select(id);
         };
+
+
         let processes = () => {
-            return SpreadBoardEditor.getProcessIDs()?.map((process) => { return { id: process.id, index: process.index, className: selected(process.index) } });
+            return manager?.getProcesses().map((process, index) => { return { id: process, index: index, className: selected(process) } });
         };
 
         const addProcess = (_: any) => {
-            SpreadBoardEditor.instance?.addProcess(searchProcessName.value.toString());
+            manager?.create(searchProcessName.value.toString());
             searchProcessName.value = "";
         }
 
-        let selected = (index: number) => { curProcess.value == index ? "selected" : "" };
+        let selected = (id: string) => { curProcess.value == id ? "selected" : "" };
 
         let searchProcessName = ref("");
         const change = (event: any) => {
             searchProcessName.value = event.target.value
         };
 
-        let menuId = ref(-1);
+        let menuId = ref('');
 
-        const showMenu = (id: number) => {
-            console.log(id);
+        const showMenu = (id: string) => {
             menuId.value = id;
         }
 
