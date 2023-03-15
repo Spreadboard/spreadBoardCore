@@ -11,6 +11,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref, onMounted } from "vue";
+import EditorManager from "../../manager/EditorManager";
 
 export default defineComponent({
     props: {
@@ -37,9 +38,6 @@ export default defineComponent({
         }
         const showSubitems = () => {
             visibleSubitems.value = true;
-
-            //@ts-ignore
-            SpreadBoardEditor.instance?.logger.log("Show subitems", props.item.subitems);
             cancelHide();
         };
         const hideSubitems = () => {

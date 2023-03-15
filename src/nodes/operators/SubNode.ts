@@ -2,10 +2,10 @@ import Rete, { Component, Node as RNode } from "rete";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { NumControl } from "../controls/NumControl";
 
-import { SpreadBoardEditor, i18n } from "../../editor/editor";
 import { SocketTypes } from "../../processor/connections/sockets";
 import { NodeCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
 import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
+import EditorManager from "../../manager/EditorManager";
 
 export class SubNode extends CompilerNode {
 
@@ -18,17 +18,17 @@ export class SubNode extends CompilerNode {
     }
 
     async builder(node: RNode): Promise<void> {
-        const inp1 = new Rete.Input('num', i18n(["subIn"]) || "Minuend", SocketTypes.numSocket().valSocket);
-        const inp2 = new Rete.Input('num2', i18n(["subIn2"]) || "Subrtahend", SocketTypes.numSocket().valSocket);
-        const out = new Rete.Output('num', i18n(["res"]) || "Result", SocketTypes.numSocket().valSocket);
+        const inp1 = new Rete.Input('num', EditorManager.getInstance()?.i18n(["subIn"]) || "Minuend", SocketTypes.numSocket().valSocket);
+        const inp2 = new Rete.Input('num2', EditorManager.getInstance()?.i18n(["subIn2"]) || "Subrtahend", SocketTypes.numSocket().valSocket);
+        const out = new Rete.Output('num', EditorManager.getInstance()?.i18n(["res"]) || "Result", SocketTypes.numSocket().valSocket);
 
-        inp1.addControl(new NumControl((val: number) => this.editor?.trigger("process"), 'num', false, i18n(["subIn"]) || "Minuend"))
-        inp2.addControl(new NumControl((val: number) => this.editor?.trigger("process"), 'num2', false, i18n(["subIn2"]) || "Subrtahend"))
+        inp1.addControl(new NumControl((val: number) => this.editor?.trigger("process"), 'num', false, EditorManager.getInstance()?.i18n(["subIn"]) || "Minuend"))
+        inp2.addControl(new NumControl((val: number) => this.editor?.trigger("process"), 'num2', false, EditorManager.getInstance()?.i18n(["subIn2"]) || "Subrtahend"))
 
         node
             .addInput(inp1)
             .addInput(inp2)
-            .addControl(new NumControl((event: string, val: number) => { }, 'preview', true, i18n(["res"]) || "Result"))
+            .addControl(new NumControl((event: string, val: number) => { }, 'preview', true, EditorManager.getInstance()?.i18n(["res"]) || "Result"))
             .addOutput(out);
     }
 

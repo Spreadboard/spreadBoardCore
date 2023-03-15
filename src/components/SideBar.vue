@@ -35,6 +35,9 @@ export default {
         Splitpanes,
         Pane
     },
+    mounted() {
+        this.select('processes')
+    },
     setup() {
 
         let curSize = ref(10);

@@ -1,5 +1,5 @@
 import Rete, { Control } from "rete";
-import { SpreadBoardEditor } from "../../editor/editor";
+import EditorManager from "../../manager/EditorManager";
 import VueSelectControl from "./VueSelectControl.vue"
 
 
@@ -7,7 +7,7 @@ export class ProcessControl extends Control {
     private component: any;
     private props: Object;
 
-    private options = SpreadBoardEditor.getProcessIDs().map(({ index, id }) => id.replace('@0.1.0', ''));
+    private options = EditorManager.getInstance()?.getProcesses();
 
     constructor(emitter: Function, key: string, readonly: boolean = false, title: string | null = null) {
         super(key);

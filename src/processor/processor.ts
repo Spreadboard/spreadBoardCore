@@ -1,8 +1,7 @@
 import { Component, Engine } from "rete";
-import { Data, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
-import { SpreadBoardEditor } from "../editor/editor";
+import { Data, NodesData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
+import EditorManager from "../manager/EditorManager";
 import { NodeCommand, CompilerOptions, Command, ProcessCommand } from "../nodes/CompilerNode";
-import { SpreadBoardStack, SpreadBoardVariable } from "./variable";
 
 
 
@@ -23,21 +22,21 @@ export type ModuleCommands = {
 
 
 export class Processor {
-    private engine: Engine;
 
     private collectedProcesses: Map<string, ProcessCommand> = new Map();
     private collectedCommandList: Map<string, NodeCommand[]> = new Map();
 
-    private async collectModule(data: ModuleData) {
+    private async collectModule(data: ModuleData, engine: Engine) {
         let moduleCommands: ModuleCommands = { id: data.id, processes: [] }
         for (let process of data.processes) {
-            moduleCommands.processes.push(await this.collectProcess(process));
+            moduleCommands.processes.push(await this.collectProcess(process.id, process.nodes, engine));
         }
         return moduleCommands;
     }
 
-    private async compileModule(data: ModuleData) {
-        let module = await this.collectModule(data);
+
+    private async compileModule(data: ModuleData, engine: Engine) {
+        let module = await this.collectModule(data, engine);
 
         let moduleString = '';
 
@@ -98,10 +97,10 @@ export class Processor {
             let func = new Function('require', function_string);
             return func((dependency: string) => { return (dependency.startsWith('@/') ? this.commandToFunction(dependency.slice(2)) : require(dependency)) });
         } catch (e) {
-            SpreadBoardEditor.instance?.logger.log("Error while converting");
-            SpreadBoardEditor.instance?.logger.log(e)
-            SpreadBoardEditor.instance?.logger.log(function_commands);
-            SpreadBoardEditor.instance?.logger.log(function_string)
+            console.log("Error while converting");
+            console.log(e)
+            console.log(function_commands);
+            console.log(function_string)
         }
     }
 
@@ -140,38 +139,23 @@ export class Processor {
         return func;
     }
 
-    constructor(engine: Engine, stack: SpreadBoardStack = { variables: new Map<string, SpreadBoardVariable<any>>(), subStacks: new Map<number, SpreadBoardStack>() }) {
-        this.engine = engine;
-    }
+    async compileProcess(id: string, nodes: NodesData, engine: Engine): Promise<ProcessCommand> {
+        let processCommand = await this.collectProcess(id, nodes, engine);
 
-    register(component: Component) {
-        this.engine.register(component);
-    }
-
-    clear() {
-        this.engine.abort();
-    }
-
-    abort() {
-        this.engine.abort();
-    }
-
-
-    async compileProcess(data: Data): Promise<ProcessCommand> {
-        let processCommand = await this.collectProcess(data);
-
-
-        this.collectedProcesses.set('@/' + data.id.replace('@0.1.0', ''), processCommand)
-        this.collectedCommandList.set('@/' + data.id.replace('@0.1.0', ''), this.collectProcessPreview(processCommand));
+        this.collectedProcesses.set(`@/${id}`, processCommand)
+        this.collectedCommandList.set(`@/${id}`, this.collectProcessPreview(processCommand));
         return processCommand;
     }
 
-    private async collectProcess(data: Data) {
-        let id = data.id.replace("@0.1.0", "");
+    private async collectProcess(id: string, nodes: NodesData, engine: Engine) {
+        let data = {
+            id: "compiler@0.1.0",
+            nodes
+        }
         let compilerOptions: CompilerOptions = { silent: true, compilerCommands: [] }
-        const compiler = this.engine.clone();
+        const compiler = engine.clone();
         const compilerData = { ...data };
-        compilerData.id = compiler.id = "compiler@0.1.0";
+        compiler.id = "compiler@0.1.0";
 
         await compiler.process(
             compilerData,
@@ -200,22 +184,20 @@ export class Processor {
 
         let processCommand = { id: id, commands: function_command.commands, dependencys: function_command.processDependencys };
 
-        SpreadBoardEditor.instance?.logger.log(`Compiled ${id}`)
+        console.log(`Compiled ${id}`)
 
-        SpreadBoardEditor.instance?.trigger("export");
         return processCommand;
     }
 
-    async process(data: Data, options?: { [key: string]: any }): Promise<"success" | "aborted"> {
-        await await this.engine.abort();
+    async process(nodes: NodesData, engine: Engine, options?: { [key: string]: any }): Promise<"success" | "aborted"> {
+        await await engine.abort();
         let compilerOptions: CompilerOptions = {
             silent: false,
             options: options,
         }
-        const processData = { ...data };
-        processData.id = this.engine.id;
+        const processData = { nodes, id: engine.id };
 
-        return await this.engine.process(processData, null, compilerOptions);
+        return await engine.process(processData, null, compilerOptions);
     }
 
 }

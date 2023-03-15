@@ -1,6 +1,4 @@
 import { NodeEditor } from "rete";
-import { ComponentPlugin } from "../editor/componentPlugin";
-import { SpreadBoardEditor } from "../editor/editor";
 import { ConditionNode } from "./controlFlow/ConditionNode";
 import { BoolNode } from "./data/BoolNode";
 import { NumNode } from "./data/NumNode";
@@ -14,6 +12,7 @@ import { MultNode } from "./operators/MultNode";
 import { SubNode } from "./operators/SubNode";
 import { ModuloNode } from "./operators/ModuloNode";
 import { DivNode } from "./operators/DivNode";
+import { ComponentPlugin } from "../manager/componentPlugin";
 
 
 const StandardNodes = new ComponentPlugin(

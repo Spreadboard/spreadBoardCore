@@ -1,12 +1,12 @@
 import Rete, { Component, Node as RNode } from "rete";
 
-import { i18n } from "../../editor/editor";
 import { SocketTypes } from "../../processor/connections/sockets";
 import { BoolControl } from "../controls/BoolControl";
 import { NumControl } from "../controls/NumControl";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { NodeCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
 import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
+import EditorManager from "../../manager/EditorManager";
 
 export class EqualNode extends CompilerNode {
     category: string[] = ["Mathe"];
@@ -15,9 +15,9 @@ export class EqualNode extends CompilerNode {
         i18nKeys: ["equal"],
         category: [["operators"]]
     }
-    compIn1 = () => i18n(["compIn1"]) || "A";
-    compIn2 = () => i18n(["compIn1"]) || "B";
-    res = () => i18n(["res"]) || "Result";
+    compIn1 = () => EditorManager.getInstance()?.i18n(["compIn1"]) || "A";
+    compIn2 = () => EditorManager.getInstance()?.i18n(["compIn1"]) || "B";
+    res = () => EditorManager.getInstance()?.i18n(["res"]) || "Result";
     constructor() {
         super("EqualNode");
     }

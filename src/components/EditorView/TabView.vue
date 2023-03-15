@@ -37,13 +37,6 @@ export default {
         this.select = (tab) => {
             manager.select(tab);
         };
-
-        setTimeout(() => {
-            manager.create("test");
-            manager.create("test2");
-            manager.select("test2");
-            manager.select("test");
-        }, 200);
     },
     setup(props) {
 

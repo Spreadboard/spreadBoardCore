@@ -1,11 +1,11 @@
 import Rete, { Component, Node as RNode } from "rete";
 
 import { NumControl } from "../controls/NumControl";
-import { i18n, SpreadBoardEditor } from "../../editor/editor";
 import { SocketTypes } from "../../processor/connections/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { NodeCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
 import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
+import EditorManager from "../../manager/EditorManager";
 
 export class NumNode extends CompilerNode {
     compile(node: NodeData, worker_input_names: { [key: string]: Command }, worker_id: string): NodeCommand {
@@ -44,9 +44,9 @@ export class NumNode extends CompilerNode {
     }
 
     async builder(node: RNode) {
-        const out1 = new Rete.Output('num', i18n(["num"]) || "Number", SocketTypes.numSocket().valSocket);
+        const out1 = new Rete.Output('num', EditorManager.getInstance()?.i18n(["num"]) || "Number", SocketTypes.numSocket().valSocket);
 
-        node.addControl(new NumControl((val: number) => SpreadBoardEditor.instance?.trigger("process"), 'num', false)).addOutput(out1);
+        node.addControl(new NumControl((val: number) => this.editor?.trigger("process"), 'num', false)).addOutput(out1);
     }
 }
 

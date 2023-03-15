@@ -1,11 +1,10 @@
 import Rete, { Component, Input, Node, Node as RNode, Output, Socket } from "rete";
 
-import { i18n, SpreadBoardEditor } from "../../editor/editor";
-import { SocketTypes } from "../../processor/connections/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { ProcessControl } from "../controls/ProcessControl";
 import { CompilerIO, Evaluation, ProcessIO } from "../../processor/connections/packet";
 import { NodeCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
+import EditorManager from "../../manager/EditorManager";
 
 export class ProcessNode extends CompilerNode {
 
@@ -31,7 +30,7 @@ export class ProcessNode extends CompilerNode {
         let inputs: { key: string, name: string, socket: Socket }[] = [];
         let outputs: { key: string, name: string, socket: Socket }[] = [];
 
-        let ios = SpreadBoardEditor.getIOS(processId);
+        let ios = EditorManager.getInstance()?.getIOS(processId) ?? { inputs: [], outputs: [] };
 
         inputs = ios.inputs;
         outputs = ios.outputs;
@@ -84,7 +83,9 @@ export class ProcessNode extends CompilerNode {
 
     process = (node: NodeData, outKey: string, inputConnections: CompilerIO, compilerOptions: CompilerOptions) => {
 
-        let func = SpreadBoardEditor.instance!.processProcess(node.data.id as string);
+        let processProcess = () => EditorManager.getInstance()?.getProcessor()?.processProcess(node.data.id as string);
+
+        let func = processProcess();
 
         return (processI0: ProcessIO) => {
             let externalInput: ProcessIO = {};
@@ -95,15 +96,15 @@ export class ProcessNode extends CompilerNode {
             );
 
             if (!func) {
-                func = SpreadBoardEditor.instance!.processProcess(node.data.id as string);
-                SpreadBoardEditor.instance?.logger.log("Fetching the Compiled Process");
+                func = processProcess;
+                console.log("Fetching the Compiled Process");
             }
             if (func) {
                 let result;
                 try {
                     result = func(externalInput);
                 } catch (e) {
-                    SpreadBoardEditor.instance?.logger.log("Error During:", func.toString())
+                    console.log("Error During:", func.toString())
                 }
                 if (result && result[outKey]) {
                     return result[outKey];
@@ -121,13 +122,13 @@ export class ProcessNode extends CompilerNode {
 
         worker_id = function_id + "_" + node.id
 
-        let out = SpreadBoardEditor.getIOS(function_id).outputs;
+        let out = EditorManager.getInstance()?.getIOS(function_id).outputs!;
 
         let outputs: { [key: string]: Command } = {}
 
 
         type logC = number | string | { [key: string]: Command }
-        SpreadBoardEditor.instance?.logger.log(node.data.id as logC, node.id as logC, worker_input_names as logC);
+        console.log(node.data.id as logC, node.id as logC, worker_input_names as logC);
 
         let temp: Command[] = [{
             node_id: node.id,

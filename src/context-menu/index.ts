@@ -5,7 +5,6 @@ import VueMenu from './menu/Menu.vue';
 import VueSearch from './menu/Search.vue';
 import { Component, NodeEditor } from 'rete';
 import menu from './menu';
-import { SpreadBoardEditor } from '../editor/editor';
 
 
 interface Plugin {

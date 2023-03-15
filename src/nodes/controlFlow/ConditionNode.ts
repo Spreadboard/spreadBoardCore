@@ -1,9 +1,9 @@
 import Rete, { Connection, Input, Node as RNode, Output, Socket, Component } from "rete";
-import { i18n } from "../../editor/editor";
 import { SocketTypes } from "../../processor/connections/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { NodeCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
 import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
+import EditorManager from "../../manager/EditorManager";
 
 export class ConditionNode extends CompilerNode {
     compile(node: NodeData, worker_input_name: { [key: string]: Command }, worker_id: string): NodeCommand {
@@ -95,12 +95,12 @@ export class ConditionNode extends CompilerNode {
     }
 
     async builder(node: RNode) {
-        const inCondition = new Rete.Input('bool', i18n(["cond"]) ?? "Condition", SocketTypes.boolSocket().valSocket);
-        const inIf = new Rete.Input('if', i18n(["if"]) ?? "If", SocketTypes.anySocket);
-        const inElse = new Rete.Input('else', i18n(["else"]) ?? "Else", SocketTypes.anySocket);
+        const inCondition = new Rete.Input('bool', EditorManager.getInstance()?.i18n(["cond"]) ?? "Condition", SocketTypes.boolSocket().valSocket);
+        const inIf = new Rete.Input('if', EditorManager.getInstance()?.i18n(["if"]) ?? "If", SocketTypes.anySocket);
+        const inElse = new Rete.Input('else', EditorManager.getInstance()?.i18n(["else"]) ?? "Else", SocketTypes.anySocket);
 
 
-        const outRes = new Rete.Output('res', i18n(["res"]) ?? "Result", SocketTypes.anySocket);
+        const outRes = new Rete.Output('res', EditorManager.getInstance()?.i18n(["res"]) ?? "Result", SocketTypes.anySocket);
 
 
         node

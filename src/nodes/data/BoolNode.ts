@@ -2,10 +2,10 @@ import Rete, { Component, Node as RNode } from "rete";
 
 import { BoolControl } from "../controls/BoolControl";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
-import { i18n, SpreadBoardEditor } from "../../editor/editor";
 import { SocketTypes } from "../../processor/connections/sockets";
 import { NodeCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
 import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
+import EditorManager from '../../manager/EditorManager';
 
 export class BoolNode extends CompilerNode {
     compile(node: NodeData, worker_input_names: { [key: string]: Command }, worker_id: string): NodeCommand {
@@ -44,7 +44,7 @@ export class BoolNode extends CompilerNode {
     }
 
     async builder(node: RNode) {
-        const out1 = new Rete.Output('bool', i18n(["bool"]) || "Boolean", SocketTypes.boolSocket().valSocket);
+        const out1 = new Rete.Output('bool', EditorManager.getInstance()?.i18n(["bool"]) || "Boolean", SocketTypes.boolSocket().valSocket);
 
         node
             .addControl(new BoolControl((val: boolean) => this.editor?.trigger("process"), 'bool', false))

@@ -1,13 +1,12 @@
 import Rete, { Component, Node as RNode } from "rete";
 
 import { TextControl } from "../controls/TextControl";
-import { i18n, SpreadBoardEditor } from "../../editor/editor";
 import { SocketTypes } from "../../processor/connections/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { NumControl } from "../controls/NumControl";
-import { SpreadBoardStack } from "../../processor/variable";
 import { NodeCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
 import { CompilerIO, Evaluation, ProcessIO } from "../../processor/connections/packet";
+import EditorManager from "../../manager/EditorManager";
 
 export class OutputNumNode extends CompilerNode {
 
@@ -25,10 +24,10 @@ export class OutputNumNode extends CompilerNode {
     }
 
     async builder(node: RNode) {
-        const in1 = new Rete.Input('val', i18n(["num"]) ?? "Number", SocketTypes.numSocket().valSocket);
+        const in1 = new Rete.Input('val', EditorManager.getInstance()?.i18n(["num"]) ?? "Number", SocketTypes.numSocket().valSocket);
 
         node.addControl(new NumControl((val: number) => { }, 'val', true));
-        node.addControl(new TextControl((val: string) => SpreadBoardEditor.instance?.trigger("process"), 'key', false)).addInput(in1);
+        node.addControl(new TextControl((val: string) => this.editor?.trigger("process"), 'key', false)).addInput(in1);
     }
 
     process = (node: NodeData, outKey: string, inputConnection: CompilerIO, compilerOptions: CompilerOptions) => {
