@@ -1,3 +1,4 @@
+import EventEmitter from "events";
 import { Component, Engine } from "rete";
 import { Data, NodesData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import EditorManager from "../manager/EditorManager";
@@ -23,8 +24,14 @@ export type ModuleCommands = {
 
 export class Processor {
 
+    private eventEmitter: EventEmitter;
+
     private collectedProcesses: Map<string, ProcessCommand> = new Map();
     private collectedCommandList: Map<string, NodeCommand[]> = new Map();
+
+    constructor(eventEmitter: EventEmitter) {
+        this.eventEmitter = eventEmitter;
+    }
 
     private async collectModule(data: ModuleData, engine: Engine) {
         let moduleCommands: ModuleCommands = { id: data.id, processes: [] }
@@ -144,6 +151,7 @@ export class Processor {
 
         this.collectedProcesses.set(`@/${id}`, processCommand)
         this.collectedCommandList.set(`@/${id}`, this.collectProcessPreview(processCommand));
+        this.eventEmitter.emit('export', processCommand);
         return processCommand;
     }
 

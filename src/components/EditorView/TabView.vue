@@ -1,22 +1,54 @@
 <template>
-    <div class="tab-handles">
-        <button v-for="tab in tabs" :class="((tab == cur) ? ['selected'] : []).concat(['tabHandle'])" @click="select(tab)"
-            @auxclick="close(tab)">
-            {{ tab }} <button class="closeButton" @click="close(tab); $event.stopImmediatePropagation()">x</button>
-        </button>
-        <div class="filler"></div>
-    </div>
-    <div id="tabs">
+    <div class="manager">
+        <div class="tab-handles">
+            <button v-for="tab in tabs" :class="((tab == cur) ? ['selected'] : []).concat(['tabHandle'])"
+                @click="select(tab)" @auxclick="close(tab)">
+                {{ tab }} <button class="closeButton" @click="close(tab); $event.stopImmediatePropagation()">x</button>
+            </button>
+            <div class="filler"></div>
+        </div>
+
+        <div class="tab-container">
+
+            <div class="float" v-if="tabs?.length != 0">
+
+                <button class="float" @click="codeOpen = !codeOpen">
+                    <Icon icon="code"></Icon>
+                </button>
+            </div>
+
+            <splitpanes style="height: 100%;width: 100%;" @pane-maximize="codeOpen = false">
+                <pane min-size="20">
+                    <div id="tabs"></div>
+                </pane>
+                <pane min-size="20" :size="40" v-if="codeOpen">
+                    <CompiledPreview></CompiledPreview>
+                </pane>
+            </splitpanes>
+
+
+        </div>
+
     </div>
 </template>
 
 <script lang="ts">
 import { ref } from 'vue';
 import EditorManager from '../../manager/EditorManager';
+import Icon from '../VS-Icon.vue';
+//@ts-ignore
+import { Splitpanes, Pane } from 'splitpanes';
+import CompiledPreview from '../CompiledPreview.vue';
 
 
 export default {
     name: "TabView",
+    components: {
+        Icon,
+        Splitpanes,
+        Pane,
+        CompiledPreview
+    },
     mounted() {
         let manager = new EditorManager(document.getElementById("tabs")!);
 
@@ -44,6 +76,9 @@ export default {
 
         let cur = ref(undefined as string | undefined);
 
+        let codeOpen = ref(false);
+
+        let onlyCode = ref(false);
 
         let close = (s: string) => { };
         let select = (s: string) => { };
@@ -52,7 +87,9 @@ export default {
             close,
             select,
             tabs,
-            cur
+            cur,
+            codeOpen,
+            onlyCode
         }
     }
 }
@@ -60,11 +97,41 @@ export default {
 </script>
 
 <style>
+div.float {
+    position: absolute;
+    margin-top: 5px;
+    width: min-content;
+    right: 5px;
+}
+
+.float>button {
+    width: 30px;
+    height: 30px;
+    padding: 3px;
+    margin-bottom: 5px;
+    box-shadow: 1px 1px 3px #000000;
+}
+
+.float>button:deep() .icon {
+    min-height: 20% !important;
+    height: 100%;
+}
+
+.manager {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-flow: column;
+}
+
 .tab-handles {
+    max-height: 8%;
+    overflow-y: hidden;
     text-align: start;
 }
 
 .tabHandle {
+    height: 100%;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
     border-width: 0;
@@ -106,8 +173,14 @@ export default {
 }
 
 
+.tab-container {
+    min-height: 92%;
+    width: 100%;
+    flex-grow: 1;
+}
+
 #tabs {
-    height: 90%;
+    height: 100%;
     width: 100%;
     background-color: unset;
 }

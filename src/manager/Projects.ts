@@ -2,9 +2,12 @@ import { Data } from "rete/types/core/data";
 import StandardNodes from "../nodes";
 import { ComponentPlugin } from "./componentPlugin";
 
+
 export type ProjectData = {
     processes: Data[],
-    packets?: ComponentPlugin[]
+    packets?: ComponentPlugin[],
+    openTabs?: string[],
+    selected?: string
 }
 
 let DefaultProject: ProjectData = {
@@ -834,7 +837,9 @@ let DefaultProject: ProjectData = {
             }
         }
     ],
-    packets: [StandardNodes]
+    packets: [StandardNodes],
+    openTabs: ['ggt', 'main', 'min'],
+    selected: 'ggt'
 }
 
 export { DefaultProject };

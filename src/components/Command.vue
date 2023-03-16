@@ -14,8 +14,8 @@
 </template>
 
 <script lang="ts">
+import { NodeData } from 'rete/types/core/data';
 import { defineComponent, ref } from 'vue';
-import { SpreadBoardEditor } from '../editor/editor';
 import { Command } from '../nodes/CompilerNode';
 
 export default defineComponent({
@@ -38,22 +38,22 @@ export default defineComponent({
 
         let command: Command = props.command as Command
 
-        let selected = ref(SpreadBoardEditor.instance?.selected.list)
+        let selected = ref([] as NodeData[])
 
-        SpreadBoardEditor.instance?.on('nodeselected', (opt) => {
+        /* SpreadBoardEditor.instance?.on('nodeselected', (opt) => {
             selected.value = [];
             selected.value = SpreadBoardEditor.instance?.selected.list;
-        });
+        }); */
 
         const isSelected = () => {
 
         }
 
-        const select = (id: number) => {
+        const select = (id: number) => {/* 
             let node = SpreadBoardEditor.instance?.nodes.find((n) => n.id == id);
             if (node)
                 SpreadBoardEditor.instance?.trigger("selectnode", { node: node })
-            else SpreadBoardEditor.instance?.unselectNode()
+            else SpreadBoardEditor.instance?.unselectNode() */
         }
 
         const hasChildren = () => {

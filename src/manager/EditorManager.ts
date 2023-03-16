@@ -60,6 +60,11 @@ class EditorManager {
                 this.processor.compileProcess(key, this.processData.get(key)!, this.blankEngine);
             }
         );
+
+        project.openTabs?.forEach(tab => this.select(tab))
+        if (project.selected) {
+            this.select(project.selected);
+        }
     }
 
     private anchor: HTMLElement;
@@ -76,7 +81,9 @@ class EditorManager {
     private engines: Map<string, Engine> = new Map();
     private blankEngine = new Engine('blank@0.1.0');
 
-    private processor = new Processor();
+
+    private eventEmitter = new EventEmitter();
+    private processor = new Processor(this.eventEmitter);
 
 
     public getIOS(processId: string) {
@@ -335,13 +342,15 @@ class EditorManager {
         return Object.seal(this.curProcess);
     }
 
-    private eventEmitter = new EventEmitter();
-
     public onSelected(callback: (selected: string) => void) {
         this.eventEmitter.on('select', callback);
     }
 
     public onTabsChange(callback: () => void) {
+        this.eventEmitter.on('tabs', callback);
+    }
+
+    public onCompiled(callback: (processCommand: ProcessCommand) => void) {
         this.eventEmitter.on('tabs', callback);
     }
 
