@@ -25,7 +25,6 @@ export class AddNode extends SpreadNode<{ num: number, num2: number }, { res: nu
                                 prev.setValue(res);
                             }
                         )
-                        console.log(`Addition-Node: `, obj, ` -> ${num}+${num2}=${res}`)
                         return { res }
                     }
                 ));
