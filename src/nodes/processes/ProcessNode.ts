@@ -3,10 +3,18 @@ import Rete, { Component, Input, Node, Node as RNode, Output, Socket } from "ret
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { ProcessControl } from "../controls/ProcessControl";
 import { CompilerIO, Evaluation, ProcessIO } from "../../processor/connections/packet";
-import { NodeCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
 import EditorManager from "../../manager/EditorManager";
+import { SpreadNode } from "../SpreadNode";
+import { combineLatest, map, Observable, OperatorFunction, startWith } from "rxjs";
 
-export class ProcessNode extends CompilerNode {
+export class ProcessNode extends SpreadNode<{ [key: string]: any }, { [key: string]: any }> {
+
+    operator = (nodeData: NodeData) => (nodeInputs: Observable<{ [key: string]: any; }>) => (processInputs: Observable<{ [key: string]: any }>) =>
+        combineLatest([nodeInputs, processInputs]).pipe(
+            startWith([{}, {}]),
+            map(([nodeInput, processInput]) => nodeInput),
+            (obs: Observable<{ [key: string]: any }>) => (EditorManager.getInstance()?.getOperator(nodeData.data.id as string) ?? map(a => { return {} }))(obs)
+        );
 
     data = {
         i18nKeys: ["process"],
@@ -70,122 +78,13 @@ export class ProcessNode extends CompilerNode {
         node.update();
     }
 
-    worker(node: NodeData, inputs: WorkerInputs, outputs: CompilerIO, compilerOptions: CompilerOptions) {
-
+    worker(node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs, outputOperators: OperatorFunction<{ [key: string]: any }, { [key: string]: any }>[]) {
         let nodeComp = this.editor?.nodes.find((n) => n.id == node.id);
-
         if (nodeComp)
             this.updateIos(node.data.id as string, nodeComp);
 
-        super.worker(node, inputs, outputs, compilerOptions);
+        super.worker(node, inputs, outputs, outputOperators);
     }
 
-
-    process = (node: NodeData, outKey: string, inputConnections: CompilerIO, compilerOptions: CompilerOptions) => {
-
-        let processProcess = () => EditorManager.getInstance()?.getProcessor()?.processProcess(node.data.id as string);
-
-        let func = processProcess();
-
-        return (processI0: ProcessIO) => {
-            let externalInput: ProcessIO = {};
-            Object.keys(inputConnections).forEach(
-                (inputKey) => {
-                    externalInput[inputKey] = inputConnections[inputKey](processI0);
-                }
-            );
-
-            if (!func) {
-                func = processProcess;
-                console.log("Fetching the Compiled Process");
-            }
-            if (func) {
-                let result;
-                try {
-                    result = func(externalInput);
-                } catch (e) {
-                    console.log("Error During:", func.toString())
-                }
-                if (result && result[outKey]) {
-                    return result[outKey];
-                } else {
-                    console.trace();
-                }
-            }
-        }
-    };
-
-
-    compile(node: NodeData, worker_input_names: { [key: string]: Command }, worker_id: string): NodeCommand {
-
-        let function_id = node.data.id as string;
-
-        worker_id = function_id + "_" + node.id
-
-        let out = EditorManager.getInstance()?.getIOS(function_id).outputs!;
-
-        let outputs: { [key: string]: Command } = {}
-
-
-        type logC = number | string | { [key: string]: Command }
-        console.log(node.data.id as logC, node.id as logC, worker_input_names as logC);
-
-        let temp: Command[] = [{
-            node_id: node.id,
-            commands: "{"
-        }];
-        Object.keys(worker_input_names).forEach((key) => {
-            if (temp.length > 1)
-                temp.push({
-                    node_id: node.id,
-                    commands: `, `
-                })
-
-
-            temp.push({
-                node_id: node.id,
-                commands: `${key}: `
-            })
-            temp.push(worker_input_names[key])
-        })
-        temp.push({
-            node_id: node.id,
-            commands: "} "
-        })
-
-
-
-        out.forEach(({ key }) => {
-            outputs[key] = {
-                node_id: node.id,
-                commands: `( ${worker_id}_get().${key} )`
-            } as Command;
-        });
-
-        return {
-            node_id: node.id,
-            commands: [
-                {
-                    node_id: node.id,
-                    commands: [
-                        {
-                            node_id: node.id,
-                            commands: `\nlet ${worker_id}_result;\nconst ${worker_id}_get = ()=> ${worker_id}_result||=${function_id}(`
-                        },
-                        {
-                            node_id: node.id,
-                            commands: temp
-                        },
-                        {
-                            node_id: node.id,
-                            commands: ` );`
-                        }
-                    ]
-                }
-            ],
-            outputs: outputs,
-            processDependencys: [`@/${function_id}`]
-        }
-    }
 }
 

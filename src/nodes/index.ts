@@ -27,10 +27,10 @@ const StandardNodes = new ComponentPlugin(
         new SubNode(),
         new ConditionNode(),
         new ModuloNode(),
-        new DivNode()
-        /*ew InputNumNode(),
+        new DivNode(),
+        new InputNumNode(),
         new OutputNumNode(),
-        new ProcessNode(), */
+        new ProcessNode()
     ]
 );
 

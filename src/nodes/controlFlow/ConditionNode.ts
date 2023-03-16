@@ -11,7 +11,10 @@ export class ConditionNode extends SpreadNode<{ bool: boolean, if: any, else: an
         (nodeInputs: Observable<{ bool: boolean; if: any; else: any; }>) =>
             (obs: Observable<{ [key: string]: any }>) =>
                 combineLatest([nodeInputs, obs.pipe(startWith({}))]).pipe(map(
-                    ([nodein, _]) => nodein.bool ? nodein.if : nodein.else
+                    ([nodein, _]) => {
+                        console.log(`${nodein.bool} ? ${nodein.if} : ${nodein.else}`)
+                        return nodein.bool ? nodein.if : nodein.else;
+                    }
                 ));
 
     data = {

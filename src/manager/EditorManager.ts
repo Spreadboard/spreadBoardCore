@@ -78,6 +78,10 @@ class EditorManager {
     //TODO: Change Operator-Type
     private compiledOperators: Map<string, OperatorFunction<{ [key: string]: any }, { [key: string]: any }>> = new Map;
 
+    public getOperator(id: string) {
+        return this.compiledOperators.get(id);
+    }
+
     private editors: Map<string, NodeEditor> = new Map();
     private engines: Map<string, Engine> = new Map();
     private blankEngine = new Engine('blank@0.1.0');

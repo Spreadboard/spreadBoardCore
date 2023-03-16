@@ -9,7 +9,7 @@ import EditorManager from "../../manager/EditorManager";
 import { SpreadNode } from "../SpreadNode";
 import { combineLatest, map, Observable, startWith } from "rxjs";
 
-export class EqualNode extends SpreadNode<{ num: number, num2: number }, { res: boolean }> {
+export class EqualNode extends SpreadNode<{ num: number, num2: number }, { bool: boolean }> {
 
 
     operator = (nodeData: NodeData) => {
@@ -20,14 +20,14 @@ export class EqualNode extends SpreadNode<{ num: number, num2: number }, { res: 
                     ([obj, _]) => {
                         let num = (obj.num ?? nodeData.data.num as number) ?? 0;
                         let num2 = (obj.num2 ?? nodeData.data.num2 as number) ?? 0;
-                        let res = num == num2;
+                        let bool = num == num2;
                         this.editor?.nodes.filter(n => n.id == nodeData.id).map(
                             node => {
                                 let prev = node.controls.get('preview') as BoolControl;
-                                prev.setValue(res);
+                                prev.setValue(bool);
                             }
                         )
-                        return { res }
+                        return { bool }
                     }
                 ));
     }
