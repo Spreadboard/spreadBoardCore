@@ -19,6 +19,12 @@ export class AddNode extends SpreadNode<{ num: number, num2: number }, { res: nu
                         let num = (obj.num ?? nodeData.data.num as number) ?? 0;
                         let num2 = (obj.num2 ?? nodeData.data.num2 as number) ?? 0;
                         let res = num + num2;
+                        this.editor?.nodes.filter(n => n.id == nodeData.id).map(
+                            node => {
+                                let prev = node.controls.get('preview') as NumControl;
+                                prev.setValue(res);
+                            }
+                        )
                         console.log(`Addition-Node: `, obj, ` -> ${num}+${num2}=${res}`)
                         return { res }
                     }
@@ -44,7 +50,7 @@ export class AddNode extends SpreadNode<{ num: number, num2: number }, { res: nu
         node
             .addInput(inp1)
             .addInput(inp2)
-            .addControl(new NumControl((event: string, val: number) => { }, 'preview', true, EditorManager.getInstance()?.i18n(["res"]) || "Result"))
+            .addControl(new NumControl((val: number) => { }, 'preview', true, EditorManager.getInstance()?.i18n(["res"]) || "Result"))
             .addOutput(out);
     }
 

@@ -47,14 +47,26 @@ export abstract class SpreadNode<T extends IO, R extends IO> extends Component {
     worker(node: NodeData, inputs: WorkerInputs, outputs: WorkerOutputs, outputOperators: OperatorFunction<IO, IO>[]): void {
         let inputOperators: Partial<{ [K in keyof T]: OperatorFunction<IO, T[K]> }> = {};
         Object.keys(inputs).forEach(
-            (key) => inputOperators[key as keyof T] = mergeOperators(...inputs[key] as OperatorFunction<IO, any>[])
+            (key) => {
+                if (inputs[key].length == 0)
+                    return;
+                let inputOP = inputs[key] as OperatorFunction<IO, any>[];
+                inputOperators[key as keyof T] = mergeOperators(...inputOP);
+            }
         );
-        let input = combineOperators(inputOperators as { [K in keyof T]: OperatorFunction<IO, T[K]> });
+        let input = pipe(
+            combineOperators(inputOperators as { [K in keyof T]: OperatorFunction<IO, T[K]> })
+        );
 
         let result = (obs: Observable<IO>) => this.operator(node)(input(obs).pipe(startWith({} as T)))(obs);
 
         Object.keys(node.outputs).forEach(
-            outKey => outputs[outKey] = (obs: Observable<IO>) => result(obs).pipe(map(res => res[outKey]))
+            outKey => {
+
+                outputs[outKey] = pipe(result, map(res => {
+                    return res[outKey];
+                }))
+            }
         )
 
 
