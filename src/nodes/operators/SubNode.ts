@@ -3,11 +3,33 @@ import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { NumControl } from "../controls/NumControl";
 
 import { SocketTypes } from "../../processor/connections/sockets";
-import { NodeCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
 import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
 import EditorManager from "../../manager/EditorManager";
+import { SpreadNode } from "../SpreadNode";
+import { combineLatest, map, Observable, startWith } from "rxjs";
 
-export class SubNode extends CompilerNode {
+export class SubNode extends SpreadNode<{ num: number, num2: number }, { res: number }> {
+
+
+    operator = (nodeData: NodeData) => {
+        console.log('Lege Operator an')
+        return (nodeInputs: Observable<{ num: number, num2: number }>) =>
+            (obs: Observable<{ [key: string]: any }>) =>
+                combineLatest([nodeInputs, obs.pipe(startWith({}))]).pipe(map(
+                    ([obj, _]) => {
+                        let num = (obj.num ?? nodeData.data.num as number) ?? 0;
+                        let num2 = (obj.num2 ?? nodeData.data.num2 as number) ?? 0;
+                        let res = num - num2;
+                        this.editor?.nodes.filter(n => n.id == nodeData.id).map(
+                            node => {
+                                let prev = node.controls.get('preview') as NumControl;
+                                prev.setValue(res);
+                            }
+                        )
+                        return { res }
+                    }
+                ));
+    }
 
     data = {
         i18nKeys: ["sub"],
@@ -32,58 +54,5 @@ export class SubNode extends CompilerNode {
             .addOutput(out);
     }
 
-    process = (node: NodeData, outKey: string, inputConnection: CompilerIO, compilerOptions: CompilerOptions) => {
-        switch (outKey) {
-            case 'num':
-                return (inputs: ProcessIO) => {
-                    const n1: number = inputConnection['num'](inputs) as number ?? node.data.num as number ?? 0;
-                    const n2: number = inputConnection['num2'](inputs) as number ?? node.data.num2 as number ?? 0;
-                    const res: number = n1 - n2;
 
-                    if (!compilerOptions.silent) {
-                        const preview = this.editor?.nodes?.find((n: RNode) => n.id == node.id)?.controls.get('preview') as NumControl | undefined;
-                        preview?.setValue(res);
-                    }
-
-                    return res;
-                }
-            default:
-                return (inputs: ProcessIO) => undefined;
-        }
-    };
-
-    compile(node: NodeData, worker_input_names: { [key: string]: Command }, worker_id: string): NodeCommand {
-
-
-        let num: Command = (worker_input_names.num) ? worker_input_names.num : { node_id: node.id, commands: `${node.data.num ?? 0}` };
-        let num2: Command = (worker_input_names.num2) ? worker_input_names.num2 : { node_id: node.id, commands: `${node.data.num2 ?? 0}` };
-
-        return {
-            node_id: node.id,
-            commands: [],
-            outputs: {
-                'num': {
-                    commands: [
-                        {
-                            node_id: node.id,
-                            commands: ` ( `
-                        },
-                        num,
-                        {
-                            node_id: node.id,
-                            commands: ` - `
-                        },
-                        num2,
-                        {
-                            node_id: node.id,
-                            commands: ` ) `
-                        },
-
-                    ],
-                    node_id: node.id
-                }
-            },
-            processDependencys: []
-        }
-    }
 }

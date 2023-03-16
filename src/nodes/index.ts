@@ -21,16 +21,16 @@ const StandardNodes = new ComponentPlugin(
         new NumNode(),
         new BoolNode(),
         new AddNode(),
-        /* new MultNode(),
+        new MultNode(),
         new GreaterNode(),
         new EqualNode(),
         new SubNode(),
-        new InputNumNode(),
-        new OutputNumNode(),
-        new ProcessNode(),
         new ConditionNode(),
         new ModuloNode(),
-        new DivNode() */
+        new DivNode()
+        /*ew InputNumNode(),
+        new OutputNumNode(),
+        new ProcessNode(), */
     ]
 );
 
