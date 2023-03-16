@@ -3,36 +3,24 @@ import Rete, { Component, Node as RNode } from "rete";
 import { NumControl } from "../controls/NumControl";
 import { SocketTypes } from "../../processor/connections/sockets";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
-import { NodeCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
 import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
 import EditorManager from "../../manager/EditorManager";
+import { SpreadNode } from "../SpreadNode";
+import { combineLatest, map, Observable, startWith } from "rxjs";
 
-export class NumNode extends CompilerNode {
-    compile(node: NodeData, worker_input_names: { [key: string]: Command }, worker_id: string): NodeCommand {
-        return {
-            node_id: node.id,
-            commands: [{
-                commands: `const ${worker_id} = ${node.data.num}`,
-                node_id: node.id
-            }],
-            outputs: {
-                'num': {
-                    node_id: node.id,
-                    commands: `${worker_id}`
-                }
-            },
-            processDependencys: []
-        }
-    }
+export class NumNode extends SpreadNode<{}, { num: number }> {
 
-    process = (node: NodeData, outKey: string, inputConnection: CompilerIO, compilerOptions: CompilerOptions) => {
-        switch (outKey) {
-            case 'num':
-                return (inputs: ProcessIO) => node.data.num;
-            default:
-                return (inputs: ProcessIO) => undefined;
-        }
-    };
+
+    operator = (nodeData: NodeData) =>
+        (nodeInputs: Observable<{}>) =>
+            (obs: Observable<{ [key: string]: any }>) =>
+                combineLatest([nodeInputs, obs.pipe(startWith({}))]).pipe(map(
+                    (_) => {
+                        let num = nodeData.data.num as number ?? 0;
+                        console.log(`NumNode: ${num}`);
+                        return { num }
+                    }
+                ));
 
     data = {
         i18nKeys: ["num"],

@@ -3,36 +3,22 @@ import Rete, { Component, Node as RNode } from "rete";
 import { BoolControl } from "../controls/BoolControl";
 import { NodeData, WorkerInputs, WorkerOutputs } from "rete/types/core/data";
 import { SocketTypes } from "../../processor/connections/sockets";
-import { NodeCommand, CompilerNode, CompilerOptions, Command } from "../CompilerNode";
-import { CompilerIO, ProcessIO } from "../../processor/connections/packet";
 import EditorManager from '../../manager/EditorManager';
+import { SpreadNode } from "../SpreadNode";
+import { combineLatest, map, Observable, startWith } from "rxjs";
 
-export class BoolNode extends CompilerNode {
-    compile(node: NodeData, worker_input_names: { [key: string]: Command }, worker_id: string): NodeCommand {
-        return {
-            node_id: node.id,
-            commands: [{
-                commands: `const ${worker_id} = ${node.data.bool}`,
-                node_id: node.id
-            }],
-            outputs: {
-                'bool': {
-                    node_id: node.id,
-                    commands: `${worker_id}`
-                }
-            },
-            processDependencys: []
-        }
-    }
+export class BoolNode extends SpreadNode<{}, { bool: boolean }> {
 
-    process = (node: NodeData, outKey: string, inputConnection: CompilerIO, compilerOptions: CompilerOptions) => {
-        switch (outKey) {
-            case 'bool':
-                return (inputs: ProcessIO) => node.data.bool;
-            default:
-                return (inputs: ProcessIO) => undefined;
-        }
-    };
+
+    operator = (nodeData: NodeData) =>
+        (nodeInputs: Observable<{}>) =>
+            (obs: Observable<{ [key: string]: any }>) =>
+                combineLatest([nodeInputs, obs.pipe(startWith({}))]).pipe(map(
+                    (_) => {
+                        let bool = nodeData.data.bool as boolean ?? false;
+                        return { bool }
+                    }
+                ));
 
     data = {
         i18nKeys: ["bool"],

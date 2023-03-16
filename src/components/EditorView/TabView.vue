@@ -22,7 +22,6 @@
                     <div id="tabs"></div>
                 </pane>
                 <pane min-size="20" :size="40" v-if="codeOpen">
-                    <CompiledPreview></CompiledPreview>
                 </pane>
             </splitpanes>
 
@@ -38,7 +37,6 @@ import EditorManager from '../../manager/EditorManager';
 import Icon from '../VS-Icon.vue';
 //@ts-ignore
 import { Splitpanes, Pane } from 'splitpanes';
-import CompiledPreview from '../CompiledPreview.vue';
 
 
 export default {
@@ -47,7 +45,6 @@ export default {
         Icon,
         Splitpanes,
         Pane,
-        CompiledPreview
     },
     mounted() {
         let manager = new EditorManager(document.getElementById("tabs")!);

@@ -21,7 +21,7 @@ const StandardNodes = new ComponentPlugin(
         new NumNode(),
         new BoolNode(),
         new AddNode(),
-        new MultNode(),
+        /* new MultNode(),
         new GreaterNode(),
         new EqualNode(),
         new SubNode(),
@@ -30,7 +30,7 @@ const StandardNodes = new ComponentPlugin(
         new ProcessNode(),
         new ConditionNode(),
         new ModuloNode(),
-        new DivNode()
+        new DivNode() */
     ]
 );
 

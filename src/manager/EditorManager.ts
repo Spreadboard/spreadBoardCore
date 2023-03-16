@@ -14,10 +14,11 @@ import AreaPlugin from "rete-area-plugin";
 
 import ContextMenuPlugin from "../context-menu";
 import EventEmitter from "events";
-import { ProcessCommand } from "../nodes/CompilerNode";
+import { mergeOperators } from '../nodes/SpreadNode'
 import { Processor } from "../processor/processor";
 import StandardNodes from "../nodes";
-import { DefaultProject, ProjectData } from "./Projects";
+import { DefaultProject, ProjectData, TestProject } from "./Projects";
+import { fromEvent, Observable, OperatorFunction } from "rxjs";
 
 type Store<T> = {
     [key: string]: T
@@ -36,7 +37,7 @@ class EditorManager {
     constructor(anchor: HTMLElement) {
         this.anchor = anchor;
         EditorManager.curInstance = this;
-        this.openProject(DefaultProject);
+        this.openProject(TestProject);
     }
 
     public openProject(project: ProjectData) {
@@ -75,7 +76,7 @@ class EditorManager {
     private processData: Map<string, NodesData> = new Map();
 
     //TODO: Change Operator-Type
-    private processCommands: Map<string, ProcessCommand> = new Map;
+    private compiledOperators: Map<string, OperatorFunction<{ [key: string]: any }, { [key: string]: any }>> = new Map;
 
     private editors: Map<string, NodeEditor> = new Map();
     private engines: Map<string, Engine> = new Map();
@@ -236,11 +237,27 @@ class EditorManager {
             this.processData.set(id, nodes);
 
             //compile
-            this.processor.compileProcess(id, nodes, engine);
+            let operators: OperatorFunction<{ [key: string]: any }, { [key: string]: any }>[] = [];
+            await engine.abort();
+            await engine.process({
+                id: id + '@0.1.0',
+                nodes
+            }, null, operators);
+            let result = mergeOperators(...operators);
+            this.compiledOperators.set(id, result);
+
+
+            //this.processor.compileProcess(id, nodes, engine);
 
             //execute
-            if (params.process || true)
-                this.processor.process(nodes, engine);
+            if (params.process || true) {
+                let emitter = new EventEmitter();
+                result(fromEvent(emitter, '') as Observable<{ [key: string]: any }>).subscribe(res => { });
+                emitter.emit('', {});
+                emitter.emit('', {});
+                emitter.emit('', {});
+            }
+            //  this.processor.process(nodes, engine);
         }
         );
 
@@ -272,7 +289,7 @@ class EditorManager {
         if (id in this.openTabs)
             this.close(id);
         this.processData.delete(id);
-        this.processCommands.delete(id);
+        this.compiledOperators.delete(id);
         this.editors.delete(id);
     }
 
@@ -350,9 +367,6 @@ class EditorManager {
         this.eventEmitter.on('tabs', callback);
     }
 
-    public onCompiled(callback: (processCommand: ProcessCommand) => void) {
-        this.eventEmitter.on('tabs', callback);
-    }
 
 }
 

@@ -10,6 +10,18 @@ export type ProjectData = {
     selected?: string
 }
 
+let TestProject: ProjectData = {
+    processes: [
+        {
+            'id': 'test',
+            'nodes': {
+
+            }
+        }
+    ],
+    packets: [StandardNodes]
+}
+
 let DefaultProject: ProjectData = {
     processes: [
         {
@@ -842,4 +854,4 @@ let DefaultProject: ProjectData = {
     selected: 'ggt'
 }
 
-export { DefaultProject };
+export { DefaultProject, TestProject };
